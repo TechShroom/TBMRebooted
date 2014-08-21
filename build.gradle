@@ -45,8 +45,6 @@ configFile.withReader {
 
 dependencies {
     compile "codechicken:CodeChickenLib:${config.mc.version}-${config.ccl.version}:dev"
-    compile "codechicken:CodeChickenCore:${config.mc.version}-${config.ccc.version}:dev"
-    compile "codechicken:NotEnoughItems:${config.mc.version}-${config.nei.version}:dev"
 }
 
 def build_number = (System.getenv("BUILD_NUMBER") ?: "1")
