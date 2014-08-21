@@ -3,7 +3,7 @@ TBM (Tunnel Boring Machine)
 TBM is a mod written for Minecraft. It brings tunnel bores to Minecraft via highly customizable blocks that suit nearly every need.
 - [![Build Status](https://travis-ci.org/TechShroom/TBMRebooted.svg?branch=master)](https://travis-ci.org/TechShroom/TBMRebooted)
 - [Minecraft Forum Thread](http://goo.gl/0yDijR)
-- [Website](http://techshroom.com) (this will be linked to the right page later)
+- [Website](http://techshroom.com/other/minecraft/mods/tbm/)
 
 Developing:
 ----------
