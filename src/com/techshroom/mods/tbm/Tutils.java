@@ -17,8 +17,8 @@ public final class Tutils {
             return id + ":" + object;
         }
     }
-    
-    public static MCAddress address(String id, String object){
+
+    public static MCAddress address(String id, String object) {
         return new MCAddress(id, object);
     }
 }

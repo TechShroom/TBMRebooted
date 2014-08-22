@@ -1,27 +1,51 @@
 package com.techshroom.mods.tbm;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.logging.log4j.Logger;
 
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
+import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
-@Mod(modid = TBMMod.ID, useMetadata = true, guiFactory = "com.techshroom.mods.tbm.gui.GuiFactory")
+@Mod(modid = TBMMod.ID, useMetadata = true,
+        guiFactory = "com.techshroom.mods.tbm.gui.GuiFactory")
 public final class TBMMod {
     static final String ID = "TBMMod";
 
     @Instance
     private static TBMMod INST;
+    @SidedProxy(clientSide = "com.techshroom.mods.tbm.TBMCProxy",
+            serverSide = "com.techshroom.mods.tbm.TBMProxy")
+    private static TBMProxy PROX;
+    public static final Map<String, Object> store = new HashMap<String, Object>();
+
+    @SuppressWarnings("unchecked")
+    public static <T> T store_get(String key) {
+        return (T) store.get(key);
+    }
 
     public static TBMMod mod() {
         return INST;
     }
 
+    public static TBMProxy proxy() {
+        return PROX;
+    }
+
+    static {
+        store.put("mod", mod());
+        store.put("proxy", proxy());
+        store.put("id", ID);
+    }
+
     public Logger log;
-    
+
     public String id() {
         return ID;
     }
@@ -30,18 +54,22 @@ public final class TBMMod {
     public void preinit(FMLPreInitializationEvent e) {
         log = e.getModLog();
         log.entry(e);
+        store.put("log", log);
+        proxy().preinit();
         log.exit();
     }
 
     @EventHandler
     public void init(FMLInitializationEvent e) {
         log.entry(e);
+        proxy().init();
         log.exit();
     }
 
     @EventHandler
     public void postinit(FMLPostInitializationEvent e) {
         log.entry(e);
+        proxy().postinit();
         log.exit();
     }
 }
