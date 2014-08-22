@@ -17,6 +17,6 @@ Of course, if you don't need to use the wrapper (as in, you have Gradle installe
 2. `cd` to the repository (folder where `src` and `resources` are located).
 3. Run `./gradlew setupDecompWorkspace` to set up an environment.
 4. Run `./gradlew eclipse` or `./gradlew idea` appropriately.
-5. Open your IDE using the generated files (i.e., for IDEA, a ProjectRed.ipr is generated in `./`)
+5. Open your IDE using the generated files (i.e., for IDEA, a TBM.ipr is generated in `./`)
 6. Edit, run, and debug your new code.
 7. Once it's bug free and working, you may submit it as a PR to the main repo.
