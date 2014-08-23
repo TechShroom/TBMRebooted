@@ -1,6 +1,6 @@
 package com.techshroom.mods.tbm.gui;
 
-import static com.techshroom.mods.tbm.Tutils.throwing;
+import static com.techshroom.mods.tbm.Tutils.*;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -39,9 +39,9 @@ public class GuiHandler implements IGuiHandler {
         } catch (ClassCastException e) {
             throwing(e);
         }
-        IGuiProvider tileAsGP = IGuiProvider.NULL;
+        IGuiProvider<Container> tileAsGP = IGuiProvider.NULL;
         try {
-            tileAsGP = ((IGuiProvider) tile);
+            tileAsGP = genericize(tile);
         } catch (ClassCastException e) {
             throwing(e);
         }

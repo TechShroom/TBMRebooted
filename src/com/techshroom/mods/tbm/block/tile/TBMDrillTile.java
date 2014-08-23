@@ -50,6 +50,6 @@ public class TBMDrillTile extends AlwaysSyncedSidedTile implements
 
     @Override
     protected int getGUIId() {
-        return store_get("drill-gui-id");
+        return (Integer) store_get("drill-gui-id");
     }
 }
