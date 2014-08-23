@@ -4,10 +4,16 @@ import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
+import com.techshroom.mods.tbm.block.tile.TBMDrillTile;
+
 public class TBMDrillEntity extends Entity {
 
     public TBMDrillEntity(World p_i1582_1_) {
         super(p_i1582_1_);
+    }
+
+    public TBMDrillEntity withTile(TBMDrillTile tile) {
+        return this;
     }
 
     @Override

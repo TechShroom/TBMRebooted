@@ -19,7 +19,8 @@ public abstract class AlwaysSyncedTileEntity extends TileEntity {
     // there seems to be an id system?
     private static int packetIDCounter = 5;
 
-    private static HashMap<Class<? extends AlwaysSyncedTileEntity>, Integer> idmap = new HashMap<Class<? extends AlwaysSyncedTileEntity>, Integer>();
+    private static HashMap<Class<? extends AlwaysSyncedTileEntity>, Integer> idmap =
+            new HashMap<Class<? extends AlwaysSyncedTileEntity>, Integer>();
 
     @Override
     public Packet getDescriptionPacket() {
@@ -30,8 +31,8 @@ public abstract class AlwaysSyncedTileEntity extends TileEntity {
         int id = idmap.get(c);
         NBTTagCompound nbt = new NBTTagCompound();
         writeToNBT(nbt);
-        S35PacketUpdateTileEntity p = new S35PacketUpdateTileEntity(xCoord,
-                yCoord, zCoord, id, nbt);
+        S35PacketUpdateTileEntity p =
+                new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, id, nbt);
         return p;
     }
 
@@ -41,7 +42,7 @@ public abstract class AlwaysSyncedTileEntity extends TileEntity {
     }
 
     public void sync() {
-        this.worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+        this.getWorldObj().markBlockForUpdate(xCoord, yCoord, zCoord);
     }
 
     public void localMarkDirty() {

@@ -1,0 +1,10 @@
+
+itemGroup.tbmItems=TBM Items
+
+item.drillhead[0].name=Wooden Drillhead
+item.drillhead[1].name=Iron Drillhead
+item.drillhead[2].name=Diamond Drillhead
+
+itemGroup.tbmBlocks=TBM Blocks
+
+tile.drill.name=Drill

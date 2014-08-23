@@ -12,7 +12,7 @@ public class TBMCProxy extends TBMProxy {
     @Override
     protected void subpostinit() {
     }
-    
+
     @Override
     public boolean isClient() {
         return true;
