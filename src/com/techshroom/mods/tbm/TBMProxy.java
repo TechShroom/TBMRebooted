@@ -3,6 +3,7 @@ package com.techshroom.mods.tbm;
 import static com.techshroom.mods.tbm.TBMMod.*;
 
 import com.techshroom.mods.tbm.block.TBMDrill;
+import com.techshroom.mods.tbm.block.TBMEject;
 import com.techshroom.mods.tbm.block.tile.TBMDrillTile;
 import com.techshroom.mods.tbm.entity.TBMDrillEntity;
 import com.techshroom.mods.tbm.gui.GuiHandler;
@@ -44,8 +45,10 @@ public class TBMProxy {
 
     private void blockData() {
         TBMDrill drill = store_put("drill", new TBMDrill());
+        TBMEject eject = store_put("ejecter", new TBMEject());
 
         GameRegistry.registerBlock(drill, drill.getUnlocalizedName());
+        GameRegistry.registerBlock(eject, eject.getUnlocalizedName());
 
         GameRegistry.registerTileEntity(TBMDrillTile.class, "drill");
     }

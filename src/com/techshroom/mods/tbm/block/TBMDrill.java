@@ -12,7 +12,6 @@ import net.minecraft.world.World;
 import com.techshroom.mods.tbm.block.tile.TBMDrillTile;
 
 public class TBMDrill extends BlockContainer {
-
     public TBMDrill() {
         super(Material.iron);
         this.setBlockName("drill")

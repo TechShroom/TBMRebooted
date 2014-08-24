@@ -8,3 +8,4 @@ item.drillhead[2].name=Diamond Drillhead
 itemGroup.tbmBlocks=TBM Blocks
 
 tile.drill.name=Drill
+tile.ejecter.name=Ejecter
