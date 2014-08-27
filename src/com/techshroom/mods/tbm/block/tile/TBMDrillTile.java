@@ -2,6 +2,7 @@ package com.techshroom.mods.tbm.block.tile;
 
 import static com.techshroom.mods.tbm.TBMMod.store_get;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.Item;
@@ -13,14 +14,18 @@ import com.techshroom.mods.tbm.gui.GuiTBMDrill;
 import com.techshroom.mods.tbm.gui.container.ContainerTBMDrill;
 
 public class TBMDrillTile extends AlwaysSyncedSidedTile implements
-        ConvertsToEntity<TBMDrillEntity>, IContainerProvider,
+        ConvertsToEntity<TBMDrillEntity>, IPlayerContainerProvider,
         IGuiProvider<ContainerTBMDrill> {
+    private static final int SIZE = 1;
 
     public TBMDrillTile() {
-        super(new InventoryBasic("Drill", false, 1), new int[][] { { 0 },
-                { 0 }, { 0 }, { 0 }, { 0 }, { 0 } });
+        super(new InventoryBasic("Drill", false, SIZE), slotAccessAll(SIZE));
     }
 
+    @Override
+    public int getSizeInventory() {
+        return SIZE;
+    }
     @Override
     public boolean isItemValidForSlot(int p_94041_1_, ItemStack p_94041_2_) {
         return super.isItemValidForSlot(p_94041_1_, p_94041_2_)
@@ -29,18 +34,13 @@ public class TBMDrillTile extends AlwaysSyncedSidedTile implements
     }
 
     @Override
-    public int getSizeInventory() {
-        return 1;
-    }
-
-    @Override
     public TBMDrillEntity convertToEntity() {
         return new TBMDrillEntity(worldObj).withTile(this);
     }
 
     @Override
-    public Container container() {
-        return new ContainerTBMDrill(this);
+    public Container container(EntityPlayer player) {
+        return new ContainerTBMDrill(this, player.inventory);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class TBMDrillTile extends AlwaysSyncedSidedTile implements
     }
 
     @Override
-    protected int getGUIId() {
+    public int getGUIId() {
         return (Integer) store_get("drill-gui-id");
     }
 }

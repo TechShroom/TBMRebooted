@@ -60,4 +60,8 @@ public class TBMDrill extends BlockContainer {
     public IIcon getIcon(int sd, int mt) {
         return sd == mt ? blockIcon : nonFront;
     }
+    
+    public IIcon notTheDrillTexture() {
+        return nonFront;
+    }
 }

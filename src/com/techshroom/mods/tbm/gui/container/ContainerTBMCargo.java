@@ -4,8 +4,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
 
-public class ContainerTBMDrill extends ContainerExt {
-    public ContainerTBMDrill(IInventory inventory, InventoryPlayer playerInv) {
+public class ContainerTBMCargo extends ContainerExt {
+    public ContainerTBMCargo(IInventory inventory, InventoryPlayer playerInv) {
         super(inventory);
         this.withBalancedSlots().withPlayerInventory(playerInv);
     }

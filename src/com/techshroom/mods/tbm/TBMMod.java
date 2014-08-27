@@ -109,5 +109,6 @@ public final class TBMMod {
 
     static {
         store_put("drill-gui-id", requestGUIId());
+        store_put("cargo-gui-id", requestGUIId());
     }
 }

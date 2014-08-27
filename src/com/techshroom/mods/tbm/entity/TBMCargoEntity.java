@@ -6,17 +6,17 @@ import net.minecraft.inventory.Container;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
-import com.techshroom.mods.tbm.block.tile.TBMDrillTile;
-import com.techshroom.mods.tbm.gui.container.ContainerTBMDrill;
+import com.techshroom.mods.tbm.block.tile.TBMCargoTile;
+import com.techshroom.mods.tbm.gui.container.ContainerTBMCargo;
 
-public class TBMDrillEntity extends TBMEntity<ContainerTBMDrill, TBMDrillTile> {
-    private TBMDrillTile guiSource;
+public class TBMCargoEntity extends TBMEntity<ContainerTBMCargo, TBMCargoTile> {
+    private TBMCargoTile guiSource;
 
-    public TBMDrillEntity(World w) {
+    public TBMCargoEntity(World w) {
         super(w);
     }
 
-    public TBMDrillEntity withTile(TBMDrillTile tile) {
+    public TBMCargoEntity withTile(TBMCargoTile tile) {
         guiSource = tile;
         return this;
     }
@@ -44,7 +44,7 @@ public class TBMDrillEntity extends TBMEntity<ContainerTBMDrill, TBMDrillTile> {
     }
 
     @Override
-    public GuiScreen guiScreen(ContainerTBMDrill c) {
+    public GuiScreen guiScreen(ContainerTBMCargo c) {
         return guiSource.guiScreen(c);
     }
 
@@ -54,7 +54,7 @@ public class TBMDrillEntity extends TBMEntity<ContainerTBMDrill, TBMDrillTile> {
     }
 
     @Override
-    public TBMDrillTile convertToTile() {
+    public TBMCargoTile convertToTile() {
         return null;
     }
 }

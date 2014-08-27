@@ -1,12 +1,12 @@
 package com.techshroom.mods.tbm.entity;
 
-import net.minecraft.entity.Entity;
+import net.minecraft.inventory.Container;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
 import com.techshroom.mods.tbm.block.tile.TBMEjectTile;
 
-public class TBMEjectEntity extends Entity {
+public class TBMEjectEntity extends TBMEntity<Container, TBMEjectTile> {
     public TBMEjectEntity(World p_i1582_1_) {
         super(p_i1582_1_);
     }
@@ -25,5 +25,15 @@ public class TBMEjectEntity extends Entity {
 
     @Override
     protected void writeEntityToNBT(NBTTagCompound p_70014_1_) {
+    }
+
+    @Override
+    public TBMEjectTile convertToTile() {
+        return null;
+    }
+
+    @Override
+    public boolean providesGUI() {
+        return false;
     }
 }

@@ -9,6 +9,7 @@ import net.minecraft.world.World;
 
 import com.techshroom.mods.tbm.block.tile.IContainerProvider;
 import com.techshroom.mods.tbm.block.tile.IGuiProvider;
+import com.techshroom.mods.tbm.block.tile.IPlayerContainerProvider;
 
 import cpw.mods.fml.common.network.IGuiHandler;
 
@@ -29,38 +30,33 @@ public class GuiHandler implements IGuiHandler {
     private GuiScreen getGui(int id, EntityPlayer player, World world, int x,
             int y, int z) {
         TileEntity tile = world.getTileEntity(x, y, z);
-        if (tile == null) {
-            throwing(new RuntimeException("No tile @ (" + x + "," + y + "," + z
-                    + ")"));
-        }
-        IContainerProvider tileAsCP = IContainerProvider.NULL;
-        try {
-            tileAsCP = ((IContainerProvider) tile);
-        } catch (ClassCastException e) {
-            throwing(e);
-        }
+        Container c = getContainer(tile, player, x, y, z);
         IGuiProvider<Container> tileAsGP = IGuiProvider.NULL;
         try {
             tileAsGP = genericize(tile);
         } catch (ClassCastException e) {
             throwing(e);
         }
-        return tileAsGP.guiScreen(tileAsCP.container());
+        return tileAsGP.guiScreen(c);
     }
 
     private Container getContainer(int id, EntityPlayer player, World world,
             int x, int y, int z) {
-        TileEntity tile = world.getTileEntity(x, y, z);
+        return getContainer(world.getTileEntity(x, y, z), player, x, y, z);
+    }
+
+    private Container getContainer(TileEntity tile, EntityPlayer player, int x,
+            int y, int z) {
         if (tile == null) {
             throwing(new RuntimeException("No tile @ (" + x + "," + y + "," + z
                     + ")"));
         }
-        IContainerProvider tileAsCP = IContainerProvider.NULL;
-        try {
-            tileAsCP = ((IContainerProvider) tile);
-        } catch (ClassCastException e) {
-            throwing(e);
+        if (tile instanceof IPlayerContainerProvider) {
+            return ((IPlayerContainerProvider) tile).container(player);
         }
-        return tileAsCP.container();
+        if (tile instanceof IContainerProvider) {
+            return ((IContainerProvider) tile).container();
+        }
+        return null;
     }
 }

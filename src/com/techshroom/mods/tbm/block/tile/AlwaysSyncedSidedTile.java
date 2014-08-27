@@ -1,20 +1,38 @@
 package com.techshroom.mods.tbm.block.tile;
 
 import static com.techshroom.mods.tbm.TBMMod.mod;
+import static com.techshroom.mods.tbm.Tutils.isClient;
 
 import java.util.Arrays;
+import java.util.Random;
 
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.common.util.Constants.NBT;
 
 import com.techshroom.mods.tbm.inv.ExtendedInventoryUtils;
 
 public abstract class AlwaysSyncedSidedTile extends AlwaysSyncedTileEntity
         implements ISidedInventory {
+    protected static final int SIDE_COUNT =
+            ForgeDirection.VALID_DIRECTIONS.length;
+    private static final Random rand = new Random();
+
+    protected static final int[][] slotAccessAll(int invSize) {
+        int[][] slots = new int[SIDE_COUNT][invSize];
+        for (int[] is : slots) {
+            for (int i = 0; i < is.length; i++) {
+                is[i] = i;
+            }
+        }
+        return slots;
+    }
+
     protected final IInventory backingInv;
     protected final int[][] SLOT_ACCESS;
 
@@ -110,17 +128,66 @@ public abstract class AlwaysSyncedSidedTile extends AlwaysSyncedTileEntity
     public void readFromNBT(NBTTagCompound nbt) {
         super.readFromNBT(nbt);
         ExtendedInventoryUtils.readInventory(
-                nbt.getTagList("inv", NBT.TAG_LIST), this);
+                nbt.getTagList("inv", NBT.TAG_COMPOUND), this);
     }
 
     @Override
     public void writeToNBT(NBTTagCompound nbt) {
         super.writeToNBT(nbt);
-        ExtendedInventoryUtils.writeInventory(this);
+        nbt.setTag("inv", ExtendedInventoryUtils.writeInventory(this));
     }
 
     @Override
     public void localMarkDirty() {
         backingInv.markDirty();
+    }
+
+    @Override
+    public void invalidate() {
+        super.invalidate();
+        if (isClient(worldObj)) {
+            return;
+        }
+        // block destroyed or similar
+        for (int i1 = 0; i1 < getSizeInventory(); ++i1) {
+            ItemStack itemstack = getStackInSlot(i1);
+
+            if (itemstack != null) {
+                float f = rand.nextFloat() * 0.8F + 0.1F;
+                float f1 = rand.nextFloat() * 0.8F + 0.1F;
+                EntityItem entityitem;
+
+                for (float f2 = rand.nextFloat() * 0.8F + 0.1F; itemstack.stackSize > 0; getWorldObj()
+                        .spawnEntityInWorld(entityitem)) {
+                    int j1 = rand.nextInt(21) + 10;
+
+                    if (j1 > itemstack.stackSize) {
+                        j1 = itemstack.stackSize;
+                    }
+
+                    itemstack.stackSize -= j1;
+                    entityitem =
+                            new EntityItem(getWorldObj(),
+                                    (double) ((float) xCoord + f),
+                                    (double) ((float) yCoord + f1),
+                                    (double) ((float) zCoord + f2),
+                                    new ItemStack(itemstack.getItem(), j1,
+                                            itemstack.getItemDamage()));
+                    float f3 = 0.05F;
+                    entityitem.motionX =
+                            (double) ((float) rand.nextGaussian() * f3);
+                    entityitem.motionY =
+                            (double) ((float) rand.nextGaussian() * f3 + 0.2F);
+                    entityitem.motionZ =
+                            (double) ((float) rand.nextGaussian() * f3);
+
+                    if (itemstack.hasTagCompound()) {
+                        entityitem.getEntityItem().setTagCompound(
+                                (NBTTagCompound) itemstack.getTagCompound()
+                                        .copy());
+                    }
+                }
+            }
+        }
     }
 }
