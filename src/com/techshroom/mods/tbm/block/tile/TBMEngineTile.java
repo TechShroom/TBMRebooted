@@ -3,8 +3,11 @@ package com.techshroom.mods.tbm.block.tile;
 import static com.techshroom.mods.tbm.TBMMod.store_get;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.InventoryBasic;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 
 import com.techshroom.mods.tbm.ConvertsToEntity;
 import com.techshroom.mods.tbm.entity.TBMEngineEntity;
@@ -23,6 +26,17 @@ public class TBMEngineTile extends AlwaysSyncedSidedTile implements
     @Override
     public int getSizeInventory() {
         return SIZE;
+    }
+
+    @Override
+    public boolean isItemValidForSlot(int p_94041_1_, ItemStack p_94041_2_) {
+        return super.isItemValidForSlot(p_94041_1_, p_94041_2_)
+                && p_94041_1_ == 0
+                && isFuel(p_94041_2_.getItem());
+    }
+
+    private boolean isFuel(Item item) {
+        return item == Items.coal;
     }
 
     @Override

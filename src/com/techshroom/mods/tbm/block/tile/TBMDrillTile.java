@@ -26,6 +26,7 @@ public class TBMDrillTile extends AlwaysSyncedSidedTile implements
     public int getSizeInventory() {
         return SIZE;
     }
+
     @Override
     public boolean isItemValidForSlot(int p_94041_1_, ItemStack p_94041_2_) {
         return super.isItemValidForSlot(p_94041_1_, p_94041_2_)
