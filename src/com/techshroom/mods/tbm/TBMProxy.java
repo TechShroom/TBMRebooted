@@ -1,13 +1,17 @@
 package com.techshroom.mods.tbm;
 
 import static com.techshroom.mods.tbm.TBMMod.*;
+import net.minecraft.block.Block;
+import net.minecraft.tileentity.TileEntity;
 
 import com.techshroom.mods.tbm.block.TBMCargo;
 import com.techshroom.mods.tbm.block.TBMDrill;
 import com.techshroom.mods.tbm.block.TBMEject;
+import com.techshroom.mods.tbm.block.TBMEngine;
 import com.techshroom.mods.tbm.block.tile.TBMCargoTile;
 import com.techshroom.mods.tbm.block.tile.TBMDrillTile;
 import com.techshroom.mods.tbm.block.tile.TBMEjectTile;
+import com.techshroom.mods.tbm.block.tile.TBMEngineTile;
 import com.techshroom.mods.tbm.entity.TBMDrillEntity;
 import com.techshroom.mods.tbm.entity.TBMEjectEntity;
 import com.techshroom.mods.tbm.gui.GuiHandler;
@@ -48,17 +52,20 @@ public class TBMProxy {
     }
 
     private void blockData() {
-        TBMDrill drill = store_put("drill", new TBMDrill());
-        TBMEject eject = store_put("ejecter", new TBMEject());
-        TBMCargo cargo = store_put("cargo", new TBMCargo());
+        registerBlock("drill", new TBMDrill(), TBMDrillTile.class);
+        registerBlock("ejecter", new TBMEject(), TBMEjectTile.class);
+        registerBlock("cargo", new TBMCargo(), TBMCargoTile.class);
+        registerBlock("engine", new TBMEngine(), TBMEngineTile.class);
+    }
 
-        GameRegistry.registerBlock(drill, drill.getUnlocalizedName());
-        GameRegistry.registerBlock(eject, eject.getUnlocalizedName());
-        GameRegistry.registerBlock(cargo, cargo.getUnlocalizedName());
+    private void registerBlock(String storeName, Block b,
+            Class<? extends TileEntity> tile) {
+        store_put(storeName, b);
+        GameRegistry.registerBlock(b, b.getUnlocalizedName());
 
-        GameRegistry.registerTileEntity(TBMDrillTile.class, "drill");
-        GameRegistry.registerTileEntity(TBMEjectTile.class, "eject");
-        GameRegistry.registerTileEntity(TBMCargoTile.class, "cargo");
+        if (tile != null) {
+            GameRegistry.registerTileEntity(tile, storeName);
+        }
     }
 
     private void itemData() {
@@ -67,22 +74,22 @@ public class TBMProxy {
 
     private void entityData() {
         EntityRegistry
-        .registerGlobalEntityID(
-                TBMDrillEntity.class,
-                "drill",
-                store_put("drill-id",
-                        EntityRegistry.findGlobalUniqueEntityId()));
+                .registerGlobalEntityID(
+                        TBMDrillEntity.class,
+                        "drill",
+                        store_put("drill-id",
+                                EntityRegistry.findGlobalUniqueEntityId()));
         EntityRegistry
-        .registerGlobalEntityID(
-                TBMEjectEntity.class,
-                "eject",
-                store_put("eject-id",
-                        EntityRegistry.findGlobalUniqueEntityId()));
+                .registerGlobalEntityID(
+                        TBMEjectEntity.class,
+                        "eject",
+                        store_put("eject-id",
+                                EntityRegistry.findGlobalUniqueEntityId()));
         EntityRegistry
-        .registerGlobalEntityID(
-                TBMDrillEntity.class,
-                "cargo",
-                store_put("cargo-id",
-                        EntityRegistry.findGlobalUniqueEntityId()));
+                .registerGlobalEntityID(
+                        TBMDrillEntity.class,
+                        "cargo",
+                        store_put("cargo-id",
+                                EntityRegistry.findGlobalUniqueEntityId()));
     }
 }
