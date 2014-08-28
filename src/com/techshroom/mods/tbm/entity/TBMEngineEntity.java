@@ -56,6 +56,6 @@ public class TBMEngineEntity extends
 
     @Override
     public TBMEngineTile convertToTile() {
-        return null;
+        return guiSource;
     }
 }

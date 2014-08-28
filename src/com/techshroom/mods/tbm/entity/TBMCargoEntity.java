@@ -55,6 +55,6 @@ public class TBMCargoEntity extends TBMEntity<ContainerTBMCargo, TBMCargoTile> {
 
     @Override
     public TBMCargoTile convertToTile() {
-        return null;
+        return guiSource;
     }
 }

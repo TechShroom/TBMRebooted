@@ -55,6 +55,6 @@ public class TBMDrillEntity extends TBMEntity<ContainerTBMDrill, TBMDrillTile> {
 
     @Override
     public TBMDrillTile convertToTile() {
-        return null;
+        return guiSource;
     }
 }

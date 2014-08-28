@@ -7,11 +7,14 @@ import net.minecraft.world.World;
 import com.techshroom.mods.tbm.block.tile.TBMEjectTile;
 
 public class TBMEjectEntity extends TBMEntity<Container, TBMEjectTile> {
+    private TBMEjectTile back;
+    
     public TBMEjectEntity(World p_i1582_1_) {
         super(p_i1582_1_);
     }
 
     public TBMEjectEntity withTile(TBMEjectTile tile) {
+        back = tile;
         return this;
     }
 
@@ -29,7 +32,7 @@ public class TBMEjectEntity extends TBMEntity<Container, TBMEjectTile> {
 
     @Override
     public TBMEjectTile convertToTile() {
-        return null;
+        return back;
     }
 
     @Override
