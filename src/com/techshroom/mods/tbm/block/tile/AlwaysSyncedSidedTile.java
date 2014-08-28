@@ -26,7 +26,7 @@ public abstract class AlwaysSyncedSidedTile extends AlwaysSyncedTileEntity
     private static int[][][] slotStore = { new int[SIDE_COUNT][0] };
 
     private static boolean __has(int i) {
-        return storeContains[i];
+        return storeContains.length > i && storeContains[i];
     }
 
     private static int[][] __get(int i) {
@@ -41,7 +41,7 @@ public abstract class AlwaysSyncedSidedTile extends AlwaysSyncedTileEntity
     }
 
     private static final int INC = 5;
-    
+
     private static void ensureCap(int i) {
         if (storeContains.length <= i) {
             storeContains = Arrays.copyOf(storeContains, i + INC);

@@ -111,5 +111,6 @@ public final class TBMMod {
         store_put("drill-gui-id", requestGUIId());
         store_put("cargo-gui-id", requestGUIId());
         store_put("engine-gui-id", requestGUIId());
+        store_put("cpu-gui-id", requestGUIId());
     }
 }

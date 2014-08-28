@@ -21,6 +21,8 @@ import net.minecraft.client.model.PositionTextureVertex;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.dispenser.IBlockSource;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Facing;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
@@ -490,6 +492,28 @@ public final class Tutils {
 
     public static boolean isClient(World w) {
         return w.isRemote;
+    }
+
+    public static void placeTileEntityCopy(TileEntity original, Block block,
+            World w, int x, int y, int z) {
+        TileEntity copy = null;
+        if (copy == null) {
+            copy = block.createTileEntity(w, w.getBlockMetadata(x, y, z));
+            if (original.getClass() != copy.getClass()) {
+                throw new IllegalArgumentException(
+                        "Transfers only valid between same class "
+                                + String.format("(%s != %s)",
+                                        original.getClass(), copy.getClass()));
+            }
+        }
+        NBTTagCompound copyTag = new NBTTagCompound();
+        original.writeToNBT(copyTag);
+        copyTag.setInteger("x", x);
+        copyTag.setInteger("y", y);
+        copyTag.setInteger("z", z);
+        copy.readFromNBT(copyTag);
+        w.setBlock(x, y, z, block);
+        w.setTileEntity(x, y, z, copy);
     }
 
     private static final int[] cc, nc;

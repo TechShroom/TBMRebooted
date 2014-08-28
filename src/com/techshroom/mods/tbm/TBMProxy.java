@@ -4,16 +4,21 @@ import static com.techshroom.mods.tbm.TBMMod.*;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 
+import com.techshroom.mods.tbm.block.TBMCPU;
 import com.techshroom.mods.tbm.block.TBMCargo;
 import com.techshroom.mods.tbm.block.TBMDrill;
 import com.techshroom.mods.tbm.block.TBMEject;
 import com.techshroom.mods.tbm.block.TBMEngine;
+import com.techshroom.mods.tbm.block.tile.TBMCPUTile;
 import com.techshroom.mods.tbm.block.tile.TBMCargoTile;
 import com.techshroom.mods.tbm.block.tile.TBMDrillTile;
 import com.techshroom.mods.tbm.block.tile.TBMEjectTile;
 import com.techshroom.mods.tbm.block.tile.TBMEngineTile;
+import com.techshroom.mods.tbm.entity.TBMCPUEntity;
+import com.techshroom.mods.tbm.entity.TBMCargoEntity;
 import com.techshroom.mods.tbm.entity.TBMDrillEntity;
 import com.techshroom.mods.tbm.entity.TBMEjectEntity;
+import com.techshroom.mods.tbm.entity.TBMEngineEntity;
 import com.techshroom.mods.tbm.gui.GuiHandler;
 import com.techshroom.mods.tbm.item.ItemDrillHead;
 
@@ -56,6 +61,7 @@ public class TBMProxy {
         registerBlock("ejecter", new TBMEject(), TBMEjectTile.class);
         registerBlock("cargo", new TBMCargo(), TBMCargoTile.class);
         registerBlock("engine", new TBMEngine(), TBMEngineTile.class);
+        registerBlock("cpu", new TBMCPU(), TBMCPUTile.class);
     }
 
     private void registerBlock(String storeName, Block b,
@@ -87,9 +93,16 @@ public class TBMProxy {
                                 EntityRegistry.findGlobalUniqueEntityId()));
         EntityRegistry
                 .registerGlobalEntityID(
-                        TBMDrillEntity.class,
+                        TBMCargoEntity.class,
                         "cargo",
                         store_put("cargo-id",
                                 EntityRegistry.findGlobalUniqueEntityId()));
+        EntityRegistry.registerGlobalEntityID(
+                TBMEngineEntity.class,
+                "engine",
+                store_put("engine-id",
+                        EntityRegistry.findGlobalUniqueEntityId()));
+        EntityRegistry.registerGlobalEntityID(TBMCPUEntity.class, "cpu",
+                store_put("cpu-id", EntityRegistry.findGlobalUniqueEntityId()));
     }
 }
