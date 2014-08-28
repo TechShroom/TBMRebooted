@@ -22,15 +22,46 @@ public abstract class AlwaysSyncedSidedTile extends AlwaysSyncedTileEntity
     protected static final int SIDE_COUNT =
             ForgeDirection.VALID_DIRECTIONS.length;
     private static final Random rand = new Random();
+    private static boolean[] storeContains = { true };
+    private static int[][][] slotStore = { new int[SIDE_COUNT][0] };
+
+    private static boolean __has(int i) {
+        return storeContains[i];
+    }
+
+    private static int[][] __get(int i) {
+        return slotStore[i];
+    }
+
+    private static int[][] __set(int i, int[][] slots) {
+        ensureCap(i);
+        storeContains[i] = true;
+        slotStore[i] = slots;
+        return __get(i);
+    }
+
+    private static final int INC = 5;
+    
+    private static void ensureCap(int i) {
+        if (storeContains.length <= i) {
+            storeContains = Arrays.copyOf(storeContains, i + INC);
+        }
+        if (slotStore.length <= i) {
+            slotStore = Arrays.copyOf(slotStore, i + INC);
+        }
+    }
 
     protected static final int[][] slotAccessAll(int invSize) {
+        if (__has(invSize)) {
+            return __get(invSize);
+        }
         int[][] slots = new int[SIDE_COUNT][invSize];
         for (int[] is : slots) {
             for (int i = 0; i < is.length; i++) {
                 is[i] = i;
             }
         }
-        return slots;
+        return __set(invSize, slots);
     }
 
     protected final IInventory backingInv;
