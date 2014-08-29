@@ -34,7 +34,7 @@ public class ItemDrillHead extends ItemBase {
     @Override
     public void getSubItems(Item p_150895_1_, CreativeTabs p_150895_2_,
             @SuppressWarnings("rawtypes") List p_150895_3_) {
-        List<ItemStack> list = genericize(p_150895_3_);
+        List<ItemStack> list = cast(p_150895_3_);
         for (int i = 0; i < COUNT_META; i++) {
             list.add(new ItemStack(p_150895_1_, 1, i));
         }

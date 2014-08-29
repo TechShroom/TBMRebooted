@@ -1,12 +1,17 @@
 package com.techshroom.mods.tbm.block.tile;
 
-import java.util.HashMap;
+import static com.techshroom.mods.tbm.Tutils.*;
 
+import java.util.HashMap;
+import java.util.List;
+
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.WorldServer;
 
 public abstract class AlwaysSyncedTileEntity extends TileEntity {
     @Override
@@ -42,7 +47,17 @@ public abstract class AlwaysSyncedTileEntity extends TileEntity {
     }
 
     public void sync() {
-        this.getWorldObj().markBlockForUpdate(xCoord, yCoord, zCoord);
+        if (!isClient(worldObj)) {
+            syncOnServer();
+        }
+    }
+
+    private void syncOnServer() {
+        WorldServer server = cast(worldObj);
+        List<EntityPlayerMP> players = cast(server.playerEntities);
+        for (EntityPlayerMP play : players) {
+            play.playerNetServerHandler.sendPacket(getDescriptionPacket());
+        }
     }
 
     public void localMarkDirty() {

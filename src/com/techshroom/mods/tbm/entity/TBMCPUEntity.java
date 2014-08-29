@@ -17,6 +17,7 @@ public class TBMCPUEntity extends TBMEntity<Container, TBMCPUTile> {
 
     public TBMCPUEntity withTile(TBMCPUTile tile) {
         guiSource = tile;
+        setLocationAndAngles(tile.xCoord, tile.yCoord, tile.zCoord, 0, 0);
         return this;
     }
 
@@ -49,6 +50,9 @@ public class TBMCPUEntity extends TBMEntity<Container, TBMCPUTile> {
 
     @Override
     public GuiScreen guiScreen(Container c) {
-        return guiSource.guiScreen(null);
+        return guiSource.guiScreenFromEntity(c, this);
+    }
+
+    public void guiStop() {
     }
 }

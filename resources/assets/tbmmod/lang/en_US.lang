@@ -10,3 +10,8 @@ itemGroup.tbmBlocks=TBM Blocks
 tile.drill.name=Drill
 tile.ejecter.name=Item Ejecter
 tile.cargo.name=Cargo Storage
+tile.cpu.name=CPU
+tile.engine.name=Engine
+
+cpugui.start=Start
+cpugui.stop=Stop

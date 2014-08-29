@@ -1,5 +1,7 @@
 package com.techshroom.mods.tbm;
 
+import static com.techshroom.mods.tbm.Tutils.cast;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,6 +11,8 @@ import net.minecraft.item.Item;
 
 import org.apache.logging.log4j.Logger;
 
+import com.techshroom.mods.tbm.debug.KillAllCommmand;
+
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -16,6 +20,10 @@ import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import cpw.mods.fml.relauncher.Side;
 
 @Mod(modid = TBMMod.ID, useMetadata = true,
         guiFactory = "com.techshroom.mods.tbm.gui.GuiFactory")
@@ -42,9 +50,8 @@ public final class TBMMod {
     public static final Map<String, Object> store =
             new HashMap<String, Object>();
 
-    @SuppressWarnings("unchecked")
     public static <T> T store_get(String key) {
-        return (T) store.get(key);
+        return cast(store.get(key));
     }
 
     public static <T> T store_put(String key, T object) {
@@ -101,10 +108,24 @@ public final class TBMMod {
         log.exit();
     }
 
+    @EventHandler
+    public void serverLoad(FMLServerStartingEvent event) {
+        try {
+            event.registerServerCommand(new KillAllCommmand());
+        } catch (Throwable t) {
+        }
+    }
+
     private static int guiCounter = 0;
 
     public static int requestGUIId() {
         return guiCounter++;
+    }
+
+    private static int discCounter = 0;
+
+    public static int requestDiscriminationID() {
+        return discCounter++;
     }
 
     static {
@@ -112,5 +133,11 @@ public final class TBMMod {
         store_put("cargo-gui-id", requestGUIId());
         store_put("engine-gui-id", requestGUIId());
         store_put("cpu-gui-id", requestGUIId());
+        SimpleNetworkWrapper manager =
+                store_put("channel",
+                        NetworkRegistry.INSTANCE.newSimpleChannel(ID));
+        manager.registerMessage(MessageCPUStartHandler.class,
+                MessageCPUStartClient.class, requestDiscriminationID(),
+                Side.SERVER);
     }
 }

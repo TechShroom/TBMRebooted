@@ -16,129 +16,190 @@ import java.util.Map;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSourceImpl;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.model.PositionTextureVertex;
+import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.dispenser.IBlockSource;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Facing;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 public final class Tutils {
-    public static final class Draw {
-        private static int[] genLengthArr(int len) {
-            int[] out = new int[len];
-            for (int i = 0; i < out.length; i++) {
-                out[i] = i;
+
+    @SideOnly(Side.CLIENT)
+    public static final class Client {
+        public static final class Draw {
+            private static int[] genLengthArr(int len) {
+                int[] out = new int[len];
+                for (int i = 0; i < out.length; i++) {
+                    out[i] = i;
+                }
+                return out;
             }
-            return out;
-        }
 
-        public static double scalePixelToBlock(double pixel) {
-            return pixel / 16f;
-        }
-
-        public static float scalePixelToBlock(float pixel) {
-            return pixel / 16f;
-        }
-
-        public static PositionTextureVertex[] scaleToBlock(
-                PositionTextureVertex[] verts) {
-            // copy it
-            verts = verts.clone();
-            for (int i = 0; i < verts.length; i++) {
-                Vec3 v3 = verts[i].vector3D;
-                v3.xCoord = scalePixelToBlock(v3.xCoord);
-                v3.yCoord = scalePixelToBlock(v3.yCoord);
-                v3.zCoord = scalePixelToBlock(v3.zCoord);
+            private static void bindTexture(ResourceLocation res) {
+                TextureManager manager =
+                        TileEntityRendererDispatcher.instance.field_147553_e;
+                if (manager != null) {
+                    manager.bindTexture(res);
+                }
             }
-            return verts;
-        }
 
-        /**
-         * Like {@link GL11#glDrawElements(int, java.nio.IntBuffer)}, but for
-         * {@link Tessellator}!
-         * 
-         * @param tessellator
-         *            - the tessellator (note: {@link Tessellator#instance} is
-         *            the only available instance, but that could change!)
-         * @param verts
-         *            - the vertices
-         * @param index
-         *            - the index array for the vert array
-         */
-        public static void tesselateElements(Tessellator tessellator,
-                PositionTextureVertex[] verts, int... index) {
-            tesselateElementsWIthTextureSpecs(tessellator, verts, null, index);
-        }
+            public static void drawBlockAsEntity(Block b, World w, double x,
+                    double y, double z) {
+                RenderBlocks renderBlocks = new RenderBlocks(w);
+                Tessellator tessellator = Tessellator.instance;
+                bindTexture(TextureMap.locationBlocksTexture);
+                RenderHelper.disableStandardItemLighting();
+                GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+                GL11.glEnable(GL11.GL_BLEND);
+                GL11.glDisable(GL11.GL_CULL_FACE);
 
-        /**
-         * Like {@link GL11#glDrawElements(int, java.nio.IntBuffer)}, but for
-         * {@link Tessellator}! This version scales the given vertex coords via
-         * {@link #scalePixelToBlock(double)}.
-         * 
-         * @param tessellator
-         *            - the tessellator (note: {@link Tessellator#instance} is
-         *            the only available instance, but that could change!)
-         * @param verts
-         *            - the vertices
-         * @param index
-         *            - the index array for the vert array
-         */
-        public static void tesselateElementsWithScale(Tessellator tessellator,
-                PositionTextureVertex[] verts, int... index) {
-            tesselateElements(tessellator, scaleToBlock(verts), index);
-        }
+                if (Minecraft.isAmbientOcclusionEnabled()) {
+                    GL11.glShadeModel(GL11.GL_SMOOTH);
+                } else {
+                    GL11.glShadeModel(GL11.GL_FLAT);
+                }
 
-        public static void tesselateElementsWithScaleAndTextureSpecs(
-                Tessellator tessellator, PositionTextureVertex[] verts,
-                Vector2f[] texCoords, int... index) {
-            tesselateElementsWIthTextureSpecs(tessellator, scaleToBlock(verts),
-                    texCoords, index);
-        }
+                tessellator.startDrawingQuads();
+                tessellator.setTranslation(x, y, z);
+                tessellator.setColorOpaque_F(1.0F, 1.0F, 1.0F);
+                renderBlocks.renderBlockAllFaces(b, 0, 0, 0);
 
-        public static void tesselateElementsWIthTextureSpecs(
-                Tessellator tessellator, PositionTextureVertex[] verts,
-                Vector2f[] texCoords, int... index) {
-            if (index == null || index.length == 0) {
-                index = genLengthArr(verts.length);
+                tessellator.setTranslation(0.0D, 0.0D, 0.0D);
+                tessellator.draw();
+                RenderHelper.enableStandardItemLighting();
             }
-            if (texCoords == null || texCoords.length == 0) {
-                texCoords = new Vector2f[verts.length];
+
+            public static double scalePixelToBlock(double pixel) {
+                return pixel / 16f;
+            }
+
+            public static float scalePixelToBlock(float pixel) {
+                return pixel / 16f;
+            }
+
+            public static PositionTextureVertex[] scaleToBlock(
+                    PositionTextureVertex[] verts) {
+                // copy it
+                verts = verts.clone();
                 for (int i = 0; i < verts.length; i++) {
-                    texCoords[i] =
-                            new Vector2f(verts[i].texturePositionX,
-                                    verts[i].texturePositionY);
+                    Vec3 v3 = verts[i].vector3D;
+                    v3.xCoord = scalePixelToBlock(v3.xCoord);
+                    v3.yCoord = scalePixelToBlock(v3.yCoord);
+                    v3.zCoord = scalePixelToBlock(v3.zCoord);
                 }
+                return verts;
             }
-            if (texCoords.length < index.length
-                    && texCoords.length == verts.length) {
-                Vector2f[] texNew = new Vector2f[index.length];
+
+            /**
+             * Like {@link GL11#glDrawElements(int, java.nio.IntBuffer)}, but
+             * for {@link Tessellator}!
+             * 
+             * @param tessellator
+             *            - the tessellator (note: {@link Tessellator#instance}
+             *            is the only available instance, but that could
+             *            change!)
+             * @param verts
+             *            - the vertices
+             * @param index
+             *            - the index array for the vert array
+             */
+            public static void tesselateElements(Tessellator tessellator,
+                    PositionTextureVertex[] verts, int... index) {
+                tesselateElementsWIthTextureSpecs(tessellator, verts, null,
+                        index);
+            }
+
+            /**
+             * Like {@link GL11#glDrawElements(int, java.nio.IntBuffer)}, but
+             * for {@link Tessellator}! This version scales the given vertex
+             * coords via {@link #scalePixelToBlock(double)}.
+             * 
+             * @param tessellator
+             *            - the tessellator (note: {@link Tessellator#instance}
+             *            is the only available instance, but that could
+             *            change!)
+             * @param verts
+             *            - the vertices
+             * @param index
+             *            - the index array for the vert array
+             */
+            public static void tesselateElementsWithScale(
+                    Tessellator tessellator, PositionTextureVertex[] verts,
+                    int... index) {
+                tesselateElements(tessellator, scaleToBlock(verts), index);
+            }
+
+            public static void tesselateElementsWithScaleAndTextureSpecs(
+                    Tessellator tessellator, PositionTextureVertex[] verts,
+                    Vector2f[] texCoords, int... index) {
+                tesselateElementsWIthTextureSpecs(tessellator,
+                        scaleToBlock(verts), texCoords, index);
+            }
+
+            public static void tesselateElementsWIthTextureSpecs(
+                    Tessellator tessellator, PositionTextureVertex[] verts,
+                    Vector2f[] texCoords, int... index) {
+                if (index == null || index.length == 0) {
+                    index = genLengthArr(verts.length);
+                }
+                if (texCoords == null || texCoords.length == 0) {
+                    texCoords = new Vector2f[verts.length];
+                    for (int i = 0; i < verts.length; i++) {
+                        texCoords[i] =
+                                new Vector2f(verts[i].texturePositionX,
+                                        verts[i].texturePositionY);
+                    }
+                }
+                if (texCoords.length < index.length
+                        && texCoords.length == verts.length) {
+                    Vector2f[] texNew = new Vector2f[index.length];
+                    for (int i = 0; i < index.length; i++) {
+                        texNew[i] = texCoords[index[i]];
+                    }
+                    texCoords = texNew;
+                }
+                if (texCoords.length != index.length) {
+                    throw new IllegalArgumentException(
+                            "texture array provided must match indexes length");
+                }
                 for (int i = 0; i < index.length; i++) {
-                    texNew[i] = texCoords[index[i]];
+                    PositionTextureVertex v = verts[index[i]];
+                    Vec3 v3 = v.vector3D;
+                    tessellator.addVertexWithUV(v3.xCoord, v3.yCoord,
+                            v3.zCoord, texCoords[i].x, texCoords[i].y);
                 }
-                texCoords = texNew;
             }
-            if (texCoords.length != index.length) {
-                throw new IllegalArgumentException(
-                        "texture array provided must match indexes length");
-            }
-            for (int i = 0; i < index.length; i++) {
-                PositionTextureVertex v = verts[index[i]];
-                Vec3 v3 = v.vector3D;
-                tessellator.addVertexWithUV(v3.xCoord, v3.yCoord, v3.zCoord,
-                        texCoords[i].x, texCoords[i].y);
+
+            private Draw() {
+                throw new AssertionError("Nope.");
             }
         }
 
-        private Draw() {
+        public static boolean buttonIsPressed(int id, GuiButton check) {
+            return check.enabled && check.id == id;
+        }
+
+        private Client() {
             throw new AssertionError("Nope.");
         }
     }
@@ -336,7 +397,7 @@ public final class Tutils {
 
         static {
             Constructor<BlockSourceImpl> constr =
-                    genericize(BlockSourceImpl.class.getDeclaredConstructors()[0]);
+                    cast(BlockSourceImpl.class.getDeclaredConstructors()[0]);
             constrCache.put(BlockSourceImpl.class, constr);
             constrCache.put(IBlockSource.class, constr);
         }
@@ -408,7 +469,7 @@ public final class Tutils {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T genericize(Object o) {
+    public static <T> T cast(Object o) {
         return (T) o;
     }
 

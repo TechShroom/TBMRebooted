@@ -33,7 +33,7 @@ public class GuiHandler implements IGuiHandler {
         Container c = getContainer(tile, player, x, y, z);
         IGuiProvider<Container> tileAsGP = IGuiProvider.NULL;
         try {
-            tileAsGP = genericize(tile);
+            tileAsGP = cast(tile);
         } catch (ClassCastException e) {
             throwing(e);
         }
