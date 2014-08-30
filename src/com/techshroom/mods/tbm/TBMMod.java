@@ -90,7 +90,7 @@ public final class TBMMod {
         log = e.getModLog();
         log.entry(e);
         store.put("log", log);
-        proxy().preinit();
+        proxy().preinit(e);
         log.exit();
     }
 

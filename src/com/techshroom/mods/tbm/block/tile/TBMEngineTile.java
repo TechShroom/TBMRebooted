@@ -14,7 +14,7 @@ import com.techshroom.mods.tbm.entity.TBMEngineEntity;
 import com.techshroom.mods.tbm.gui.GuiTBMEngine;
 import com.techshroom.mods.tbm.gui.container.ContainerTBMEngine;
 
-public class TBMEngineTile extends AlwaysSyncedSidedTile implements
+public class TBMEngineTile extends AlwaysSyncedCPUSidedTile implements
         ConvertsToEntity<TBMEngineEntity>, IPlayerContainerProvider,
         IGuiProvider<ContainerTBMEngine> {
     private static final int SIZE = 9;
@@ -31,8 +31,7 @@ public class TBMEngineTile extends AlwaysSyncedSidedTile implements
     @Override
     public boolean isItemValidForSlot(int p_94041_1_, ItemStack p_94041_2_) {
         return super.isItemValidForSlot(p_94041_1_, p_94041_2_)
-                && p_94041_1_ == 0
-                && isFuel(p_94041_2_.getItem());
+                && p_94041_1_ == 0 && isFuel(p_94041_2_.getItem());
     }
 
     private boolean isFuel(Item item) {

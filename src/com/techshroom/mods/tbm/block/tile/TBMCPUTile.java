@@ -22,10 +22,11 @@ import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TBMCPUTile extends AlwaysSyncedTileEntity implements
+public class TBMCPUTile extends AlwaysSyncedCPUTile implements
         ConvertsToEntity<TBMCPUEntity>, IPlayerContainerProvider,
         IGuiProvider<Container> {
     public TBMCPUTile() {
+        setCPUTile(this);
         insertTileEntity(this);
     }
 

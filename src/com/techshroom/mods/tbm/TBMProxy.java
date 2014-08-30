@@ -3,6 +3,7 @@ package com.techshroom.mods.tbm;
 import static com.techshroom.mods.tbm.TBMMod.*;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.config.Configuration;
 
 import com.techshroom.mods.tbm.block.TBMCPU;
 import com.techshroom.mods.tbm.block.TBMCargo;
@@ -22,17 +23,30 @@ import com.techshroom.mods.tbm.entity.TBMEngineEntity;
 import com.techshroom.mods.tbm.gui.GuiHandler;
 import com.techshroom.mods.tbm.item.ItemDrillHead;
 
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class TBMProxy {
-    public final void preinit() {
+    protected Configuration conf;
+
+    public final void preinit(FMLPreInitializationEvent event) {
         NetworkRegistry.INSTANCE.registerGuiHandler(mod(), new GuiHandler());
         blockData();
         itemData();
         entityData();
+        conf =
+                store_put(
+                        "config",
+                        new Configuration(event.getSuggestedConfigurationFile()));
+        conf.load();
+        store_put("use-chest-model",
+                conf.getBoolean("use-chest-model", "models", false,
+                        "true to use the chest model for the cargo block, "
+                                + "false for the full block model.\n"));
         subpreinit();
+        conf.save();
     }
 
     protected void subpreinit() {

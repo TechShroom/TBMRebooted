@@ -11,7 +11,7 @@ import com.techshroom.mods.tbm.entity.TBMCargoEntity;
 import com.techshroom.mods.tbm.gui.GuiTBMCargo;
 import com.techshroom.mods.tbm.gui.container.ContainerTBMCargo;
 
-public class TBMCargoTile extends AlwaysSyncedSidedTile implements
+public class TBMCargoTile extends AlwaysSyncedCPUSidedTile implements
         ConvertsToEntity<TBMCargoEntity>, IPlayerContainerProvider,
         IGuiProvider<ContainerTBMCargo> {
     private static final int SIZE = 27;

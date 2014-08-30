@@ -1,5 +1,7 @@
 package com.techshroom.mods.tbm.gui.container;
 
+import com.techshroom.mods.tbm.gui.slot.SlotExt;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
@@ -115,10 +117,108 @@ public abstract class ContainerExt extends Container {
 
         return stackCopy;
     }
-    
+
     @Override
     public void onContainerClosed(EntityPlayer p_75134_1_) {
         super.onContainerClosed(p_75134_1_);
         inventory.closeInventory();
+    }
+
+    @Override
+    protected Slot addSlotToContainer(Slot slot) {
+        if (!(slot instanceof SlotExt)) {
+            // adapt slot
+            slot = SlotExt.extend(slot);
+        }
+        return super.addSlotToContainer(slot);
+    }
+
+    /**
+     * Merges provided ItemStack with the first available one in the
+     * container/player inventory. Obeys
+     * {@link IInventory#isItemValidForSlot(int, ItemStack)}.
+     */
+    @Override
+    protected boolean mergeItemStack(ItemStack putStack,
+            int startIndexInContainer, int endIndexInContainer,
+            boolean workBackwards) {
+        boolean flag1 = false;
+        int k = startIndexInContainer;
+
+        if (workBackwards) {
+            k = endIndexInContainer - 1;
+        }
+
+        Slot slot;
+        ItemStack itemstack1;
+
+        if (putStack.isStackable()) {
+            while (putStack.stackSize > 0
+                    && (!workBackwards && k < endIndexInContainer || workBackwards
+                            && k >= startIndexInContainer)) {
+                slot = (Slot) this.inventorySlots.get(k);
+                itemstack1 = slot.getStack();
+
+                if (itemstack1 != null
+                        && itemstack1.getItem() == putStack.getItem()
+                        && (!putStack.getHasSubtypes() || putStack
+                                .getItemDamage() == itemstack1.getItemDamage())
+                        && ItemStack
+                                .areItemStackTagsEqual(putStack, itemstack1)) {
+                    int l = itemstack1.stackSize + putStack.stackSize;
+
+                    if (l <= putStack.getMaxStackSize()) {
+                        putStack.stackSize = 0;
+                        itemstack1.stackSize = l;
+                        slot.onSlotChanged();
+                        flag1 = true;
+                    } else if (itemstack1.stackSize < putStack
+                            .getMaxStackSize()) {
+                        putStack.stackSize -=
+                                putStack.getMaxStackSize()
+                                        - itemstack1.stackSize;
+                        itemstack1.stackSize = putStack.getMaxStackSize();
+                        slot.onSlotChanged();
+                        flag1 = true;
+                    }
+                }
+
+                if (workBackwards) {
+                    --k;
+                } else {
+                    ++k;
+                }
+            }
+        }
+
+        if (putStack.stackSize > 0) {
+            if (workBackwards) {
+                k = endIndexInContainer - 1;
+            } else {
+                k = startIndexInContainer;
+            }
+
+            while (!workBackwards && k < endIndexInContainer || workBackwards
+                    && k >= startIndexInContainer) {
+                slot = (Slot) this.inventorySlots.get(k);
+                itemstack1 = slot.getStack();
+
+                if (itemstack1 == null && slot.isItemValid(putStack)) {
+                    slot.putStack(putStack.copy());
+                    slot.onSlotChanged();
+                    putStack.stackSize = 0;
+                    flag1 = true;
+                    break;
+                }
+
+                if (workBackwards) {
+                    --k;
+                } else {
+                    ++k;
+                }
+            }
+        }
+
+        return flag1;
     }
 }

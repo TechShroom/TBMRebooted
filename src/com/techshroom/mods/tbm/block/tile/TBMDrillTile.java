@@ -13,7 +13,7 @@ import com.techshroom.mods.tbm.entity.TBMDrillEntity;
 import com.techshroom.mods.tbm.gui.GuiTBMDrill;
 import com.techshroom.mods.tbm.gui.container.ContainerTBMDrill;
 
-public class TBMDrillTile extends AlwaysSyncedSidedTile implements
+public class TBMDrillTile extends AlwaysSyncedCPUSidedTile implements
         ConvertsToEntity<TBMDrillEntity>, IPlayerContainerProvider,
         IGuiProvider<ContainerTBMDrill> {
     private static final int SIZE = 1;

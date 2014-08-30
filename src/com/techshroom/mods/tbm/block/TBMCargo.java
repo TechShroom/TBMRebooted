@@ -10,7 +10,7 @@ import com.techshroom.mods.tbm.block.tile.TBMCargoTile;
 
 public class TBMCargo extends TBMBlockContainer<TBMCargoTile> {
     public TBMCargo() {
-        super("cargo", "cargo-tex");
+        super("cargo", "cargo_side-tex");
     }
 
     @Override

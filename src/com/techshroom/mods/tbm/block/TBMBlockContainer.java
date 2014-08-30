@@ -41,7 +41,8 @@ public abstract class TBMBlockContainer<TileType extends TileEntity> extends
     @Override
     public final TileEntity createNewTileEntity(World p_149915_1_,
             int p_149915_2_) {
-        return g_createNewTileEntity(p_149915_1_, p_149915_2_);
+        TileEntity ent = g_createNewTileEntity(p_149915_1_, p_149915_2_);
+        return ent;
     }
 
     @Override
