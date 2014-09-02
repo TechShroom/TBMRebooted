@@ -2,6 +2,7 @@ package com.techshroom.mods.tbm.render.entity;
 
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.ResourceLocation;
 
 import com.techshroom.mods.tbm.Tutils;
 
@@ -17,13 +18,33 @@ public abstract class GenericRender<T extends Entity> extends Render {
 
     /**
      * Render entity generic
-     * @param entity - entity
-     * @param x - x
-     * @param y - y
-     * @param z - z
-     * @param yaw - probably the yaw, not sure
-     * @param unknown - no idea what this is
+     * 
+     * @param entity
+     *            - entity
+     * @param x
+     *            - x
+     * @param y
+     *            - y
+     * @param z
+     *            - z
+     * @param yaw
+     *            - probably the yaw, not sure
+     * @param unknown
+     *            - no idea what this is, possibly partialTick?
      */
     public abstract void g_doRender(T entity, double x, double y, double z,
             float yaw, float unknown);
+
+    @Override
+    protected final ResourceLocation getEntityTexture(Entity p_110775_1_) {
+        return g_getEntityTexture(Tutils.<T> cast(p_110775_1_));
+    }
+
+    /**
+     * Get entity texture generic
+     * 
+     * @param entity
+     *            - the entity
+     */
+    public abstract ResourceLocation g_getEntityTexture(T entity);
 }

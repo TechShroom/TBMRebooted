@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.block.BlockSourceImpl;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -26,15 +27,33 @@ public class TBMCPUTile extends AlwaysSyncedCPUTile implements
         ConvertsToEntity<TBMCPUEntity>, IPlayerContainerProvider,
         IGuiProvider<Container> {
     public TBMCPUTile() {
-        setCPUTile(this);
-        insertTileEntity(this);
+        insertWhenPossible(this);
     }
 
+    private List<TileEntity> insertLater = new ArrayList<TileEntity>();
     private List<TileEntity> tiles = new ArrayList<TileEntity>();
+
+    private void insertWhenPossible(TileEntity tile) {
+        insertLater.add(tile);
+    }
+
+    @Override
+    public void updateEntity() {
+        super.updateEntity();
+        if (worldObj != null) {
+            for (TileEntity inserting : insertLater) {
+                insertTileEntity(inserting);
+            }
+        }
+    }
 
     public void insertTileEntity(TileEntity ref) {
         if (ref.getWorldObj() != worldObj) {
             mod().log.warn("TE not in same world, rejecting");
+            return;
+        }
+        if (isClient(worldObj)) {
+            // reject client side
             return;
         }
         tiles.add(ref);
@@ -47,14 +66,15 @@ public class TBMCPUTile extends AlwaysSyncedCPUTile implements
     public void guiStart() {
         if (isClient(worldObj)) {
             client_sendStart();
+            Minecraft.getMinecraft().displayGuiScreen(null);
         } else {
             for (TileEntity tile : tiles) {
                 if (tile instanceof ConvertsToEntity) {
                     ConvertsToEntity<TBMEntity<Container, TileEntity>> tileToEntity =
                             cast(tile);
+                    worldObj.spawnEntityInWorld(tileToEntity.convertToEntity());
                     worldObj.setBlockToAir(tile.xCoord, tile.yCoord,
                             tile.zCoord);
-                    worldObj.spawnEntityInWorld(tileToEntity.convertToEntity());
                 }
             }
         }

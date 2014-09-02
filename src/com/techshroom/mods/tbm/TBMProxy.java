@@ -2,6 +2,7 @@ package com.techshroom.mods.tbm;
 
 import static com.techshroom.mods.tbm.TBMMod.*;
 import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.config.Configuration;
 
@@ -92,31 +93,28 @@ public class TBMProxy {
         store_put("drillhead", new ItemDrillHead());
     }
 
+    /*
+     * 256 is from the ender crystal distance, should be right for us
+     */
+    private static final int BLOCK_VIS_RANGE = 256;
+    /*
+     * MAX_VALUE is from the ender crystal and falling block update speed,
+     * should be right for us
+     */
+    private static final int BLOCK_UPDATE_SPEED = Integer.MAX_VALUE;
+
     private void entityData() {
-        EntityRegistry
-                .registerGlobalEntityID(
-                        TBMDrillEntity.class,
-                        "drill",
-                        store_put("drill-id",
-                                EntityRegistry.findGlobalUniqueEntityId()));
-        EntityRegistry
-                .registerGlobalEntityID(
-                        TBMEjectEntity.class,
-                        "eject",
-                        store_put("eject-id",
-                                EntityRegistry.findGlobalUniqueEntityId()));
-        EntityRegistry
-                .registerGlobalEntityID(
-                        TBMCargoEntity.class,
-                        "cargo",
-                        store_put("cargo-id",
-                                EntityRegistry.findGlobalUniqueEntityId()));
-        EntityRegistry.registerGlobalEntityID(
-                TBMEngineEntity.class,
-                "engine",
-                store_put("engine-id",
-                        EntityRegistry.findGlobalUniqueEntityId()));
-        EntityRegistry.registerGlobalEntityID(TBMCPUEntity.class, "cpu",
-                store_put("cpu-id", EntityRegistry.findGlobalUniqueEntityId()));
+        registerEntity(TBMCPUEntity.class, "cpu");
+        registerEntity(TBMCargoEntity.class, "cargo");
+        registerEntity(TBMEjectEntity.class, "ejecter");
+        registerEntity(TBMDrillEntity.class, "drill");
+        registerEntity(TBMEngineEntity.class, "engine");
+    }
+
+    private int entCounter = 0;
+
+    private void registerEntity(Class<? extends Entity> eClass, String id) {
+        EntityRegistry.registerModEntity(eClass, id, entCounter++, mod(),
+                BLOCK_VIS_RANGE, BLOCK_UPDATE_SPEED, true);
     }
 }

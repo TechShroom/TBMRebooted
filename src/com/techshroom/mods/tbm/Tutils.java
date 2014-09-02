@@ -7,6 +7,7 @@ import java.awt.Point;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,6 +40,10 @@ import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
 
+import com.techshroom.mods.tbm.block.tile.CPUConnectable;
+import com.techshroom.mods.tbm.block.tile.TBMCPUTile;
+
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -423,14 +428,130 @@ public final class Tutils {
         }
     }
 
-    public static class MetadataConstants {
+    public static final class MetadataConstants {
         public static final int UPDATE = 1, SEND = 2, DONTRERENDER = 2;
         public static final int UPDATE_AND_SEND = UPDATE | SEND;
+
+        private MetadataConstants() {
+            throw new AssertionError("Nope.");
+        }
     }
 
-    public static class SideConstants {
+    public static final class SharedMethods {
+        public static boolean CPUConnectable_sendUpdateRequestToCPU(
+                TileEntity _this, CPUConnectable _thisAsConnectable,
+                TileEntity[] dejaVu) {
+            boolean thisIsSource =
+                    _this.equals(_thisAsConnectable.getCPUTile());
+            if (thisIsSource) {
+                return mod().log.exit(true);
+            }
+            boolean noFailure = true;
+            IBlockSource thisLoc =
+                    new BlockSourceImpl(_this.getWorldObj(), _this.xCoord,
+                            _this.yCoord, _this.zCoord);
+            List<TileEntity> dejaList = Arrays.asList(dejaVu);
+            IBlockSource[] surrounding = IBS.neighbors(thisLoc);
+            for (IBlockSource around : surrounding) {
+                TileEntity at = around.getBlockTileEntity();
+                if (dejaList.contains(at)) {
+                    // already checked
+                    continue;
+                }
+                if (at instanceof CPUConnectable) {
+                    CPUConnectable tileAsConnect = (CPUConnectable) at;
+                    noFailure |=
+                            tileAsConnect
+                                    .sendUpdateRequestToCPU(CPUConnectable_extendByUs(
+                                            _this, dejaVu));
+                }
+            }
+            return mod().log.exit(noFailure);
+        }
+
+        public static boolean CPUConnectable_updateCPUConnections(
+                TileEntity _this, CPUConnectable _thisAsConnectable,
+                TileEntity[] dejaVu, TBMCPUTile backRef) {
+            boolean thisIsSource =
+                    _this.equals(_thisAsConnectable.getCPUTile());
+            if (thisIsSource && (dejaVu.length > 0 || backRef != null)) {
+                // source is doing propagation, but we are a source? Conflict,
+                // return false.
+                return 
+                        mod().log.exit(false);
+            }
+            boolean noFailure = true;
+            IBlockSource thisLoc =
+                    new BlockSourceImpl(_this.getWorldObj(), _this.xCoord,
+                            _this.yCoord, _this.zCoord);
+            List<TileEntity> dejaList = Arrays.asList(dejaVu);
+            IBlockSource[] surrounding = IBS.neighbors(thisLoc);
+            for (IBlockSource around : surrounding) {
+                TileEntity at = around.getBlockTileEntity();
+                if (dejaList.contains(at)) {
+                    // already checked
+                    continue;
+                }
+                if (at instanceof CPUConnectable) {
+                    CPUConnectable tileAsConnect = (CPUConnectable) at;
+                    noFailure &=
+                            tileAsConnect.updateCPUConnections(
+                                    CPUConnectable_extendByUs(_this, dejaVu),
+                                    (TBMCPUTile) (thisIsSource ? _this
+                                            : backRef));
+                }
+            }
+            if (noFailure && backRef != null) {
+                // okay to set our tile, there is no conflict
+                _thisAsConnectable.setCPUTile(backRef);
+            } else if (noFailure) {
+                // this is weird. There's no backRef, but we aren't a source.
+                // Who
+                // doesn't have the tile?
+                return mod().log.exit(false);
+            }
+            return mod().log.exit(noFailure);
+        }
+
+        public static void CPUConnectable_updateEntity(TileEntity _this,
+                CPUConnectable _thisAsConnectable) {
+            if (_thisAsConnectable.hasCPUTile() && _this.getWorldObj() != null) {
+                _this.updateContainingBlockInfo();
+            }
+        }
+
+        public static void CPUConnectable_updateContainingBlockInfo(
+                TileEntity _this, CPUConnectable _thisAsConnectable) {
+            if (isClient(_this.getWorldObj())) {
+                return;
+            }
+            if (_this.equals(_thisAsConnectable.getCPUTile())) {
+                _thisAsConnectable
+                        .updateCPUConnections(new TileEntity[0], null);
+            } else {
+                _thisAsConnectable.sendUpdateRequestToCPU(new TileEntity[0]);
+            }
+        }
+
+        private static TileEntity[] CPUConnectable_extendByUs(TileEntity _this,
+                TileEntity[] dejaVu) {
+            TileEntity[] copy = Arrays.copyOf(dejaVu, dejaVu.length + 1);
+            copy[dejaVu.length] = _this;
+            return copy;
+        }
+
+        private SharedMethods() {
+            throw new AssertionError("Nope.");
+        }
+    }
+
+    public static final class SideConstants {
         public static final int TOP = 1, BOTTOM = 0, NORTH = 2, EAST = 5,
                 SOUTH = 3, WEST = 4;
+
+        private SideConstants() {
+            throw new AssertionError("Nope.");
+        }
     }
 
     public static final class Time {
@@ -552,7 +673,8 @@ public final class Tutils {
     }
 
     public static boolean isClient(World w) {
-        return w.isRemote;
+        return w == null ? FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT
+                : w.isRemote;
     }
 
     public static void placeTileEntityCopy(TileEntity original, Block block,

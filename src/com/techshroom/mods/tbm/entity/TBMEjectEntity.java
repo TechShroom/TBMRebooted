@@ -1,5 +1,7 @@
 package com.techshroom.mods.tbm.entity;
 
+import static com.techshroom.mods.tbm.TBMMod.store_get;
+import net.minecraft.block.Block;
 import net.minecraft.inventory.Container;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -38,5 +40,10 @@ public class TBMEjectEntity extends TBMEntity<Container, TBMEjectTile> {
     @Override
     public boolean providesGUI() {
         return false;
+    }
+    
+    @Override
+    public Block blockBase() {
+        return store_get("ejecter");
     }
 }

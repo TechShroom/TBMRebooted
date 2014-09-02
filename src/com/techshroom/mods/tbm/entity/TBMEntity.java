@@ -1,11 +1,14 @@
 package com.techshroom.mods.tbm.entity;
 
 import static com.techshroom.mods.tbm.TBMMod.mod;
+import net.minecraft.block.Block;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 import com.techshroom.mods.tbm.ConvertsToTile;
@@ -20,6 +23,12 @@ public abstract class TBMEntity<ContainerType extends Container, TileType extend
     }
 
     public abstract boolean providesGUI();
+    
+    public abstract Block blockBase();
+    
+    public ResourceLocation getEntityTexture() {
+        return TextureMap.locationBlocksTexture;
+    }
 
     public int getGUIId() {
         if (providesGUI()) {

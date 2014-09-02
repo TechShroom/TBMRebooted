@@ -1,5 +1,7 @@
 package com.techshroom.mods.tbm.entity;
 
+import static com.techshroom.mods.tbm.TBMMod.store_get;
+import net.minecraft.block.Block;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -20,7 +22,7 @@ public class TBMCPUEntity extends TBMEntity<Container, TBMCPUTile> {
         setLocationAndAngles(tile.xCoord, tile.yCoord, tile.zCoord, 0, 0);
         return this;
     }
-
+    
     @Override
     protected void entityInit() {
     }
@@ -41,6 +43,11 @@ public class TBMCPUEntity extends TBMEntity<Container, TBMCPUTile> {
     @Override
     public boolean providesGUI() {
         return true;
+    }
+    
+    @Override
+    public Block blockBase() {
+        return store_get("cpu");
     }
 
     @Override

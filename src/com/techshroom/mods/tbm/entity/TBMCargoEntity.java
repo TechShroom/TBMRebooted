@@ -1,5 +1,7 @@
 package com.techshroom.mods.tbm.entity;
 
+import static com.techshroom.mods.tbm.TBMMod.store_get;
+import net.minecraft.block.Block;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -36,6 +38,11 @@ public class TBMCargoEntity extends TBMEntity<ContainerTBMCargo, TBMCargoTile> {
     @Override
     public boolean providesGUI() {
         return true;
+    }
+    
+    @Override
+    public Block blockBase() {
+        return store_get("cargo");
     }
 
     @Override
