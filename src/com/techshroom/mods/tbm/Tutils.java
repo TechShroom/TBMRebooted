@@ -444,7 +444,7 @@ public final class Tutils {
             boolean thisIsSource =
                     _this.equals(_thisAsConnectable.getCPUTile());
             if (thisIsSource) {
-                return mod().log.exit(true);
+                return true;
             }
             boolean noFailure = true;
             IBlockSource thisLoc =
@@ -466,7 +466,7 @@ public final class Tutils {
                                             _this, dejaVu));
                 }
             }
-            return mod().log.exit(noFailure);
+            return noFailure;
         }
 
         public static boolean CPUConnectable_updateCPUConnections(
@@ -477,8 +477,7 @@ public final class Tutils {
             if (thisIsSource && (dejaVu.length > 0 || backRef != null)) {
                 // source is doing propagation, but we are a source? Conflict,
                 // return false.
-                return 
-                        mod().log.exit(false);
+                return false;
             }
             boolean noFailure = true;
             IBlockSource thisLoc =
@@ -506,11 +505,10 @@ public final class Tutils {
                 _thisAsConnectable.setCPUTile(backRef);
             } else if (noFailure) {
                 // this is weird. There's no backRef, but we aren't a source.
-                // Who
-                // doesn't have the tile?
-                return mod().log.exit(false);
+                // Who doesn't have the tile?
+                return false;
             }
-            return mod().log.exit(noFailure);
+            return noFailure;
         }
 
         public static void CPUConnectable_updateEntity(TileEntity _this,
