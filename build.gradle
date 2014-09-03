@@ -29,7 +29,7 @@ repositories {
 apply plugin: 'forge'
 
 // This is our group
-group = "techshroom" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+group = "com.techshroom" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 // This is our actual project within the group.
 archivesBaseName = "TBM"
 
