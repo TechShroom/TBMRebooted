@@ -1,6 +1,7 @@
 package com.techshroom.mods.tbm.entity;
 
 import static com.techshroom.mods.tbm.TBMMod.mod;
+import static com.techshroom.mods.tbm.Tutils.cast;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -15,17 +16,25 @@ import com.techshroom.mods.tbm.ConvertsToTile;
 import com.techshroom.mods.tbm.block.tile.IGuiProvider;
 import com.techshroom.mods.tbm.block.tile.IPlayerContainerProvider;
 
-public abstract class TBMEntity<ContainerType extends Container, TileType extends TileEntity>
-        extends Entity implements IGuiProvider<ContainerType>,
-        IPlayerContainerProvider, ConvertsToTile<TileType> {
+public abstract class TBMEntity<C extends Container, T extends TileEntity, TH extends TBMEntity<C, T, TH>>
+        extends Entity implements IGuiProvider<C>,
+        IPlayerContainerProvider, ConvertsToTile<T> {
     public TBMEntity(World w) {
         super(w);
     }
 
     public abstract boolean providesGUI();
-    
+
     public abstract Block blockBase();
-    
+
+    public final TH withTile(T tile) {
+        setLocationAndAngles(tile.xCoord, tile.yCoord, tile.zCoord, 0, 0);
+        pWithTile(tile);
+        return cast(this);
+    }
+
+    protected abstract void pWithTile(T tile);
+
     public ResourceLocation getEntityTexture() {
         return TextureMap.locationBlocksTexture;
     }
@@ -48,7 +57,7 @@ public abstract class TBMEntity<ContainerType extends Container, TileType extend
     }
 
     @Override
-    public GuiScreen guiScreen(ContainerType c) {
+    public GuiScreen guiScreen(C c) {
         if (providesGUI()) {
             throw new IllegalStateException(
                     "Implementation claims to provide GUI but does not");

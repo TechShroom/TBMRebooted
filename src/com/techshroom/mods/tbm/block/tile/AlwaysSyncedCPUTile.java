@@ -24,10 +24,12 @@ public abstract class AlwaysSyncedCPUTile extends AlwaysSyncedTileEntity
     public void setCPUTile(TBMCPUTile tile) {
         if (isClient(worldObj)) {
             // will happen on server side
+            System.err.println("isclient block");
             return;
         }
         System.err.println(this + ".cpuTile = " + tile);
         this.cpuTile = tile;
+        tile.insertTileEntity(this);
     }
 
     @Override

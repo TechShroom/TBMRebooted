@@ -139,7 +139,7 @@ task baseJar(type: Jar, dependsOn: reobf) {
         attributes 'FMLCorePluginContainsFMLMod': 'true'
     }
     version = project.ext.jarVer
-    appendix = 'Core'
+    appendix = ''
 }
 
 // baseJar pulls all files not in any other jar. Therefore must run last

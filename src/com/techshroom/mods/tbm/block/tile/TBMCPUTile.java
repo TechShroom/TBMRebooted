@@ -12,6 +12,8 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 
 import com.techshroom.mods.tbm.ConvertsToEntity;
 import com.techshroom.mods.tbm.MessageCPUStartClient;
@@ -19,15 +21,17 @@ import com.techshroom.mods.tbm.entity.TBMCPUEntity;
 import com.techshroom.mods.tbm.entity.TBMEntity;
 import com.techshroom.mods.tbm.gui.GuiTBMCPU;
 
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TBMCPUTile extends AlwaysSyncedCPUTile implements
-        ConvertsToEntity<TBMCPUEntity>, IPlayerContainerProvider,
-        IGuiProvider<Container> {
+public class TBMCPUTile
+        extends AlwaysSyncedCPUTile implements ConvertsToEntity<TBMCPUEntity>,
+        IPlayerContainerProvider, IGuiProvider<Container> {
     public TBMCPUTile() {
-        insertWhenPossible(this);
+        setCPUTile(this);
+        insertTileEntity(this);
     }
 
     private List<TileEntity> insertLater = new ArrayList<TileEntity>();
@@ -44,10 +48,15 @@ public class TBMCPUTile extends AlwaysSyncedCPUTile implements
             for (TileEntity inserting : insertLater) {
                 insertTileEntity(inserting);
             }
+            insertLater.clear();
         }
     }
 
     public void insertTileEntity(TileEntity ref) {
+        if (ref.getWorldObj() == null || worldObj == null) {
+            insertWhenPossible(ref);
+            return;
+        }
         if (ref.getWorldObj() != worldObj) {
             mod().log.warn("TE not in same world, rejecting");
             return;
@@ -56,6 +65,11 @@ public class TBMCPUTile extends AlwaysSyncedCPUTile implements
             // reject client side
             return;
         }
+        if (tiles.contains(ref)) {
+            // dupes
+            return;
+        }
+        mod().log.trace(ref);
         tiles.add(ref);
     }
 
@@ -70,13 +84,25 @@ public class TBMCPUTile extends AlwaysSyncedCPUTile implements
         } else {
             for (TileEntity tile : tiles) {
                 if (tile instanceof ConvertsToEntity) {
-                    ConvertsToEntity<TBMEntity<Container, TileEntity>> tileToEntity =
+                    ConvertsToEntity<TBMEntity<Container, TileEntity, ?>> tileToEntity =
                             cast(tile);
+                    mod().log.trace("SPAWN SERVER " + tileToEntity);
                     worldObj.spawnEntityInWorld(tileToEntity.convertToEntity());
                     worldObj.setBlockToAir(tile.xCoord, tile.yCoord,
                             tile.zCoord);
                 }
             }
+        }
+    }
+
+    {
+        MinecraftForge.EVENT_BUS.register(this);
+    }
+
+    @SubscribeEvent
+    public void entitySpaceOfTheDevil(EntityJoinWorldEvent spawner) {
+        if (isClient(spawner.world) && spawner.entity instanceof TBMEntity) {
+            mod().log.trace("CLIENT SPAWN " + spawner.entity);
         }
     }
 

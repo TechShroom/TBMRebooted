@@ -11,16 +11,17 @@ import net.minecraft.world.World;
 import com.techshroom.mods.tbm.block.tile.TBMDrillTile;
 import com.techshroom.mods.tbm.gui.container.ContainerTBMDrill;
 
-public class TBMDrillEntity extends TBMEntity<ContainerTBMDrill, TBMDrillTile> {
+public class TBMDrillEntity
+        extends TBMEntity<ContainerTBMDrill, TBMDrillTile, TBMDrillEntity> {
     private TBMDrillTile guiSource;
 
     public TBMDrillEntity(World w) {
         super(w);
     }
 
-    public TBMDrillEntity withTile(TBMDrillTile tile) {
+    @Override
+    public void pWithTile(TBMDrillTile tile) {
         guiSource = tile;
-        return this;
     }
 
     @Override
@@ -39,7 +40,7 @@ public class TBMDrillEntity extends TBMEntity<ContainerTBMDrill, TBMDrillTile> {
     public boolean providesGUI() {
         return true;
     }
-    
+
     @Override
     public Block blockBase() {
         return store_get("drill");

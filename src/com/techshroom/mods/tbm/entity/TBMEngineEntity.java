@@ -11,17 +11,17 @@ import net.minecraft.world.World;
 import com.techshroom.mods.tbm.block.tile.TBMEngineTile;
 import com.techshroom.mods.tbm.gui.container.ContainerTBMEngine;
 
-public class TBMEngineEntity extends
-        TBMEntity<ContainerTBMEngine, TBMEngineTile> {
+public class TBMEngineEntity
+        extends TBMEntity<ContainerTBMEngine, TBMEngineTile, TBMEngineEntity> {
     private TBMEngineTile guiSource;
 
     public TBMEngineEntity(World w) {
         super(w);
     }
 
-    public TBMEngineEntity withTile(TBMEngineTile tile) {
+    @Override
+    public void pWithTile(TBMEngineTile tile) {
         guiSource = tile;
-        return this;
     }
 
     @Override
@@ -40,7 +40,7 @@ public class TBMEngineEntity extends
     public boolean providesGUI() {
         return true;
     }
-    
+
     @Override
     public Block blockBase() {
         return store_get("engine");

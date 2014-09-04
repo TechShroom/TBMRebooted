@@ -11,16 +11,17 @@ import net.minecraft.world.World;
 import com.techshroom.mods.tbm.block.tile.TBMCargoTile;
 import com.techshroom.mods.tbm.gui.container.ContainerTBMCargo;
 
-public class TBMCargoEntity extends TBMEntity<ContainerTBMCargo, TBMCargoTile> {
+public class TBMCargoEntity
+        extends TBMEntity<ContainerTBMCargo, TBMCargoTile, TBMCargoEntity> {
     private TBMCargoTile guiSource;
 
     public TBMCargoEntity(World w) {
         super(w);
     }
 
-    public TBMCargoEntity withTile(TBMCargoTile tile) {
+    @Override
+    public void pWithTile(TBMCargoTile tile) {
         guiSource = tile;
-        return this;
     }
 
     @Override
@@ -39,7 +40,7 @@ public class TBMCargoEntity extends TBMEntity<ContainerTBMCargo, TBMCargoTile> {
     public boolean providesGUI() {
         return true;
     }
-    
+
     @Override
     public Block blockBase() {
         return store_get("cargo");

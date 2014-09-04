@@ -444,7 +444,8 @@ public final class Tutils {
             boolean thisIsSource =
                     _this.equals(_thisAsConnectable.getCPUTile());
             if (thisIsSource) {
-                return true;
+                return CPUConnectable_updateCPUConnections(_this,
+                        _thisAsConnectable, new TileEntity[0], null);
             }
             boolean noFailure = true;
             IBlockSource thisLoc =
@@ -464,6 +465,8 @@ public final class Tutils {
                             tileAsConnect
                                     .sendUpdateRequestToCPU(CPUConnectable_extendByUs(
                                             _this, dejaVu));
+                } else {
+                    // System.err.println();
                 }
             }
             return noFailure;
@@ -513,7 +516,7 @@ public final class Tutils {
 
         public static void CPUConnectable_updateEntity(TileEntity _this,
                 CPUConnectable _thisAsConnectable) {
-            if (_thisAsConnectable.hasCPUTile() && _this.getWorldObj() != null) {
+            if (!_thisAsConnectable.hasCPUTile() && _this.getWorldObj() != null) {
                 _this.updateContainingBlockInfo();
             }
         }

@@ -10,19 +10,19 @@ import net.minecraft.world.World;
 
 import com.techshroom.mods.tbm.block.tile.TBMCPUTile;
 
-public class TBMCPUEntity extends TBMEntity<Container, TBMCPUTile> {
+public class TBMCPUEntity
+        extends TBMEntity<Container, TBMCPUTile, TBMCPUEntity> {
     private TBMCPUTile guiSource;
 
     public TBMCPUEntity(World p_i1582_1_) {
         super(p_i1582_1_);
     }
 
-    public TBMCPUEntity withTile(TBMCPUTile tile) {
+    @Override
+    public void pWithTile(TBMCPUTile tile) {
         guiSource = tile;
-        setLocationAndAngles(tile.xCoord, tile.yCoord, tile.zCoord, 0, 0);
-        return this;
     }
-    
+
     @Override
     protected void entityInit() {
     }
@@ -44,7 +44,7 @@ public class TBMCPUEntity extends TBMEntity<Container, TBMCPUTile> {
     public boolean providesGUI() {
         return true;
     }
-    
+
     @Override
     public Block blockBase() {
         return store_get("cpu");

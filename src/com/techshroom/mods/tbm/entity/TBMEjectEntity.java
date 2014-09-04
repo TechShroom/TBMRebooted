@@ -8,16 +8,17 @@ import net.minecraft.world.World;
 
 import com.techshroom.mods.tbm.block.tile.TBMEjectTile;
 
-public class TBMEjectEntity extends TBMEntity<Container, TBMEjectTile> {
+public class TBMEjectEntity
+        extends TBMEntity<Container, TBMEjectTile, TBMEjectEntity> {
     private TBMEjectTile back;
-    
+
     public TBMEjectEntity(World p_i1582_1_) {
         super(p_i1582_1_);
     }
 
-    public TBMEjectEntity withTile(TBMEjectTile tile) {
+    @Override
+    public void pWithTile(TBMEjectTile tile) {
         back = tile;
-        return this;
     }
 
     @Override
@@ -41,7 +42,7 @@ public class TBMEjectEntity extends TBMEntity<Container, TBMEjectTile> {
     public boolean providesGUI() {
         return false;
     }
-    
+
     @Override
     public Block blockBase() {
         return store_get("ejecter");

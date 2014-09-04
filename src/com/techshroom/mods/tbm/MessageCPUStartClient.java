@@ -26,7 +26,6 @@ public class MessageCPUStartClient implements IMessage {
                 new BlockSourceImpl(MinecraftServer.getServer()
                         .worldServerForDimension(buf.readInt()), buf.readInt(),
                         buf.readInt(), buf.readInt());
-        System.err.println("BUF LOADED");
     }
 
     @Override
@@ -35,7 +34,6 @@ public class MessageCPUStartClient implements IMessage {
         buf.writeInt(location.getXInt());
         buf.writeInt(location.getYInt());
         buf.writeInt(location.getZInt());
-        System.err.println("BUF WRITTEN");
     }
 
     public TBMCPUTile getTile() {
