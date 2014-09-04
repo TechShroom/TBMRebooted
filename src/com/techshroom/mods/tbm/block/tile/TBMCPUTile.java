@@ -12,7 +12,6 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 
 import com.techshroom.mods.tbm.ConvertsToEntity;
@@ -21,6 +20,9 @@ import com.techshroom.mods.tbm.entity.TBMCPUEntity;
 import com.techshroom.mods.tbm.entity.TBMEntity;
 import com.techshroom.mods.tbm.gui.GuiTBMCPU;
 
+import cpw.mods.fml.common.eventhandler.Event;
+import cpw.mods.fml.common.eventhandler.EventPriority;
+import cpw.mods.fml.common.eventhandler.IEventListener;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
@@ -95,12 +97,21 @@ public class TBMCPUTile
         }
     }
 
-    {
-        MinecraftForge.EVENT_BUS.register(this);
+    static {
+        new EntityJoinWorldEvent(null, null).getListenerList().register(0,
+                EventPriority.LOWEST, new IEventListener() {
+
+                    @Override
+                    public void invoke(Event event) {
+                        EntityJoinWorldEvent e = cast(event);
+                        entitySpawnOfTheDevil(e);
+                    }
+                });
+
     }
 
     @SubscribeEvent
-    public void entitySpaceOfTheDevil(EntityJoinWorldEvent spawner) {
+    public static void entitySpawnOfTheDevil(EntityJoinWorldEvent spawner) {
         if (isClient(spawner.world) && spawner.entity instanceof TBMEntity) {
             mod().log.trace("CLIENT SPAWN " + spawner.entity);
         }
