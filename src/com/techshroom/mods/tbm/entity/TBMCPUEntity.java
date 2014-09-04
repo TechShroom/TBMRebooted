@@ -1,6 +1,7 @@
 package com.techshroom.mods.tbm.entity;
 
 import static com.techshroom.mods.tbm.TBMMod.store_get;
+import static com.techshroom.mods.tbm.Tutils.isClient;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
@@ -20,6 +21,7 @@ public class TBMCPUEntity
 
     @Override
     public void pWithTile(TBMCPUTile tile) {
+        System.err.println(tile);
         guiSource = tile;
     }
 
@@ -28,11 +30,19 @@ public class TBMCPUEntity
     }
 
     @Override
-    protected void readEntityFromNBT(NBTTagCompound p_70037_1_) {
+    protected void readEntityFromNBT(NBTTagCompound nbt) {
+        NBTTagCompound tileBase = nbt.getCompoundTag("tile");
+        pWithTile(new TBMCPUTile());
+        guiSource.readFromNBT(tileBase);
+        System.err.println(isClient(worldObj) + "=>" + "READ-A");
     }
 
     @Override
-    protected void writeEntityToNBT(NBTTagCompound p_70014_1_) {
+    protected void writeEntityToNBT(NBTTagCompound nbt) {
+        NBTTagCompound tileBase = nbt.getCompoundTag("tile");
+        guiSource.writeToNBT(tileBase);
+        nbt.setTag("tile", tileBase);
+        System.err.println(isClient(worldObj) + "=>" + "WRITE-A");
     }
 
     @Override
@@ -43,6 +53,12 @@ public class TBMCPUEntity
     @Override
     public boolean providesGUI() {
         return true;
+    }
+
+    @Override
+    public int getGUIId() {
+        System.err.println(isClient(worldObj) + "=>" + guiSource);
+        return guiSource.getGUIId();
     }
 
     @Override

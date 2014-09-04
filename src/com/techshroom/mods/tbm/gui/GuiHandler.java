@@ -1,15 +1,19 @@
 package com.techshroom.mods.tbm.gui;
 
 import static com.techshroom.mods.tbm.Tutils.*;
+
+import java.util.List;
+
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
 import com.techshroom.mods.tbm.block.tile.IContainerProvider;
 import com.techshroom.mods.tbm.block.tile.IGuiProvider;
 import com.techshroom.mods.tbm.block.tile.IPlayerContainerProvider;
+import com.techshroom.mods.tbm.entity.TBMEntity;
 
 import cpw.mods.fml.common.network.IGuiHandler;
 
@@ -29,11 +33,30 @@ public class GuiHandler implements IGuiHandler {
 
     private GuiScreen getGui(int id, EntityPlayer player, World world, int x,
             int y, int z) {
-        TileEntity tile = world.getTileEntity(x, y, z);
-        Container c = getContainer(tile, player, x, y, z);
+        Object source = world.getTileEntity(x, y, z);
+        Container c = getContainer(source, player, x, y, z);
+        if (source == null) {
+            List<?> l =
+                    player.worldObj.getEntitiesWithinAABB(TBMEntity.class,
+                            AxisAlignedBB.getBoundingBox(x - 0.5, y - 0.5,
+                                    z - 0.5, x - 0.5, y - 0.5, z - 0.5));
+            for (Object o : l) {
+                if (o instanceof IPlayerContainerProvider) {
+                    source = o;
+                } else if (o instanceof IContainerProvider) {
+                    source = o;
+                }
+                if (source != null) {
+                    break;
+                }
+            }
+            if (source == null)
+                throwing(new RuntimeException("No source @ (" + x + "," + y
+                        + "," + z + ")"));
+        }
         IGuiProvider<Container> tileAsGP = IGuiProvider.NULL;
         try {
-            tileAsGP = cast(tile);
+            tileAsGP = cast(source);
         } catch (ClassCastException e) {
             throwing(e);
         }
@@ -45,17 +68,36 @@ public class GuiHandler implements IGuiHandler {
         return getContainer(world.getTileEntity(x, y, z), player, x, y, z);
     }
 
-    private Container getContainer(TileEntity tile, EntityPlayer player, int x,
+    private Container getContainer(Object source, EntityPlayer player, int x,
             int y, int z) {
-        if (tile == null) {
-            throwing(new RuntimeException("No tile @ (" + x + "," + y + "," + z
-                    + ")"));
+        if (source == null) {
+            List<?> l =
+                    player.worldObj.getEntitiesWithinAABB(TBMEntity.class,
+                            AxisAlignedBB.getBoundingBox(x - 0.5, y - 0.5,
+                                    z - 0.5, x - 0.5, y - 0.5, z - 0.5));
+            for (Object o : l) {
+                if (o instanceof IPlayerContainerProvider) {
+                    source = o;
+                } else if (o instanceof IContainerProvider) {
+                    source = o;
+                }
+                if (source != null) {
+                    break;
+                }
+            }
+            if (source == null)
+                source = IContainerProvider.NULL;
+            /*
+             * throwing(new RuntimeException("No source @ (" + x + "," + y + ","
+             * + z + ")"));
+             */
         }
-        if (tile instanceof IPlayerContainerProvider) {
-            return ((IPlayerContainerProvider) tile).container(player);
+        System.err.println(isClient(player.worldObj) + "=>" + source);
+        if (source instanceof IPlayerContainerProvider) {
+            return ((IPlayerContainerProvider) source).container(player);
         }
-        if (tile instanceof IContainerProvider) {
-            return ((IContainerProvider) tile).container();
+        if (source instanceof IContainerProvider) {
+            return ((IContainerProvider) source).container();
         }
         return null;
     }

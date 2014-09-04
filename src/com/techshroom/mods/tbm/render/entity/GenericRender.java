@@ -6,7 +6,8 @@ import net.minecraft.util.ResourceLocation;
 
 import com.techshroom.mods.tbm.Tutils;
 
-public abstract class GenericRender<T extends Entity> extends Render {
+public abstract class GenericRender<T extends Entity>
+        extends Render {
 
     @Override
     public final void doRender(Entity p_76986_1_, double p_76986_2_,
@@ -21,19 +22,19 @@ public abstract class GenericRender<T extends Entity> extends Render {
      * 
      * @param entity
      *            - entity
-     * @param x
-     *            - x
-     * @param y
-     *            - y
-     * @param z
-     *            - z
+     * @param xOnScreen
+     *            - x on screen
+     * @param yOnScreen
+     *            - y on screen
+     * @param zOnScreen
+     *            - z on screen
      * @param yaw
      *            - probably the yaw, not sure
      * @param unknown
      *            - no idea what this is, possibly partialTick?
      */
-    public abstract void g_doRender(T entity, double x, double y, double z,
-            float yaw, float unknown);
+    public abstract void g_doRender(T entity, double xOnScreen,
+            double yOnScreen, double zOnScreen, float yaw, float unknown);
 
     @Override
     protected final ResourceLocation getEntityTexture(Entity p_110775_1_) {

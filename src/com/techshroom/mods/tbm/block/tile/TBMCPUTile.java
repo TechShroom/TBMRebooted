@@ -15,10 +15,10 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 
 import com.techshroom.mods.tbm.ConvertsToEntity;
-import com.techshroom.mods.tbm.MessageCPUStartClient;
 import com.techshroom.mods.tbm.entity.TBMCPUEntity;
 import com.techshroom.mods.tbm.entity.TBMEntity;
 import com.techshroom.mods.tbm.gui.GuiTBMCPU;
+import com.techshroom.mods.tbm.net.MessageCPUStartClient;
 
 import cpw.mods.fml.common.eventhandler.Event;
 import cpw.mods.fml.common.eventhandler.EventPriority;
@@ -133,7 +133,7 @@ public class TBMCPUTile
         player.openGui(mod(), getGUIId(), worldObj, xCoord, yCoord, zCoord);
     }
 
-    private int getGUIId() {
+    public int getGUIId() {
         return (Integer) store_get("cpu-gui-id");
     }
 

@@ -12,6 +12,8 @@ import net.minecraft.item.Item;
 import org.apache.logging.log4j.Logger;
 
 import com.techshroom.mods.tbm.debug.KillAllCommmand;
+import com.techshroom.mods.tbm.net.MessageCPUStartClient;
+import com.techshroom.mods.tbm.net.MessageCPUStartHandler;
 
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
