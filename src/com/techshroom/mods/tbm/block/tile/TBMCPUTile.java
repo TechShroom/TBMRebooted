@@ -15,10 +15,11 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 
 import com.techshroom.mods.tbm.ConvertsToEntity;
+import com.techshroom.mods.tbm.block.BlockFlags;
 import com.techshroom.mods.tbm.entity.TBMCPUEntity;
 import com.techshroom.mods.tbm.entity.TBMEntity;
 import com.techshroom.mods.tbm.gui.GuiTBMCPU;
-import com.techshroom.mods.tbm.net.MessageCPUStartClient;
+import com.techshroom.mods.tbm.net.messageForServer.MessageCPUStartClient;
 
 import cpw.mods.fml.common.eventhandler.Event;
 import cpw.mods.fml.common.eventhandler.EventPriority;
@@ -84,6 +85,7 @@ public class TBMCPUTile
             client_sendStart();
             Minecraft.getMinecraft().displayGuiScreen(null);
         } else {
+            BlockFlags.DOING_TILE_TO_ENTITY_TRANSFER = true;
             for (TileEntity tile : tiles) {
                 if (tile instanceof ConvertsToEntity) {
                     ConvertsToEntity<TBMEntity<Container, TileEntity, ?>> tileToEntity =
@@ -94,6 +96,7 @@ public class TBMCPUTile
                             tile.zCoord);
                 }
             }
+            BlockFlags.DOING_TILE_TO_ENTITY_TRANSFER = false;
         }
     }
 
@@ -119,7 +122,7 @@ public class TBMCPUTile
 
     @SideOnly(Side.CLIENT)
     private void client_sendStart() {
-        SimpleNetworkWrapper serverHook = store_get("channel");
+        SimpleNetworkWrapper serverHook = mod().netmanager().netWrapper();
         serverHook.sendToServer(new MessageCPUStartClient(new BlockSourceImpl(
                 worldObj, xCoord, yCoord, zCoord)));
     }
@@ -130,7 +133,8 @@ public class TBMCPUTile
     }
 
     public void fireGUIOpenRequest(EntityPlayer player) {
-        player.openGui(mod(), getGUIId(), worldObj, xCoord, yCoord, zCoord);
+        if (!isClient(worldObj))
+            player.openGui(mod(), getGUIId(), worldObj, xCoord, yCoord, zCoord);
     }
 
     public int getGUIId() {

@@ -12,8 +12,9 @@ import net.minecraft.item.Item;
 import org.apache.logging.log4j.Logger;
 
 import com.techshroom.mods.tbm.debug.KillAllCommmand;
-import com.techshroom.mods.tbm.net.MessageCPUStartClient;
-import com.techshroom.mods.tbm.net.MessageCPUStartHandler;
+import com.techshroom.mods.tbm.net.NetProxy;
+import com.techshroom.mods.tbm.net.NetProxy.Client;
+import com.techshroom.mods.tbm.net.NetProxy.Server;
 
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -23,9 +24,6 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import cpw.mods.fml.relauncher.Side;
 
 @Mod(modid = TBMMod.ID, useMetadata = true,
         guiFactory = "com.techshroom.mods.tbm.gui.GuiFactory")
@@ -92,6 +90,11 @@ public final class TBMMod {
         log = e.getModLog();
         log.entry(e);
         store.put("log", log);
+        if (PROX.isClient()) {
+            netmanager = new Client();
+        } else {
+            netmanager = new Server();
+        }
         proxy().preinit(e);
         log.exit();
     }
@@ -124,22 +127,16 @@ public final class TBMMod {
         return guiCounter++;
     }
 
-    private static int discCounter = 0;
-
-    public static int requestDiscriminationID() {
-        return discCounter++;
-    }
-
     static {
         store_put("drill-gui-id", requestGUIId());
         store_put("cargo-gui-id", requestGUIId());
         store_put("engine-gui-id", requestGUIId());
         store_put("cpu-gui-id", requestGUIId());
-        SimpleNetworkWrapper manager =
-                store_put("channel",
-                        NetworkRegistry.INSTANCE.newSimpleChannel(ID));
-        manager.registerMessage(MessageCPUStartHandler.class,
-                MessageCPUStartClient.class, requestDiscriminationID(),
-                Side.SERVER);
+    }
+
+    private static NetProxy netmanager;
+
+    public NetProxy netmanager() {
+        return netmanager;
     }
 }
