@@ -112,7 +112,7 @@ public abstract class AlwaysSyncedSidedTile extends AlwaysSyncedTileEntity
         return backingInv.isUseableByPlayer(p_70300_1_);
     }
 
-    protected abstract int getGUIId();
+    public abstract int getGUIId();
 
     public void fireGUIOpenRequest(EntityPlayer player) {
         player.openGui(mod(), getGUIId(), worldObj, xCoord, yCoord, zCoord);

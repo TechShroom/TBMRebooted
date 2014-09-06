@@ -19,6 +19,7 @@ import com.techshroom.mods.tbm.block.BlockFlags;
 import com.techshroom.mods.tbm.entity.TBMCPUEntity;
 import com.techshroom.mods.tbm.entity.TBMEntity;
 import com.techshroom.mods.tbm.gui.GuiTBMCPU;
+import com.techshroom.mods.tbm.gui.container.ContainerTBMCPU;
 import com.techshroom.mods.tbm.net.messageForServer.MessageCPUStartClient;
 
 import cpw.mods.fml.common.eventhandler.Event;
@@ -31,7 +32,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TBMCPUTile
         extends AlwaysSyncedCPUTile implements ConvertsToEntity<TBMCPUEntity>,
-        IPlayerContainerProvider, IGuiProvider<Container> {
+        IPlayerContainerProvider, IGuiProvider<ContainerTBMCPU> {
     public TBMCPUTile() {
         setCPUTile(this);
         insertTileEntity(this);
@@ -117,6 +118,9 @@ public class TBMCPUTile
     public static void entitySpawnOfTheDevil(EntityJoinWorldEvent spawner) {
         if (isClient(spawner.world) && spawner.entity instanceof TBMEntity) {
             mod().log.trace("CLIENT SPAWN " + spawner.entity);
+            mod().log
+                    .trace("[FactSpewer] Did you know that this world's dimension is "
+                            + spawner.world.provider.dimensionId);
         }
     }
 
@@ -133,25 +137,25 @@ public class TBMCPUTile
     }
 
     public void fireGUIOpenRequest(EntityPlayer player) {
-        if (!isClient(worldObj))
-            player.openGui(mod(), getGUIId(), worldObj, xCoord, yCoord, zCoord);
+        player.openGui(mod(), getGUIId(), worldObj, xCoord, yCoord, zCoord);
     }
 
     public int getGUIId() {
         return (Integer) store_get("cpu-gui-id");
     }
 
-    public GuiScreen guiScreenFromEntity(Container c, TBMCPUEntity entity) {
+    public GuiScreen
+            guiScreenFromEntity(ContainerTBMCPU c, TBMCPUEntity entity) {
         return new GuiTBMCPU(entity);
     }
 
     @Override
-    public GuiScreen guiScreen(Container c) {
+    public GuiScreen guiScreen(ContainerTBMCPU c) {
         return new GuiTBMCPU(this);
     }
 
     @Override
     public Container container(EntityPlayer player) {
-        return IPlayerContainerProvider.NULL.container(player);
+        return new ContainerTBMCPU();
     }
 }
