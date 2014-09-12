@@ -10,3 +10,7 @@ script: ./gradlew build -S
 env:
   global:
     TERM=dumb
+
+cache:
+    directories:
+    - $HOME/.gradle
