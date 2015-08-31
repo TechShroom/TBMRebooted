@@ -1,43 +1,56 @@
-import org.apache.tools.ant.filters.ReplaceTokens
-
-// This sets us up for building a forge project - you need all of these
 buildscript {
     repositories {
+        jcenter()
         mavenCentral()
+        maven {
+            url "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+        maven {
+            url "http://techshroom.github.io/downloads/maven"
+        }
         maven {
             name = "forge"
             url = "http://files.minecraftforge.net/maven"
         }
-        maven {
-            name = "sonatype"
-            url = "https://oss.sonatype.org/content/repositories/snapshots/"
+    }
+    
+    configurations.all {
+        resolutionStrategy {
+            cacheChangingModulesFor 0, 'seconds'
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.0-SNAPSHOT'
+        classpath group: 'com.techshroom', name: 'Aversion', version: '1.0.1-SNAPSHOT'
     }
 }
+apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'aversion-apt'
+apply plugin: 'aversion-maven'
+apply plugin: 'aversion-util'
+
+util {
+    javaVersion = '1.6'
+}
+
+idea.project.languageLevel = util.javaVersion
 
 repositories {
+    mavenCentral()
     maven {
         name "chickenbones"
         url "http://chickenbones.net/maven/"
     }
+    maven {
+        name "central snapshots"
+        url "https://oss.sonatype.org/content/repositories/snapshots/"
+    }
 }
-
-// Apply the forge plugin - this adds all the magic for automatically obfuscating, deobfuscating etc
-apply plugin: 'forge'
-
-// This is our group
-group = "com.techshroom" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-// This is our actual project within the group.
+group = "com.techshroom"
 archivesBaseName = "TBM"
 
-// Define properties file
 ext.configFile = file "build.properties"
-
 configFile.withReader {
-    // Load config.  It shall from now be referenced as simply config or project.config
     def prop = new Properties()
     prop.load(it)
     project.ext.config = new ConfigSlurper().parse prop
@@ -45,13 +58,36 @@ configFile.withReader {
 
 dependencies {
     compile "codechicken:CodeChickenLib:${config.mc.version}-${config.ccl.version}:dev"
+
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.0.2'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.0.2'
+    compile group: 'net.sf.jopt-simple', name: 'jopt-simple', version: '4.7'
+    compile group: 'com.google.code.gson', name: 'gson', version: '2.3'
+    addAPTReqWComp group: 'com.google.guava', name: 'guava', version: '18.0'
+    addAPT group: 'com.google.auto.factory', name: 'auto-factory', version: '1.0-SNAPSHOT'
+    addAPT group: 'com.google.auto.service', name: 'auto-service', version: '1.0-SNAPSHOT'
+    addAPT group: 'com.google.auto.value', name: 'auto-value', version: '1.2-SNAPSHOT'
+    addAPTReq name: 'aopalliance'
+    addAPTReq name: 'asm'
+    addAPTReq name: 'auto-value'
+    addAPTReq name: 'auto-common'
+    addAPTReq name: 'cglib'
+    addAPTReq name: 'commons-collections'
+    addAPTReq name: 'commons-lang'
+    addAPTReq name: 'dagger'
+    addAPTReq name: 'javawriter'
+    addAPTReq name: 'javax.inject'
+    addAPTReq name: 'velocity'
+
+    testCompile group: 'junit', name: 'junit', version: '4.+'
 }
 
-def build_number = (System.getenv("BUILD_NUMBER") ?: "1")
-version =  "${project.config.mod.version}." + build_number
-
-println config.mc.version + "-" + config.forge.version
-// Setup the forge minecraft plugin data. Specify the preferred forge/minecraft version here
+def build_number = (System.getenv("BUILD_NUMBER") ?: null)
+// VERSION IS:
+// <MC_VERSION>.<MOD_VERSION>-<BUILD_NUMBER (if present)>
+// This ensures that it is easy to identify what MC version the mod is for
+version =  "${project.config.mc.semver}.${project.config.mod.version}" +
+                (build_number ? "-" + build_number : "")
 minecraft {
     version = config.mc.version + "-" + config.forge.version
     if (file('../run').exists()) {
@@ -59,118 +95,10 @@ minecraft {
     } else {
         runDir = "run"
     }
-}
-
-sourceSets {
-    main {
-        def root = project.projectDir
-        java {
-            srcDir new File(root, "src")
-        }
-        resources {
-            srcDir new File(root, "resources")
-        }
-    }
-}
-
-task updateVersion(type: Copy) {
-    // Replace tokens
-    from(sourceSets.main.java.srcDirs)
-    into 'build/sources/java'
-    filter(ReplaceTokens, tokens: [
-        'VERSION': config.mod.version,
-        'BUILD_NUMBER': build_number
-    ])
-}
-
-compileJava.dependsOn updateVersion
-
-processResources {
-    //redo task if any of these properties change
-    inputs.property "version", project.version
-    inputs.property "mc.version", config.mc.version
-    inputs.property "ccl.version", config.ccl.version
-
-    // Replace properties in all files
-    from(sourceSets.main.resources.srcDirs) {
-        include '**.info'
-        filter(ReplaceTokens, tokens: [
-            'VERSION': config.mod.version,
-            'BUILD_NUMBER': build_number,
-            'MC_VERSION': config.mc.version,
-            'FORGE_VERSION': config.forge.version,
-            'CCL_VERSION': config.ccl.version
-        ])
-    }
-    // Copy everything else
-    from(sourceSets.main.resources.srcDirs) {
-        include 'assets/**/*.*'
-    }
-}
-
-// Short-hand variable
-ext.jarVer = "${project.minecraft.version}-${project.version}"
-// Output of reobf task
-ext.jarFile = reobf.outputs.files.each{}.collect{ zipTree(it) }
-// Files to not include in baseJar
-ext.baseExcludes = []
-
-task exampleTaskDoNotRunJar(type: Jar, dependsOn: reobf) {
-    from (project.ext.jarFile) {
-        include "stuff here"
-        rename ("ext_info.info", 'mcmod.info')
-
-        project.ext.baseExcludes.addAll(includes)
-    }
-    manifest {
-        attributes 'FMLCorePlugin': 'codechicken.core.launch.DepLoader'
-        attributes 'FMLCorePluginContainsFMLMod': 'true'
-    }
-    version = project.ext.jarVer
-    appendix = 'name'
-}
-
-task baseJar(type: Jar, dependsOn: reobf) {
-    from (project.ext.jarFile) {
-        exclude project.ext.baseExcludes
-    }
-    manifest {
-        attributes 'FMLCorePlugin': 'codechicken.core.launch.DepLoader'
-        attributes 'FMLCorePluginContainsFMLMod': 'true'
-    }
-    version = project.ext.jarVer
-    appendix = ''
-}
-
-// baseJar pulls all files not in any other jar. Therefore must run last
-baseJar.mustRunAfter { tasks.findAll { task -> (task.name.endsWith('Jar') && !task.name.equals('baseJar')) } }
-
-gradle.taskGraph.afterTask { task, TaskState state ->
-    if (task == baseJar) {
-        // Delete original jar now it has been split into separate jars.
-        reobf.outputs.files.each{delete it}
-    }
-}
-
-// Add in a source jar for people, should they desire to download such a thing
-//task sourceJar(type: Jar) {
-//    from sourceSets.main.allSource
-//    classifier = 'src'
-//    version = "${project.minecraft.version}-${project.version}"
-//}
-
-// Add in an mcp named jar, for those who wish to run in a development environment (assuming mcp naming matches)
-//task deobfJar(type: Jar) {
-//    from sourceSets.main.output
-//    classifier = 'dev'
-//    version = "${project.minecraft.version}-${project.version}"
-//    manifest {
-//        attributes 'FMLCorePlugin': 'codechicken.core.launch.DepLoader'
-//        attributes 'FMLCorePluginContainsFMLMod': 'true'
-//    }
-//}
-
-// Tell the artifact system about our extra jars
-artifacts {
-    archives baseJar
+    replace '@VERSION@': version
+    replace '@BUILD_NUMBER@': build_number?:"0"
+    replace '@MC_VERSION@': config.mc.version
+    replace '@FORGE_VERSION@': config.forge.version
+    replace '@CCL_VERSION@': config.ccl.version
+    mappings "stable_16"
 }
