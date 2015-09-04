@@ -1,5 +1,6 @@
 buildscript {
     repositories {
+        mavenLocal()
         jcenter()
         mavenCentral()
         maven {
@@ -30,7 +31,7 @@ apply plugin: 'aversion-maven'
 apply plugin: 'aversion-util'
 
 util {
-    javaVersion = '1.6'
+    javaVersion = '1.8'
 }
 
 idea.project.languageLevel = util.javaVersion
