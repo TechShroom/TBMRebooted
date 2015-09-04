@@ -1,6 +1,6 @@
 [
 {
-  "modid": "TBMMod",
+  "modid": "tbmmod",
   "name": "Tunnel Boring Machine Mod",
   "description":"Tunnel boring. It's not boring! Built against Forge @FORGE_VERSION@.",
   "version": "@VERSION@.@BUILD_NUMBER@",

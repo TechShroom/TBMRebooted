@@ -103,3 +103,7 @@ minecraft {
     replace '@CCL_VERSION@': config.ccl.version
     mappings "stable_16"
 }
+
+// did u know that AT checking is bad
+[tasks.deobfMcMCP, tasks.deobfMcSRG].each { it.failOnAtError = false }
+

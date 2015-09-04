@@ -23,15 +23,15 @@ public class ItemBase extends Item {
     }
 
     protected void addVariants(int... meta) {
+        if (!this.hasSubtypes) {
+            throw new IllegalStateException("there's no metadata in your item!");
+        }
         String[] var = new String[meta.length];
         for (int i = 0; i < meta.length; i++) {
             String name = getMetaUnlocalizedName(meta[i]).replace("item.", "");
             var[i] = addressMod(name);
-            if (i > 0) {
-                ModelLoader.setCustomModelResourceLocation(this, i,
-                        new ModelResourceLocation(addressMod(name),
-                                "inventory"));
-            }
+            ModelLoader.setCustomModelResourceLocation(this, i,
+                    new ModelResourceLocation(addressMod(name), "inventory"));
         }
         ModelBakery.addVariantName(this, var);
     }
