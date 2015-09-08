@@ -1,8 +1,9 @@
 package com.techshroom.mods.tbm.net;
 
 import static com.techshroom.mods.tbm.TBMMod.mod;
-import static com.techshroom.mods.tbm.TBMMod.store_put;
+import static com.techshroom.mods.tbm.TBMMod.store;
 
+import com.techshroom.mods.tbm.TBMKeys;
 import com.techshroom.mods.tbm.net.messageForServer.MessageCPUStartClient;
 import com.techshroom.mods.tbm.net.messageForServer.MessageCPUStartHandler;
 
@@ -13,8 +14,10 @@ import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 
 public abstract class NetProxy {
-    private static final SimpleNetworkWrapper netmanager = store_put("channel",
-            NetworkRegistry.INSTANCE.newSimpleChannel(mod().id()));
+
+    private static final SimpleNetworkWrapper netmanager =
+            store.put(TBMKeys.NETWORK_CHANNEL,
+                    NetworkRegistry.INSTANCE.newSimpleChannel(mod().id()));
 
     public SimpleNetworkWrapper netWrapper() {
         return netmanager;
@@ -26,8 +29,8 @@ public abstract class NetProxy {
         return discCounter++;
     }
 
-    public static final class Client
-            extends NetProxy {
+    public static final class Client extends NetProxy {
+
         private final NetProxy.Server server = new NetProxy.Server();
 
         @Override
@@ -48,8 +51,8 @@ public abstract class NetProxy {
         }
     }
 
-    public static final class Server
-            extends NetProxy {
+    public static final class Server extends NetProxy {
+
         @Override
         public void doNetRegistrationsForSide() {
             mod().log.trace("server net registrations start");
@@ -80,9 +83,7 @@ public abstract class NetProxy {
         return getSide() == Side.SERVER;
     }
 
-    protected
-            <REQ extends IMessage, REPLY extends IMessage>
-            void
+    protected <REQ extends IMessage, REPLY extends IMessage> void
             registerMessage(
                     Class<? extends IMessageHandler<REQ, REPLY>> messageHandler,
                     Class<REQ> requestMessageType, int discriminator) {

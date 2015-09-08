@@ -1,7 +1,7 @@
 package com.techshroom.mods.tbm;
 
 import static com.techshroom.mods.tbm.TBMMod.mod;
-import static com.techshroom.mods.tbm.TBMMod.store_put;
+import static com.techshroom.mods.tbm.TBMMod.store;
 
 import com.techshroom.mods.tbm.block.TBMCPU;
 import com.techshroom.mods.tbm.block.TBMCargo;
@@ -20,6 +20,7 @@ import com.techshroom.mods.tbm.entity.TBMEjectEntity;
 import com.techshroom.mods.tbm.entity.TBMEngineEntity;
 import com.techshroom.mods.tbm.gui.GuiHandler;
 import com.techshroom.mods.tbm.item.ItemDrillHead;
+import com.techshroom.mods.tbm.util.Storage.Key;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -39,10 +40,10 @@ public class TBMProxy {
         blockData();
         itemData();
         entityData();
-        this.conf = store_put("config",
+        this.conf = store.put(TBMKeys.CONFIG,
                 new Configuration(event.getSuggestedConfigurationFile()));
         this.conf.load();
-        store_put("use-chest-model",
+        store.put(TBMKeys.USE_CHEST_MODEL,
                 this.conf.getBoolean("use-chest-model", "models", false,
                         "true to use the chest model for the cargo block, "
                                 + "false for the full block model.\n"));
@@ -72,25 +73,27 @@ public class TBMProxy {
     }
 
     private void blockData() {
-        registerBlock("drill", new TBMDrill(), TBMDrillTile.class);
-        registerBlock("ejecter", new TBMEject(), TBMEjectTile.class);
-        registerBlock("cargo", new TBMCargo(), TBMCargoTile.class);
-        registerBlock("engine", new TBMEngine(), TBMEngineTile.class);
-        registerBlock("cpu", new TBMCPU(), TBMCPUTile.class);
+        registerBlock(TBMKeys.Blocks.DRILL, new TBMDrill(), TBMDrillTile.class);
+        registerBlock(TBMKeys.Blocks.EJECTOR, new TBMEject(),
+                TBMEjectTile.class);
+        registerBlock(TBMKeys.Blocks.CARGO, new TBMCargo(), TBMCargoTile.class);
+        registerBlock(TBMKeys.Blocks.ENGINE, new TBMEngine(),
+                TBMEngineTile.class);
+        registerBlock(TBMKeys.Blocks.CPU, new TBMCPU(), TBMCPUTile.class);
     }
 
-    private void registerBlock(String storeName, Block b,
+    private void registerBlock(Key<Block> storeName, Block b,
             Class<? extends TileEntity> tile) {
-        store_put(storeName, b);
+        store.put(storeName, b);
         GameRegistry.registerBlock(b, b.getUnlocalizedName());
 
         if (tile != null) {
-            GameRegistry.registerTileEntity(tile, storeName);
+            GameRegistry.registerTileEntity(tile, storeName.toString());
         }
     }
 
     private void itemData() {
-        store_put("drillhead", new ItemDrillHead());
+        store.put(TBMKeys.Items.DRILLHEAD, new ItemDrillHead());
     }
 
     /*

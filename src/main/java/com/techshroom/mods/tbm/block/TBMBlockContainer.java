@@ -2,6 +2,9 @@ package com.techshroom.mods.tbm.block;
 
 import static com.techshroom.mods.tbm.TBMMod.*;
 import static com.techshroom.mods.tbm.Tutils.*;
+
+import com.techshroom.mods.tbm.TBMKeys;
+
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -18,7 +21,7 @@ public abstract class TBMBlockContainer<TileType extends TileEntity>
     protected TBMBlockContainer(Material mat, String unlocalizedName,
             String blockTexBase) {
         super(mat);
-        CreativeTabs blockTab = store_get("blockTab");
+        CreativeTabs blockTab = store.get(TBMKeys.BLOCK_TAB).get();
         setUnlocalizedName(unlocalizedName).setCreativeTab(blockTab);
     }
 

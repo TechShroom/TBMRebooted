@@ -1,18 +1,13 @@
 package com.techshroom.mods.tbm;
 
-import static com.techshroom.mods.tbm.Tutils.cast;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.logging.log4j.Logger;
 
 import com.techshroom.mods.tbm.debug.KillAllCommmand;
 import com.techshroom.mods.tbm.net.NetProxy;
 import com.techshroom.mods.tbm.net.NetProxy.Client;
 import com.techshroom.mods.tbm.net.NetProxy.Server;
+import com.techshroom.mods.tbm.util.Storage;
 
-import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.Mod;
@@ -42,31 +37,17 @@ public final class TBMMod {
 
         @Override
         public Item getTabIconItem() {
-            return Item.getItemFromBlock((Block) store_get("drill"));
+            return Item.getItemFromBlock(store.get(TBMKeys.Blocks.DRILL).get());
         }
     };
     private static final CreativeTabs tabItem = new CreativeTabs("tbmItems") {
 
         @Override
         public Item getTabIconItem() {
-            return store_get("drillhead");
+            return store.get(TBMKeys.Items.DRILLHEAD).get();
         }
     };
-    public static final Map<String, Object> store =
-            new HashMap<String, Object>();
-
-    public static <T> T store_get(String key) {
-        return cast(store.get(key));
-    }
-
-    public static <T> T store_put(String key, T object) {
-        if (store.containsKey(key)) {
-            INST.log.info("replacing key " + key + ", " + store.get(key)
-                    + " --replace-> " + object);
-        }
-        store.put(key, object);
-        return object;
-    }
+    public static final Storage store = new Storage();
 
     public static TBMMod mod() {
         return INST;
@@ -81,12 +62,12 @@ public final class TBMMod {
     }
 
     static {
-        store.put("mod", mod());
-        store.put("proxy", proxy());
-        store.put("proxy_world", worldFetcher());
-        store.put("id", ID);
-        store.put("itemTab", tabItem);
-        store.put("blockTab", tabBlock);
+        store.put(TBMKeys.MOD, mod());
+        store.put(TBMKeys.PROXY, proxy());
+        store.put(TBMKeys.WORLD_PROXY, worldFetcher());
+        store.put(TBMKeys.ID, ID);
+        store.put(TBMKeys.ITEM_TAB, tabItem);
+        store.put(TBMKeys.BLOCK_TAB, tabBlock);
     }
 
     public Logger log;
@@ -99,7 +80,9 @@ public final class TBMMod {
     public void preinit(FMLPreInitializationEvent e) {
         this.log = e.getModLog();
         this.log.entry(e);
-        store.put("log", this.log);
+        store.put(TBMKeys.LOGGER, this.log);
+        store.put(TBMKeys.CONFIG_DIR,
+                e.getModConfigurationDirectory().toPath().toAbsolutePath());
         if (PROX.isClient()) {
             netmanager = new Client();
         } else {
@@ -139,10 +122,10 @@ public final class TBMMod {
     }
 
     static {
-        store_put("drill-gui-id", requestGUIId());
-        store_put("cargo-gui-id", requestGUIId());
-        store_put("engine-gui-id", requestGUIId());
-        store_put("cpu-gui-id", requestGUIId());
+        store.put(TBMKeys.GuiId.DRILL, requestGUIId());
+        store.put(TBMKeys.GuiId.CARGO, requestGUIId());
+        store.put(TBMKeys.GuiId.ENGINE, requestGUIId());
+        store.put(TBMKeys.GuiId.CPU, requestGUIId());
     }
 
     private static NetProxy netmanager;

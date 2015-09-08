@@ -1,6 +1,13 @@
 package com.techshroom.mods.tbm.block.tile;
 
-import static com.techshroom.mods.tbm.TBMMod.store_get;
+import static com.techshroom.mods.tbm.TBMMod.store;
+
+import com.techshroom.mods.tbm.ConvertsToEntity;
+import com.techshroom.mods.tbm.TBMKeys;
+import com.techshroom.mods.tbm.entity.TBMEngineEntity;
+import com.techshroom.mods.tbm.gui.GuiTBMEngine;
+import com.techshroom.mods.tbm.gui.container.ContainerTBMEngine;
+
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -9,18 +16,15 @@ import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
-import com.techshroom.mods.tbm.ConvertsToEntity;
-import com.techshroom.mods.tbm.entity.TBMEngineEntity;
-import com.techshroom.mods.tbm.gui.GuiTBMEngine;
-import com.techshroom.mods.tbm.gui.container.ContainerTBMEngine;
-
-public class TBMEngineTile extends AlwaysSyncedCPUSidedTile implements
-        ConvertsToEntity<TBMEngineEntity>, IPlayerContainerProvider,
+public class TBMEngineTile extends AlwaysSyncedCPUSidedTile
+        implements ConvertsToEntity<TBMEngineEntity>, IPlayerContainerProvider,
         IGuiProvider<ContainerTBMEngine> {
+
     private static final int SIZE = 9;
 
     public TBMEngineTile() {
-        super(new InventoryBasic("Engine", false, SIZE), slotsToAllowAnySidedAcess(SIZE));
+        super(new InventoryBasic("Engine", false, SIZE),
+                slotsToAllowAnySidedAcess(SIZE));
     }
 
     @Override
@@ -55,6 +59,6 @@ public class TBMEngineTile extends AlwaysSyncedCPUSidedTile implements
 
     @Override
     public int getGUIId() {
-        return ((Integer) store_get("engine-gui-id")).intValue();
+        return store.get(TBMKeys.GuiId.ENGINE).getAsInt();
     }
 }

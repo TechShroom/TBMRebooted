@@ -1,15 +1,17 @@
 package com.techshroom.mods.tbm.block.tile;
 
-import static com.techshroom.mods.tbm.TBMMod.store_get;
+import static com.techshroom.mods.tbm.TBMMod.store;
+
+import com.techshroom.mods.tbm.ConvertsToEntity;
+import com.techshroom.mods.tbm.TBMKeys;
+import com.techshroom.mods.tbm.entity.TBMCargoEntity;
+import com.techshroom.mods.tbm.gui.GuiTBMCargo;
+import com.techshroom.mods.tbm.gui.container.ContainerTBMCargo;
+
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.InventoryBasic;
-
-import com.techshroom.mods.tbm.ConvertsToEntity;
-import com.techshroom.mods.tbm.entity.TBMCargoEntity;
-import com.techshroom.mods.tbm.gui.GuiTBMCargo;
-import com.techshroom.mods.tbm.gui.container.ContainerTBMCargo;
 
 public class TBMCargoTile extends AlwaysSyncedCPUSidedTile implements
         ConvertsToEntity<TBMCargoEntity>, IPlayerContainerProvider,
@@ -42,7 +44,7 @@ public class TBMCargoTile extends AlwaysSyncedCPUSidedTile implements
 
     @Override
     public int getGUIId() {
-        return ((Integer) store_get("cargo-gui-id")).intValue();
+        return store.get(TBMKeys.GuiId.CARGO).getAsInt();
     }
 
 }

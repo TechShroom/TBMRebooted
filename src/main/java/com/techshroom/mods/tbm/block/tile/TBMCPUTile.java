@@ -1,7 +1,7 @@
 package com.techshroom.mods.tbm.block.tile;
 
 import static com.techshroom.mods.tbm.TBMMod.mod;
-import static com.techshroom.mods.tbm.TBMMod.store_get;
+import static com.techshroom.mods.tbm.TBMMod.store;
 import static com.techshroom.mods.tbm.Tutils.cast;
 import static com.techshroom.mods.tbm.Tutils.isClient;
 
@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.techshroom.mods.tbm.ConvertsToEntity;
+import com.techshroom.mods.tbm.TBMKeys;
 import com.techshroom.mods.tbm.block.BlockFlags;
 import com.techshroom.mods.tbm.entity.TBMCPUEntity;
 import com.techshroom.mods.tbm.entity.TBMEntity;
@@ -144,7 +145,7 @@ public class TBMCPUTile extends AlwaysSyncedCPUTile
     }
 
     public int getGUIId() {
-        return (Integer) store_get("cpu-gui-id");
+        return store.get(TBMKeys.GuiId.CPU).getAsInt();
     }
 
     public GuiScreen guiScreenFromEntity(ContainerTBMCPU c,
