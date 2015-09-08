@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import net.minecraft.command.CommandBase;
+import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -84,4 +85,11 @@ public class KillAllCommmand extends CommandBase {
         }
         return entitynames;
     }
+
+    @Override
+    public int compareTo(Object p_compareTo_1_) {
+        // why......because bad class mappings. I have no clue.
+        return this.compareTo((ICommand) p_compareTo_1_);
+    }
+
 }
