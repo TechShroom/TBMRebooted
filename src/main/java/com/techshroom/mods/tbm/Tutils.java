@@ -12,7 +12,6 @@ import java.awt.Point;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,9 +24,7 @@ import org.lwjgl.util.vector.Vector2f;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
-import com.techshroom.mods.tbm.block.TBMBlockContainer;
-import com.techshroom.mods.tbm.block.tile.CPUConnectable;
-import com.techshroom.mods.tbm.block.tile.TBMCPUTile;
+import com.techshroom.mods.tbm.block.TBMBlockBase;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSourceImpl;
@@ -409,110 +406,6 @@ public final class Tutils {
         }
     }
 
-    public static final class DefaultMethods {
-
-        public static boolean CPUConnectable_sendUpdateRequestToCPU(
-                TileEntity _this, CPUConnectable _thisAsConnectable,
-                TileEntity[] dejaVu) {
-            boolean thisIsSource =
-                    _this.equals(_thisAsConnectable.getCPUTile());
-            if (thisIsSource) {
-                return CPUConnectable_updateCPUConnections(_this,
-                        _thisAsConnectable, new TileEntity[0], null);
-            }
-            boolean noFailure = true;
-            IBlockSource thisLoc =
-                    new BlockSourceImpl(_this.getWorld(), _this.getPos());
-            List<TileEntity> dejaList = Arrays.asList(dejaVu);
-            IBlockSource[] surrounding = IBS.neighbors(thisLoc);
-            for (IBlockSource around : surrounding) {
-                TileEntity at = around.getBlockTileEntity();
-                if (dejaList.contains(at)) {
-                    // already checked
-                    continue;
-                }
-                if (at instanceof CPUConnectable) {
-                    CPUConnectable tileAsConnect = (CPUConnectable) at;
-                    noFailure |= tileAsConnect.sendUpdateRequestToCPU(
-                            CPUConnectable_extendByUs(_this, dejaVu));
-                } else {
-                    // System.err.println();
-                }
-            }
-            return noFailure;
-        }
-
-        public static boolean CPUConnectable_updateCPUConnections(
-                TileEntity _this, CPUConnectable _thisAsConnectable,
-                TileEntity[] dejaVu, TBMCPUTile backRef) {
-            boolean thisIsSource =
-                    _this.equals(_thisAsConnectable.getCPUTile());
-            if (thisIsSource && (dejaVu.length > 0 || backRef != null)) {
-                // source is doing propagation, but we are a source? Conflict,
-                // return false.
-                return false;
-            }
-            boolean noFailure = true;
-            IBlockSource thisLoc =
-                    new BlockSourceImpl(_this.getWorld(), _this.getPos());
-            List<TileEntity> dejaList = Arrays.asList(dejaVu);
-            IBlockSource[] surrounding = IBS.neighbors(thisLoc);
-            for (IBlockSource around : surrounding) {
-                TileEntity at = around.getBlockTileEntity();
-                if (dejaList.contains(at)) {
-                    // already checked
-                    continue;
-                }
-                if (at instanceof CPUConnectable) {
-                    CPUConnectable tileAsConnect = (CPUConnectable) at;
-                    noFailure &= tileAsConnect.updateCPUConnections(
-                            CPUConnectable_extendByUs(_this, dejaVu),
-                            (TBMCPUTile) (thisIsSource ? _this : backRef));
-                }
-            }
-            if (noFailure && backRef != null) {
-                // okay to set our tile, there is no conflict
-                _thisAsConnectable.setCPUTile(backRef);
-            } else if (noFailure) {
-                // this is weird. There's no backRef, but we aren't a source.
-                // Who doesn't have the tile?
-                return false;
-            }
-            return noFailure;
-        }
-
-        public static void CPUConnectable_updateEntity(TileEntity _this,
-                CPUConnectable _thisAsConnectable) {
-            if (!_thisAsConnectable.hasCPUTile() && _this.getWorld() != null) {
-                _this.updateContainingBlockInfo();
-            }
-        }
-
-        public static void CPUConnectable_updateContainingBlockInfo(
-                TileEntity _this, CPUConnectable _thisAsConnectable) {
-            if (isClient(_this.getWorld())) {
-                return;
-            }
-            if (_this.equals(_thisAsConnectable.getCPUTile())) {
-                _thisAsConnectable.updateCPUConnections(new TileEntity[0],
-                        null);
-            } else {
-                _thisAsConnectable.sendUpdateRequestToCPU(new TileEntity[0]);
-            }
-        }
-
-        private static TileEntity[] CPUConnectable_extendByUs(TileEntity _this,
-                TileEntity[] dejaVu) {
-            TileEntity[] copy = Arrays.copyOf(dejaVu, dejaVu.length + 1);
-            copy[dejaVu.length] = _this;
-            return copy;
-        }
-
-        private DefaultMethods() {
-            throw new AssertionError("Nope.");
-        }
-    }
-
     public static final class SideConstants {
 
         public static final int BOTTOM = EnumFacing.DOWN.getIndex();
@@ -603,9 +496,9 @@ public final class Tutils {
         return (T) o;
     }
 
-    private static final Map<TBMBlockContainer<?>, BlockState> SIDE_STATE =
+    private static final Map<TBMBlockBase, BlockState> SIDE_STATE =
             Maps.newHashMap();
-    private static final Map<TBMBlockContainer<?>, BlockState> SIDE_STATE_NO_Y_AXIS =
+    private static final Map<TBMBlockBase, BlockState> SIDE_STATE_NO_Y_AXIS =
             Maps.newHashMap();
     private static final PropertyDirection FACING =
             PropertyDirection.create("facing");
@@ -619,15 +512,14 @@ public final class Tutils {
 
             });
 
-    private static BlockState getOrCreateSideState(TBMBlockContainer<?> block) {
+    private static BlockState getOrCreateSideState(TBMBlockBase block) {
         if (!SIDE_STATE.containsKey(block)) {
             SIDE_STATE.put(block, new BlockState(block, FACING));
         }
         return SIDE_STATE.get(block);
     }
 
-    private static BlockState
-            getOrCreateSideStateNoYAxis(TBMBlockContainer<?> block) {
+    private static BlockState getOrCreateSideStateNoYAxis(TBMBlockBase block) {
         if (!SIDE_STATE_NO_Y_AXIS.containsKey(block)) {
             SIDE_STATE_NO_Y_AXIS.put(block,
                     new BlockState(block, FACING_FILTERED));
@@ -635,23 +527,22 @@ public final class Tutils {
         return SIDE_STATE_NO_Y_AXIS.get(block);
     }
 
-    public static IBlockState getSideBaseState(TBMBlockContainer<?> block) {
+    public static IBlockState getSideBaseState(TBMBlockBase block) {
         return getOrCreateSideState(block).getBaseState();
     }
 
     public static IBlockState createStateForSideByEntityRotation(
-            TBMBlockContainer<?> block, BlockPos pos, EntityLivingBase entity) {
+            TBMBlockBase block, BlockPos pos, EntityLivingBase entity) {
         return getOrCreateSideState(block).getBaseState().withProperty(FACING,
                 EnumFacing.getFront(getSideByEntityRotation(pos, entity)));
     }
 
-    public static IBlockState
-            getSideBaseNoYAxisState(TBMBlockContainer<?> block) {
+    public static IBlockState getSideBaseNoYAxisState(TBMBlockBase block) {
         return getOrCreateSideState(block).getBaseState();
     }
 
     public static IBlockState createStateForSideByEntityRotationNoYAxis(
-            TBMBlockContainer<?> block, BlockPos pos, EntityLivingBase entity) {
+            TBMBlockBase block, BlockPos pos, EntityLivingBase entity) {
         return getOrCreateSideStateNoYAxis(block).getBaseState().withProperty(
                 FACING_FILTERED,
                 EnumFacing.getFront(getSideByEntityRotationNoYAxis(entity)));

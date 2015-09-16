@@ -1,14 +1,13 @@
 package com.techshroom.mods.tbm.render.entity;
 
+import com.techshroom.mods.tbm.Tutils;
+
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 
-import com.techshroom.mods.tbm.Tutils;
-
-public abstract class GenericRender<T extends Entity>
-        extends Render {
+public abstract class GenericRender<T extends Entity> extends Render {
 
     protected GenericRender(RenderManager renderManager) {
         super(renderManager);

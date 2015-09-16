@@ -1,28 +1,24 @@
 package com.techshroom.mods.tbm.block;
 
-import com.techshroom.mods.tbm.block.tile.TBMEngineTile;
+import com.techshroom.mods.tbm.entity.TBMEngineEntity;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
-public class TBMEngine extends TBMBlockContainer<TBMEngineTile> {
+public class TBMEngine extends TBMBlockBase {
 
     public TBMEngine() {
         super("engine", "engine-tex");
     }
 
     @Override
-    protected TBMEngineTile g_createNewTileEntity(World w, int meta) {
-        return new TBMEngineTile();
-    }
-
-    @Override
-    protected boolean onBlockActivated(World w, BlockPos pos, EntityPlayer p,
-            EnumFacing side, TBMEngineTile tile) {
-        tile.fireGUIOpenRequest(p);
-        return true;
+    public Entity spawnEntity(World world, BlockPos pos, IBlockState state) {
+        TBMEngineEntity entity = new TBMEngineEntity(world);
+        world.spawnEntityInWorld(entity);
+        entity.moveToBlockPosAndAngles(pos, 0, 0);
+        return entity;
     }
 
 }

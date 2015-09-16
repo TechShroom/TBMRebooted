@@ -1,12 +1,13 @@
 package com.techshroom.mods.tbm.gui;
 
-import net.minecraft.client.gui.inventory.GuiContainer;
-
 import com.techshroom.mods.tbm.gui.container.ContainerExt;
 
+import net.minecraft.client.gui.inventory.GuiContainer;
+
 public abstract class GuiContainerExt extends GuiContainer {
+
     protected final ContainerExt container;
-    
+
     public GuiContainerExt(ContainerExt contExt) {
         super(contExt);
         this.container = contExt;

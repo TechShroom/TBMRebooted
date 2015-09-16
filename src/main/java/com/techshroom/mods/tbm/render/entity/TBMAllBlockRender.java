@@ -2,7 +2,7 @@ package com.techshroom.mods.tbm.render.entity;
 
 import org.lwjgl.opengl.GL11;
 
-import com.techshroom.mods.tbm.block.TBMBlockContainer;
+import com.techshroom.mods.tbm.block.TBMBlockBase;
 import com.techshroom.mods.tbm.entity.TBMEntity;
 
 import codechicken.lib.math.MathHelper;
@@ -14,14 +14,11 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.inventory.Container;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
-public class TBMAllBlockRender
-        extends GenericRender<TBMEntity<Container, TileEntity, ?>> {
+public class TBMAllBlockRender extends GenericRender<TBMEntity> {
 
     public TBMAllBlockRender(RenderManager renderManager) {
         super(renderManager);
@@ -31,9 +28,9 @@ public class TBMAllBlockRender
             Minecraft.getMinecraft().getBlockRendererDispatcher();
 
     @Override
-    public void g_doRender(TBMEntity<Container, TileEntity, ?> entity,
-            double renderOnScreenX, double renderOnScreenY,
-            double renderOnScreenZ, float yaw, float unknown) {
+    public void g_doRender(TBMEntity entity, double renderOnScreenX,
+            double renderOnScreenY, double renderOnScreenZ, float yaw,
+            float unknown) {
         if (entity.worldObj
                 .getBlockState(
                         new BlockPos(entity.posX, entity.posY, entity.posZ))
@@ -72,7 +69,7 @@ public class TBMAllBlockRender
 
     private void renderBlock(Block b, World w, int x, int y, int z, int meta) {
         BlockPos pos = new BlockPos(x, y, z);
-        if (!(b instanceof TBMBlockContainer)) {
+        if (!(b instanceof TBMBlockBase)) {
             throw new IllegalStateException(
                     "Trying to render an entity with a non-tbm block! block="
                             + b + ", location=" + pos);
@@ -87,8 +84,7 @@ public class TBMAllBlockRender
     }
 
     @Override
-    public ResourceLocation
-            g_getEntityTexture(TBMEntity<Container, TileEntity, ?> entity) {
+    public ResourceLocation g_getEntityTexture(TBMEntity entity) {
         return entity.getEntityTexture();
     }
 

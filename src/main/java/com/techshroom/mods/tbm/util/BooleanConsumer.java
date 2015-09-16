@@ -1,6 +1,7 @@
 package com.techshroom.mods.tbm.util;
 
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * Represents an operation that accepts a single {@code boolean}-valued argument
@@ -24,7 +25,7 @@ public interface BooleanConsumer {
      * @param value
      *            the input argument
      */
-            void accept(boolean value);
+    void accept(boolean value);
 
     /**
      * Returns a composed {@code BooleanConsumer} that performs, in sequence,

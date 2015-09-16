@@ -1,12 +1,13 @@
 package com.techshroom.mods.tbm.gui;
 
-import net.minecraft.util.ResourceLocation;
-
 import org.lwjgl.opengl.GL11;
 
 import com.techshroom.mods.tbm.gui.container.ContainerTBMCargo;
 
+import net.minecraft.util.ResourceLocation;
+
 public class GuiTBMCargo extends GuiContainerExt {
+
     private static final ResourceLocation field_147017_u =
             new ResourceLocation("textures/gui/container/generic_54.png");
 
@@ -23,8 +24,7 @@ public class GuiTBMCargo extends GuiContainerExt {
         int l = (this.height - this.ySize) / 2;
         this.drawTexturedModalRect(k, l, 0, 0, this.xSize,
                 this.container.getNumRows() * 18 + 17);
-        this.drawTexturedModalRect(k,
-                l + this.container.getNumRows() * 18 + 17, 0, 126, this.xSize,
-                96);
+        this.drawTexturedModalRect(k, l + this.container.getNumRows() * 18 + 17,
+                0, 126, this.xSize, 96);
     }
 }

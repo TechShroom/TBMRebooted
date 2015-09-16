@@ -1,12 +1,14 @@
 package com.techshroom.mods.tbm.inv;
 
 import static com.techshroom.mods.tbm.TBMMod.mod;
+
+import codechicken.lib.inventory.InventoryUtils;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagList;
-import codechicken.lib.inventory.InventoryUtils;
 
 public final class ExtendedInventoryUtils {
+
     private ExtendedInventoryUtils() {
     }
 
@@ -15,9 +17,8 @@ public final class ExtendedInventoryUtils {
         for (int i = 0; i < stack.length; i++) {
             stack[i] = inv.getStackInSlot(i);
         }
-        NBTTagList list =
-                InventoryUtils.writeItemStacksToTag(stack,
-                        inv.getInventoryStackLimit());
+        NBTTagList list = InventoryUtils.writeItemStacksToTag(stack,
+                inv.getInventoryStackLimit());
         return list;
     }
 

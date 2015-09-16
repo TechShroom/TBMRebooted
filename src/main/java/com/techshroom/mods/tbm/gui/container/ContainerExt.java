@@ -10,6 +10,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
 public abstract class ContainerExt extends Container {
+
     protected static final int SLOTS_PER_ROW_DEFAULT = 9;
     protected boolean usingPlayerInventory;
     protected int numRows;
@@ -54,8 +55,8 @@ public abstract class ContainerExt extends Container {
         }
         if (slotIndex != slotCount) {
             throw new IllegalStateException(
-                    "unbalanced slots, algorithm incorrect "
-                            + String.format("(%s != %s)", slotIndex, slotCount));
+                    "unbalanced slots, algorithm incorrect " + String
+                            .format("(%s != %s)", slotIndex, slotCount));
         }
         return this;
     }
@@ -83,8 +84,8 @@ public abstract class ContainerExt extends Container {
     }
 
     @Override
-    public ItemStack
-            transferStackInSlot(EntityPlayer p_82846_1_, int p_82846_2_) {
+    public ItemStack transferStackInSlot(EntityPlayer p_82846_1_,
+            int p_82846_2_) {
         return shiftClick(p_82846_1_, p_82846_2_);
     }
 
@@ -100,11 +101,12 @@ public abstract class ContainerExt extends Container {
             int allSlotsSize = this.inventorySlots.size();
 
             if (slotIndex < notPlayerSize) {
-                if (!this.mergeItemStack(slotStack, notPlayerSize,
-                        allSlotsSize, true)) {
+                if (!this.mergeItemStack(slotStack, notPlayerSize, allSlotsSize,
+                        true)) {
                     return null;
                 }
-            } else if (!this.mergeItemStack(slotStack, 0, notPlayerSize, false)) {
+            } else if (!this.mergeItemStack(slotStack, 0, notPlayerSize,
+                    false)) {
                 return null;
             }
 
@@ -154,8 +156,8 @@ public abstract class ContainerExt extends Container {
 
         if (putStack.isStackable()) {
             while (putStack.stackSize > 0
-                    && (!workBackwards && k < endIndexInContainer || workBackwards
-                            && k >= startIndexInContainer)) {
+                    && (!workBackwards && k < endIndexInContainer
+                            || workBackwards && k >= startIndexInContainer)) {
                 slot = (Slot) this.inventorySlots.get(k);
                 itemstack1 = slot.getStack();
 
@@ -163,8 +165,8 @@ public abstract class ContainerExt extends Container {
                         && itemstack1.getItem() == putStack.getItem()
                         && (!putStack.getHasSubtypes() || putStack
                                 .getItemDamage() == itemstack1.getItemDamage())
-                        && ItemStack
-                                .areItemStackTagsEqual(putStack, itemstack1)) {
+                        && ItemStack.areItemStackTagsEqual(putStack,
+                                itemstack1)) {
                     int l = itemstack1.stackSize + putStack.stackSize;
 
                     if (l <= putStack.getMaxStackSize()) {
@@ -174,9 +176,8 @@ public abstract class ContainerExt extends Container {
                         flag1 = true;
                     } else if (itemstack1.stackSize < putStack
                             .getMaxStackSize()) {
-                        putStack.stackSize -=
-                                putStack.getMaxStackSize()
-                                        - itemstack1.stackSize;
+                        putStack.stackSize -= putStack.getMaxStackSize()
+                                - itemstack1.stackSize;
                         itemstack1.stackSize = putStack.getMaxStackSize();
                         slot.onSlotChanged();
                         flag1 = true;
@@ -198,8 +199,8 @@ public abstract class ContainerExt extends Container {
                 k = startIndexInContainer;
             }
 
-            while (!workBackwards && k < endIndexInContainer || workBackwards
-                    && k >= startIndexInContainer) {
+            while (!workBackwards && k < endIndexInContainer
+                    || workBackwards && k >= startIndexInContainer) {
                 slot = (Slot) this.inventorySlots.get(k);
                 itemstack1 = slot.getStack();
 

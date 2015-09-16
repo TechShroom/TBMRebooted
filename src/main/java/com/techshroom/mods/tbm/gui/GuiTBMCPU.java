@@ -5,7 +5,6 @@ import static com.techshroom.mods.tbm.Tutils.cast;
 import java.util.List;
 
 import com.techshroom.mods.tbm.Tutils.Client;
-import com.techshroom.mods.tbm.block.tile.TBMCPUTile;
 import com.techshroom.mods.tbm.entity.TBMCPUEntity;
 
 import net.minecraft.client.gui.GuiButton;
@@ -22,15 +21,10 @@ public class GuiTBMCPU extends GuiScreen {
         }
     }
 
-    private TBMCPUTile tileRef = null;
     private TBMCPUEntity entRef = null;
 
     public GuiTBMCPU(TBMCPUEntity entity) {
         this.entRef = entity;
-    }
-
-    public GuiTBMCPU(TBMCPUTile cpu) {
-        this.tileRef = cpu;
     }
 
     private List<GuiButton> buttons() {
@@ -46,8 +40,14 @@ public class GuiTBMCPU extends GuiScreen {
     }
 
     private String getMotionMessage() {
-        String trans = this.tileRef != null ? "cpugui.start" : "cpugui.stop";
+        String trans = isMovingTemp() ? "cpugui.start" : "cpugui.stop";
         return StatCollector.translateToLocal(trans);
+    }
+
+    private boolean isMovingTemp() {
+        // TODO better definition of moving
+        return this.entRef.motionX < 0.001 && this.entRef.motionZ < 0.001
+                && this.entRef.motionY < 0.001;
     }
 
     @Override
@@ -64,8 +64,8 @@ public class GuiTBMCPU extends GuiScreen {
     @Override
     protected void actionPerformed(GuiButton button) {
         if (Client.buttonIsPressed(BUTTONS.MOTION, button)) {
-            if (this.tileRef != null) {
-                this.tileRef.guiStart();
+            if (isMovingTemp()) {
+                this.entRef.guiStart();
             } else {
                 this.entRef.guiStop();
             }

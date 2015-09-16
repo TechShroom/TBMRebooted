@@ -4,8 +4,6 @@ import static com.techshroom.mods.tbm.TBMMod.mod;
 import static com.techshroom.mods.tbm.TBMMod.store;
 
 import com.techshroom.mods.tbm.TBMKeys;
-import com.techshroom.mods.tbm.net.messageForServer.MessageCPUStartClient;
-import com.techshroom.mods.tbm.net.messageForServer.MessageCPUStartHandler;
 
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -56,8 +54,6 @@ public abstract class NetProxy {
         @Override
         public void doNetRegistrationsForSide() {
             mod().log.trace("server net registrations start");
-            registerMessage(MessageCPUStartHandler.class,
-                    MessageCPUStartClient.class, requestDiscriminationID());
             mod().log.trace("server net registrations end");
         }
 

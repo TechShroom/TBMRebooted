@@ -8,11 +8,6 @@ import com.techshroom.mods.tbm.block.TBMCargo;
 import com.techshroom.mods.tbm.block.TBMDrill;
 import com.techshroom.mods.tbm.block.TBMEject;
 import com.techshroom.mods.tbm.block.TBMEngine;
-import com.techshroom.mods.tbm.block.tile.TBMCPUTile;
-import com.techshroom.mods.tbm.block.tile.TBMCargoTile;
-import com.techshroom.mods.tbm.block.tile.TBMDrillTile;
-import com.techshroom.mods.tbm.block.tile.TBMEjectTile;
-import com.techshroom.mods.tbm.block.tile.TBMEngineTile;
 import com.techshroom.mods.tbm.entity.TBMCPUEntity;
 import com.techshroom.mods.tbm.entity.TBMCargoEntity;
 import com.techshroom.mods.tbm.entity.TBMDrillEntity;
@@ -73,13 +68,15 @@ public class TBMProxy {
     }
 
     private void blockData() {
-        registerBlock(TBMKeys.Blocks.DRILL, new TBMDrill(), TBMDrillTile.class);
-        registerBlock(TBMKeys.Blocks.EJECTOR, new TBMEject(),
-                TBMEjectTile.class);
-        registerBlock(TBMKeys.Blocks.CARGO, new TBMCargo(), TBMCargoTile.class);
-        registerBlock(TBMKeys.Blocks.ENGINE, new TBMEngine(),
-                TBMEngineTile.class);
-        registerBlock(TBMKeys.Blocks.CPU, new TBMCPU(), TBMCPUTile.class);
+        registerBlock(TBMKeys.Blocks.DRILL, new TBMDrill());
+        registerBlock(TBMKeys.Blocks.EJECTOR, new TBMEject());
+        registerBlock(TBMKeys.Blocks.CARGO, new TBMCargo());
+        registerBlock(TBMKeys.Blocks.ENGINE, new TBMEngine());
+        registerBlock(TBMKeys.Blocks.CPU, new TBMCPU());
+    }
+
+    private void registerBlock(Key<Block> storeName, Block b) {
+        registerBlock(storeName, b, null);
     }
 
     private void registerBlock(Key<Block> storeName, Block b,

@@ -1,8 +1,9 @@
-package com.techshroom.mods.tbm.block.tile;
+package com.techshroom.mods.tbm.gui;
 
 import net.minecraft.inventory.Container;
 
 public interface IContainerProvider {
+
     static final IContainerProvider NULL = new IContainerProvider() {
 
         @Override

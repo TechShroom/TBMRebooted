@@ -3,21 +3,24 @@ package com.techshroom.mods.tbm.entity;
 import static com.techshroom.mods.tbm.TBMMod.store;
 
 import com.techshroom.mods.tbm.TBMKeys;
-import com.techshroom.mods.tbm.block.tile.TBMEjectTile;
 
 import net.minecraft.block.Block;
-import net.minecraft.inventory.Container;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 
-public class TBMEjectEntity
-        extends TBMEntity<Container, TBMEjectTile, TBMEjectEntity> {
+public class TBMEjectEntity extends TBMEntity {
 
-    public TBMEjectEntity(World p_i1582_1_) {
-        super(p_i1582_1_);
+    public TBMEjectEntity(World w) {
+        super(w);
     }
 
     @Override
     public Block blockBase() {
         return store.get(TBMKeys.Blocks.EJECTOR).get();
     }
+
+    @Override
+    public void onMoveToBlock(BlockPos pos) {
+    }
+
 }

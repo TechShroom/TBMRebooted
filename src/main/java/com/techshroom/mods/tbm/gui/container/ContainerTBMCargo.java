@@ -5,6 +5,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
 
 public class ContainerTBMCargo extends ContainerExt {
+
     public ContainerTBMCargo(IInventory inventory, InventoryPlayer playerInv) {
         super(inventory, playerInv.player);
         this.withBalancedSlots().withPlayerInventory(playerInv);

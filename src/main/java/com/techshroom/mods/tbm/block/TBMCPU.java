@@ -1,27 +1,24 @@
 package com.techshroom.mods.tbm.block;
 
-import com.techshroom.mods.tbm.block.tile.TBMCPUTile;
+import com.techshroom.mods.tbm.entity.TBMCPUEntity;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
-public class TBMCPU extends TBMBlockContainer<TBMCPUTile> {
+public class TBMCPU extends TBMBlockBase {
 
     public TBMCPU() {
         super("cpu", "cpu-tex");
     }
 
     @Override
-    protected TBMCPUTile g_createNewTileEntity(World w, int meta) {
-        return new TBMCPUTile();
+    public Entity spawnEntity(World world, BlockPos pos, IBlockState state) {
+        TBMCPUEntity entity = new TBMCPUEntity(world);
+        world.spawnEntityInWorld(entity);
+        entity.moveToBlockPosAndAngles(pos, 0, 0);
+        return entity;
     }
 
-    @Override
-    protected boolean onBlockActivated(World w, BlockPos pos, EntityPlayer p,
-            EnumFacing side, TBMCPUTile tile) {
-        tile.fireGUIOpenRequest(p);
-        return true;
-    }
 }

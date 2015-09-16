@@ -24,7 +24,8 @@ public class ItemBase extends Item {
 
     protected void addVariants(int... meta) {
         if (!this.hasSubtypes) {
-            throw new IllegalStateException("there's no metadata in your item!");
+            throw new IllegalStateException(
+                    "there's no metadata in your item!");
         }
         String[] var = new String[meta.length];
         for (int i = 0; i < meta.length; i++) {

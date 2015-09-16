@@ -6,9 +6,6 @@ import static com.techshroom.mods.tbm.Tutils.throwing;
 
 import java.util.List;
 
-import com.techshroom.mods.tbm.block.tile.IContainerProvider;
-import com.techshroom.mods.tbm.block.tile.IGuiProvider;
-import com.techshroom.mods.tbm.block.tile.IPlayerContainerProvider;
 import com.techshroom.mods.tbm.entity.TBMEntity;
 
 import net.minecraft.client.gui.GuiScreen;
