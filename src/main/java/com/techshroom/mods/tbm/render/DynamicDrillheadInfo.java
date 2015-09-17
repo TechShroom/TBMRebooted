@@ -31,6 +31,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 
@@ -67,8 +68,18 @@ public abstract class DynamicDrillheadInfo {
         private static ItemMetaReference deserialize(String string)
                 throws NBTException {
             NBTTagCompound tag = JsonToNBT.getTagFromJson(string);
-            return of(Item.getByNameOrId(tag.getString("item")),
-                    tag.getInteger("meta"));
+            String item = tag.getString("item");
+            try {
+                return of(Item.getByNameOrId(item), tag.getInteger("meta"));
+            } catch (NullPointerException npe) {
+                if (npe.getMessage().equals("Null item")) {
+                    NullPointerException msg =
+                            new NullPointerException("Null item " + item);
+                    msg.setStackTrace(npe.getStackTrace());
+                    throw msg;
+                }
+                throw npe;
+            }
         }
 
         ItemMetaReference() {
@@ -84,7 +95,10 @@ public abstract class DynamicDrillheadInfo {
 
         private String serialize() {
             NBTTagCompound tag = new NBTTagCompound();
-            tag.setString("item", getItem().getUnlocalizedName());
+            tag.setString("item",
+                    Optional.ofNullable((ResourceLocation) Item.itemRegistry
+                            .getNameForObject(getItem()))
+                    .map(ResourceLocation::toString).orElse("minecraft:air"));
             tag.setInteger("meta", getMetadata());
             return tag.toString();
         }
@@ -96,12 +110,12 @@ public abstract class DynamicDrillheadInfo {
 
     }
 
-    private static final Configuration CONFIGURATION =
-            new Configuration(store.get(TBMKeys.CONFIG_DIR).get()
-                    .resolve(mod().id() + "DrillheadConfig.cfg").toFile());
-    private static final Property DRILLHEADS_PROP;
+    private static Configuration CONFIGURATION;
+    private static Property DRILLHEADS_PROP;
 
-    static {
+    public static final void doInitializationThatForgeScrewsOver() {
+        CONFIGURATION = new Configuration(store.get(TBMKeys.CONFIG_DIR).get()
+                .resolve(mod().id() + "DrillheadConfig.cfg").toFile());
         CONFIGURATION.load();
         Property prop = CONFIGURATION.get("items", "drillhead",
                 EmptyArrays.EMPTY_STRINGS);
@@ -111,6 +125,16 @@ public abstract class DynamicDrillheadInfo {
                 + " [default: default + dynamically discovered drillheads]";
         DRILLHEADS_PROP = prop;
         CONFIGURATION.save();
+        addDrillhead(ItemMetaReference.of(Items.wooden_pickaxe),
+                ItemMetaReference.of(Blocks.planks), 0x9c6000);
+        addDrillhead(ItemMetaReference.of(Items.iron_pickaxe),
+                ItemMetaReference.of(Items.iron_ingot), 0xdbdbdb);
+        addDrillhead(ItemMetaReference.of(Items.diamond_pickaxe),
+                ItemMetaReference.of(Items.diamond), 0x00fff2);
+        addConfigDrillheads();
+        discoverDynamicDrillheads();
+        saveConfigDrillheads();
+        locked = true;
     }
 
     private static final Set<DynamicDrillheadInfo> allDrillheads =
@@ -152,6 +176,7 @@ public abstract class DynamicDrillheadInfo {
         metadataToDrill.put(meta, info);
         pickaxeToDrill.put(pickaxe, info);
         componentToDrill.put(component, info);
+        mod().log.debug("Added DDI " + info);
         return info;
     }
 
@@ -214,20 +239,6 @@ public abstract class DynamicDrillheadInfo {
 
     private static void discoverDynamicDrillheads() {
         // TODO
-    }
-
-    static {
-        // planks=0x9c6000 iron=0xdbdbdb diamond=0x00fff2
-        addDrillhead(ItemMetaReference.of(Items.wooden_pickaxe),
-                ItemMetaReference.of(Blocks.planks), 0x9c6000);
-        addDrillhead(ItemMetaReference.of(Items.iron_pickaxe),
-                ItemMetaReference.of(Items.iron_ingot), 0xdbdbdb);
-        addDrillhead(ItemMetaReference.of(Items.diamond_pickaxe),
-                ItemMetaReference.of(Items.diamond), 0x00fff2);
-        addConfigDrillheads();
-        discoverDynamicDrillheads();
-        saveConfigDrillheads();
-        locked = true;
     }
 
     public static int getMaximumMeta() {

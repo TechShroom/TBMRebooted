@@ -50,7 +50,7 @@
             <AppenderRef ref="File" />
             <AppenderRef ref="ServerGuiConsole" level="INFO" />
         </Logger>
-        <Logger level="ALL" name="TBMMod" additivity="false">
+        <Logger level="ALL" name="tbmmod" additivity="false">
             <AppenderRef ref="SysOut" level="ALL" />
             <AppenderRef ref="File" />
             <AppenderRef ref="ServerGuiConsole" level="ALL" />

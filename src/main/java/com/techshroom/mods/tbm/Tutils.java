@@ -18,11 +18,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
 import com.techshroom.mods.tbm.block.TBMBlockBase;
 
@@ -48,7 +48,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumFacing.Axis;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
@@ -72,6 +71,10 @@ public final class Tutils {
                 }
             }
 
+            /**
+             * @deprecated what's this for
+             */
+            @Deprecated
             public static void drawBlockAsEntity(Block b, World w, double x,
                     double y, double z) {
                 WorldRenderer wrender = new WorldRenderer(1024);
@@ -96,7 +99,7 @@ public final class Tutils {
             }
 
             public static double scalePixelToBlock(double pixel) {
-                return pixel / 16f;
+                return pixel / 16d;
             }
 
             public static float scalePixelToBlock(float pixel) {
@@ -422,6 +425,10 @@ public final class Tutils {
 
     public static final class Time {
 
+        /**
+         * @deprecated {@link TimeUnit}
+         */
+        @Deprecated
         public static int minutesAsSeconds(int minutes) {
             return minutes * 60;
         }
@@ -503,14 +510,7 @@ public final class Tutils {
     private static final PropertyDirection FACING =
             PropertyDirection.create("facing");
     private static final PropertyDirection FACING_FILTERED =
-            PropertyDirection.create("facing", new Predicate<EnumFacing>() {
-
-                @Override
-                public boolean apply(EnumFacing input) {
-                    return input.getAxis() != Axis.Y;
-                }
-
-            });
+            PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
 
     private static BlockState getOrCreateSideState(TBMBlockBase block) {
         if (!SIDE_STATE.containsKey(block)) {
@@ -526,6 +526,10 @@ public final class Tutils {
         }
         return SIDE_STATE_NO_Y_AXIS.get(block);
     }
+    
+    public static BlockState getSideBlockState(TBMBlockBase block) {
+        return getOrCreateSideState(block);
+    }
 
     public static IBlockState getSideBaseState(TBMBlockBase block) {
         return getOrCreateSideState(block).getBaseState();
@@ -536,9 +540,13 @@ public final class Tutils {
         return getOrCreateSideState(block).getBaseState().withProperty(FACING,
                 EnumFacing.getFront(getSideByEntityRotation(pos, entity)));
     }
+    
+    public static BlockState getSideBlockNoYAxisState(TBMBlockBase block) {
+        return getOrCreateSideStateNoYAxis(block);
+    }
 
     public static IBlockState getSideBaseNoYAxisState(TBMBlockBase block) {
-        return getOrCreateSideState(block).getBaseState();
+        return getOrCreateSideStateNoYAxis(block).getBaseState();
     }
 
     public static IBlockState createStateForSideByEntityRotationNoYAxis(

@@ -10,13 +10,13 @@ public class TBMCProxy extends TBMProxy {
 
     @Override
     protected void subpreinit() {
-        RenderingRegistry.registerEntityRenderingHandler(TBMEntity.class,
-                new TBMAllBlockRender(
-                        Minecraft.getMinecraft().getRenderManager()));
     }
 
     @Override
     protected void subinit() {
+        RenderingRegistry.registerEntityRenderingHandler(TBMEntity.class,
+                new TBMAllBlockRender(
+                        Minecraft.getMinecraft().getRenderManager()));
     }
 
     @Override

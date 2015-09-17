@@ -15,6 +15,7 @@ import com.techshroom.mods.tbm.entity.TBMEjectEntity;
 import com.techshroom.mods.tbm.entity.TBMEngineEntity;
 import com.techshroom.mods.tbm.gui.GuiHandler;
 import com.techshroom.mods.tbm.item.ItemDrillHead;
+import com.techshroom.mods.tbm.render.DynamicDrillheadInfo;
 import com.techshroom.mods.tbm.util.Storage.Key;
 
 import net.minecraft.block.Block;
@@ -31,7 +32,10 @@ public class TBMProxy {
     protected Configuration conf;
 
     public final void preinit(FMLPreInitializationEvent event) {
+        store.put(TBMKeys.CONFIG_DIR,
+                event.getModConfigurationDirectory().toPath().toAbsolutePath());
         NetworkRegistry.INSTANCE.registerGuiHandler(mod(), new GuiHandler());
+        DynamicDrillheadInfo.doInitializationThatForgeScrewsOver();
         blockData();
         itemData();
         entityData();

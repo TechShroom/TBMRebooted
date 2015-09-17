@@ -81,8 +81,6 @@ public final class TBMMod {
         this.log = e.getModLog();
         this.log.entry(e);
         store.put(TBMKeys.LOGGER, this.log);
-        store.put(TBMKeys.CONFIG_DIR,
-                e.getModConfigurationDirectory().toPath().toAbsolutePath());
         if (PROX.isClient()) {
             netmanager = new Client();
         } else {

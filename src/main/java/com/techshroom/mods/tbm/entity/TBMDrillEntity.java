@@ -1,5 +1,6 @@
 package com.techshroom.mods.tbm.entity;
 
+import static com.techshroom.mods.tbm.TBMMod.mod;
 import static com.techshroom.mods.tbm.TBMMod.store;
 
 import com.techshroom.mods.tbm.TBMKeys;
@@ -33,7 +34,7 @@ public class TBMDrillEntity extends TBMFullGuiEntity<ContainerTBMDrill> {
                 ? FakePlayerFactory.getMinecraft((WorldServer) w) : null;
         if (this.fakery != null) {
             this.fakery.inventory.currentItem = 0;
-            this.fakery.setGameType(GameType.SURVIVAL);
+            this.fakery.theItemInWorldManager.setGameType(GameType.SURVIVAL);
             this.fakery.setPosition(0, Double.POSITIVE_INFINITY, 0);
         }
     }
@@ -57,6 +58,12 @@ public class TBMDrillEntity extends TBMFullGuiEntity<ContainerTBMDrill> {
                             .get().getPickaxe().convertToItemStack(3));
         }
         super.setInventorySlotContents(index, stack);
+    }
+    
+    @Override
+    public void onEntityUpdate() {
+        super.onEntityUpdate();
+        mod().log.trace("ALL YOUR ENTITY ARE HERE " + toString());
     }
 
     private void damageTools(int amt) {
