@@ -399,12 +399,17 @@ public final class Tutils {
         }
     }
 
-    public static final class MetadataConstants {
+    public static final class SetBlockFlag {
 
-        public static final int UPDATE = 1, SEND = 2, DONTRERENDER = 2;
+        public static final int UPDATE = 1, SEND = 2, DONT_RE_RENDER = 2;
         public static final int UPDATE_AND_SEND = UPDATE | SEND;
+        public static final int SEND_AND_DONT_RE_RENDER = SEND | DONT_RE_RENDER;
+        public static final int UPDATE_AND_DONT_RE_RENDER =
+                UPDATE | DONT_RE_RENDER;
+        public static final int UPDATE_SEND_AND_DONT_RE_RENDER =
+                UPDATE | SEND | DONT_RE_RENDER;
 
-        private MetadataConstants() {
+        private SetBlockFlag() {
             throw new AssertionError("Nope.");
         }
     }
@@ -507,14 +512,14 @@ public final class Tutils {
             Maps.newHashMap();
     private static final Map<TBMBlockBase, BlockState> SIDE_STATE_NO_Y_AXIS =
             Maps.newHashMap();
-    private static final PropertyDirection FACING =
+    public static final PropertyDirection PROP_FACING =
             PropertyDirection.create("facing");
-    private static final PropertyDirection FACING_FILTERED =
+    public static final PropertyDirection PROP_FACING_HORIZ =
             PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
 
     private static BlockState getOrCreateSideState(TBMBlockBase block) {
         if (!SIDE_STATE.containsKey(block)) {
-            SIDE_STATE.put(block, new BlockState(block, FACING));
+            SIDE_STATE.put(block, new BlockState(block, PROP_FACING));
         }
         return SIDE_STATE.get(block);
     }
@@ -522,11 +527,11 @@ public final class Tutils {
     private static BlockState getOrCreateSideStateNoYAxis(TBMBlockBase block) {
         if (!SIDE_STATE_NO_Y_AXIS.containsKey(block)) {
             SIDE_STATE_NO_Y_AXIS.put(block,
-                    new BlockState(block, FACING_FILTERED));
+                    new BlockState(block, PROP_FACING_HORIZ));
         }
         return SIDE_STATE_NO_Y_AXIS.get(block);
     }
-    
+
     public static BlockState getSideBlockState(TBMBlockBase block) {
         return getOrCreateSideState(block);
     }
@@ -537,10 +542,11 @@ public final class Tutils {
 
     public static IBlockState createStateForSideByEntityRotation(
             TBMBlockBase block, BlockPos pos, EntityLivingBase entity) {
-        return getOrCreateSideState(block).getBaseState().withProperty(FACING,
+        return getOrCreateSideState(block).getBaseState().withProperty(
+                PROP_FACING,
                 EnumFacing.getFront(getSideByEntityRotation(pos, entity)));
     }
-    
+
     public static BlockState getSideBlockNoYAxisState(TBMBlockBase block) {
         return getOrCreateSideStateNoYAxis(block);
     }
@@ -552,7 +558,7 @@ public final class Tutils {
     public static IBlockState createStateForSideByEntityRotationNoYAxis(
             TBMBlockBase block, BlockPos pos, EntityLivingBase entity) {
         return getOrCreateSideStateNoYAxis(block).getBaseState().withProperty(
-                FACING_FILTERED,
+                PROP_FACING_HORIZ,
                 EnumFacing.getFront(getSideByEntityRotationNoYAxis(entity)));
     }
 

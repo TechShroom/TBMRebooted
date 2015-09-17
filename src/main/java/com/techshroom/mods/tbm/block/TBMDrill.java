@@ -1,7 +1,7 @@
 package com.techshroom.mods.tbm.block;
 
 import com.techshroom.mods.tbm.Tutils;
-import com.techshroom.mods.tbm.Tutils.MetadataConstants;
+import com.techshroom.mods.tbm.Tutils.SetBlockFlag;
 import com.techshroom.mods.tbm.entity.TBMDrillEntity;
 
 import net.minecraft.block.state.IBlockState;
@@ -30,7 +30,7 @@ public class TBMDrill extends TBMBlockBase {
             EntityLivingBase ent, ItemStack stack) {
         w.setBlockState(pos,
                 Tutils.createStateForSideByEntityRotation(this, pos, ent),
-                MetadataConstants.SEND);
+                SetBlockFlag.SEND);
         super.onBlockPlacedBy(w, pos, w.getBlockState(pos), ent, stack);
     }
 

@@ -13,6 +13,7 @@ import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
 import com.techshroom.mods.tbm.TBMKeys;
+import com.techshroom.mods.tbm.Tutils;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -26,6 +27,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
 public abstract class TBMBlockBase extends Block {
@@ -101,7 +103,15 @@ public abstract class TBMBlockBase extends Block {
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state,
             EntityLivingBase placer, ItemStack stack) {
         if (this.facingStyle != FacingStyle.NONE) {
-            worldIn.setBlockState(pos, placer.getHorizontalFacing(), flags)
+            EnumFacing facing = null;
+            if (this.facingStyle == FacingStyle.ALL) {
+            }
+            if (this.facingStyle == FacingStyle.HORIZONTAL) {
+            }
+            worldIn.setBlockState(pos,
+                    createBlockState().getBaseState()
+                            .withProperty(Tutils.PROP_FACING, facing),
+                    Tutils.SetBlockFlag.SEND);
         }
         try {
             Entity spawned = spawnEntity(worldIn, pos, state);
