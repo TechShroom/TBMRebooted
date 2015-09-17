@@ -15,6 +15,7 @@ public class TBMDrill extends TBMBlockBase {
 
     public TBMDrill() {
         super("drill", "drill-tex");
+        setFacingStyle(FacingStyle.ALL);
     }
 
     @Override

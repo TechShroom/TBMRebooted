@@ -27,6 +27,7 @@ import com.google.common.collect.Maps;
 import com.techshroom.mods.tbm.block.TBMBlockBase;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockPistonBase;
 import net.minecraft.block.BlockSourceImpl;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockState;
@@ -542,9 +543,8 @@ public final class Tutils {
 
     public static IBlockState createStateForSideByEntityRotation(
             TBMBlockBase block, BlockPos pos, EntityLivingBase entity) {
-        return getOrCreateSideState(block).getBaseState().withProperty(
-                PROP_FACING,
-                EnumFacing.getFront(getSideByEntityRotation(pos, entity)));
+        return getOrCreateSideState(block).getBaseState()
+                .withProperty(PROP_FACING, getFacing(pos, entity));
     }
 
     public static BlockState getSideBlockNoYAxisState(TBMBlockBase block) {
@@ -557,11 +557,20 @@ public final class Tutils {
 
     public static IBlockState createStateForSideByEntityRotationNoYAxis(
             TBMBlockBase block, BlockPos pos, EntityLivingBase entity) {
-        return getOrCreateSideStateNoYAxis(block).getBaseState().withProperty(
-                PROP_FACING_HORIZ,
-                EnumFacing.getFront(getSideByEntityRotationNoYAxis(entity)));
+        return getOrCreateSideStateNoYAxis(block).getBaseState()
+                .withProperty(PROP_FACING_HORIZ, getHorizontalFacing(entity));
     }
 
+    public static EnumFacing getFacing(BlockPos pos, EntityLivingBase entity) {
+        return BlockPistonBase.getFacingFromEntity(entity.worldObj, pos,
+                entity);
+    }
+
+    public static EnumFacing getHorizontalFacing(EntityLivingBase entity) {
+        return entity.getHorizontalFacing();
+    }
+
+    @SuppressWarnings("unused")
     private static int getSideByEntityRotation(BlockPos pos,
             EntityLivingBase entity) {
         if (MathHelper.abs((float) entity.posX - (float) pos.getX()) < 2.0F
