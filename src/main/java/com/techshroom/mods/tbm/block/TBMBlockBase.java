@@ -6,9 +6,13 @@ import static com.techshroom.mods.tbm.Tutils.getSideBaseNoYAxisState;
 import static com.techshroom.mods.tbm.Tutils.getSideBaseState;
 import static com.techshroom.mods.tbm.Tutils.getSideBlockNoYAxisState;
 import static com.techshroom.mods.tbm.Tutils.getSideBlockState;
+import static com.techshroom.mods.tbm.Tutils.isClient;
+
+import java.util.List;
 
 import com.techshroom.mods.tbm.TBMKeys;
 import com.techshroom.mods.tbm.Tutils;
+import com.techshroom.mods.tbm.entity.TBMEntity;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -19,6 +23,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumFacing;
@@ -128,8 +133,9 @@ public abstract class TBMBlockBase extends Block {
                     .withProperty(prop, facing), Tutils.SetBlockFlag.SEND);
         }
         try {
-            Entity spawned = spawnEntity(worldIn, pos, state);
-            if (spawned == null) {
+            Entity spawned =
+                    spawnEntity(worldIn, pos, worldIn.getBlockState(pos));
+            if (spawned == null && !isClient(worldIn)) {
                 throw new NullPointerException();
             }
         } catch (Exception e) {
@@ -141,7 +147,24 @@ public abstract class TBMBlockBase extends Block {
             }
             e.printStackTrace();
         }
-        worldIn.setBlockToAir(pos);
+        // worldIn.setBlockToAir(pos);
+    }
+
+    @Override
+    public void onBlockDestroyedByPlayer(World world, BlockPos pos,
+            IBlockState state) {
+        List<?> entitiesWithinAABB =
+                world.getEntitiesWithinAABB(TBMEntity.class, aabbFromPos(pos));
+        if (entitiesWithinAABB.isEmpty()) {
+            return;
+        }
+        TBMEntity linked = (TBMEntity) entitiesWithinAABB.get(0);
+        linked.setDead();
+    }
+
+    private AxisAlignedBB aabbFromPos(BlockPos pos) {
+        return new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(),
+                pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D);
     }
 
     public abstract Entity spawnEntity(World world, BlockPos pos,

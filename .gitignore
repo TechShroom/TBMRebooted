@@ -65,4 +65,10 @@ white-list.txt.converted
 whitelist.json
 world-20140811-075700.zip
 .cache
+# wtf????
 /.apt_generated/
+/forgeSrc/
+*.launch
+.factorypath
+
+

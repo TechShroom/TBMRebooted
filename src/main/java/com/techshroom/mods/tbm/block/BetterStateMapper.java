@@ -16,9 +16,9 @@ public class BetterStateMapper extends StateMapperBase {
 
     @Override
     protected ModelResourceLocation
-            getModelResourceLocation(IBlockState p_178132_1_) {
+            getModelResourceLocation(IBlockState state) {
         return new ModelResourceLocation(addressMod(this.mrlId),
-                this.getPropertyString(p_178132_1_.getProperties()));
+                this.getPropertyString(state.getProperties()));
     }
 
 }

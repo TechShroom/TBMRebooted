@@ -1,5 +1,7 @@
 package com.techshroom.mods.tbm.block;
 
+import static com.techshroom.mods.tbm.Tutils.isClient;
+
 import com.techshroom.mods.tbm.Tutils;
 import com.techshroom.mods.tbm.Tutils.SetBlockFlag;
 import com.techshroom.mods.tbm.entity.TBMDrillEntity;
@@ -20,9 +22,12 @@ public class TBMDrill extends TBMBlockBase {
 
     @Override
     public Entity spawnEntity(World world, BlockPos pos, IBlockState state) {
-        TBMDrillEntity entity = new TBMDrillEntity(world);
-        world.spawnEntityInWorld(entity);
+        if (isClient(world)) {
+            return null;
+        }
+        TBMDrillEntity entity = new TBMDrillEntity(world, state);
         entity.moveToBlockPosAndAngles(pos, 0, 0);
+        world.spawnEntityInWorld(entity);
         return entity;
     }
 

@@ -1,7 +1,7 @@
 {
     "variants": {
-        "facing=down":  { "model": "tbmmod:drill", "x": 180 },
-        "facing=up":    { "model": "tbmmod:drill", "z": 90},
+        "facing=down":  { "model": "tbmmod:drill_vertical", "x": 180 },
+        "facing=up":    { "model": "tbmmod:drill_vertical" },
         "facing=north": { "model": "tbmmod:drill" },
         "facing=south": { "model": "tbmmod:drill", "y": 180 },
         "facing=west":  { "model": "tbmmod:drill", "y": 270 },

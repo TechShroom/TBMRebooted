@@ -6,7 +6,7 @@ import com.techshroom.mods.tbm.TBMKeys;
 import com.techshroom.mods.tbm.gui.GuiTBMEngine;
 import com.techshroom.mods.tbm.gui.container.ContainerTBMEngine;
 
-import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -17,9 +17,14 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 
 public class TBMEngineEntity extends TBMFullGuiEntity<ContainerTBMEngine> {
-
+    
     public TBMEngineEntity(World w) {
-        super(w, TBMKeys.GuiId.ENGINE, new InventoryBasic("Engine", false, 9));
+        this(w, store.get(TBMKeys.Blocks.ENGINE).get().getDefaultState());
+    }
+
+    public TBMEngineEntity(World w, IBlockState state) {
+        super(w, state, TBMKeys.GuiId.ENGINE,
+                new InventoryBasic("Engine", false, 9));
     }
 
     @Override
@@ -30,11 +35,6 @@ public class TBMEngineEntity extends TBMFullGuiEntity<ContainerTBMEngine> {
 
     private boolean isFuel(ItemStack item) {
         return TileEntityFurnace.isItemFuel(item);
-    }
-
-    @Override
-    public Block blockBase() {
-        return store.get(TBMKeys.Blocks.ENGINE).get();
     }
 
     @Override

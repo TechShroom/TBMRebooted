@@ -6,7 +6,6 @@ import com.techshroom.mods.tbm.TBMKeys;
 import com.techshroom.mods.tbm.gui.GuiTBMCPU;
 import com.techshroom.mods.tbm.gui.container.ContainerTBMCPU;
 
-import net.minecraft.block.Block;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -15,13 +14,8 @@ import net.minecraft.world.World;
 
 public class TBMCPUEntity extends TBMGuiEntity<ContainerTBMCPU> {
 
-    public TBMCPUEntity(World p_i1582_1_) {
-        super(p_i1582_1_);
-    }
-
-    @Override
-    public Block blockBase() {
-        return store.get(TBMKeys.Blocks.CPU).get();
+    public TBMCPUEntity(World w) {
+        super(w, store.get(TBMKeys.Blocks.CPU).get().getDefaultState());
     }
 
     @Override

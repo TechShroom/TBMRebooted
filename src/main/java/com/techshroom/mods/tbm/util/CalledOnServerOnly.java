@@ -12,7 +12,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * Like {@link SideOnly} + {@link Side#SERVER}, except not stripped on the
  * client...
  */
-@Retention(RetentionPolicy.SOURCE)
-@Target({ ElementType.METHOD, ElementType.TYPE })
+@Retention(RetentionPolicy.CLASS)
+@Target(ElementType.METHOD)
 public @interface CalledOnServerOnly {
 }

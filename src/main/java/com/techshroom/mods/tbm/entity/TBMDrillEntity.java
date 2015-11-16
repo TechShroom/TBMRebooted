@@ -1,6 +1,5 @@
 package com.techshroom.mods.tbm.entity;
 
-import static com.techshroom.mods.tbm.TBMMod.mod;
 import static com.techshroom.mods.tbm.TBMMod.store;
 
 import com.techshroom.mods.tbm.TBMKeys;
@@ -8,7 +7,6 @@ import com.techshroom.mods.tbm.gui.GuiTBMDrill;
 import com.techshroom.mods.tbm.gui.container.ContainerTBMDrill;
 import com.techshroom.mods.tbm.render.DynamicDrillheadInfo;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
@@ -29,7 +27,12 @@ public class TBMDrillEntity extends TBMFullGuiEntity<ContainerTBMDrill> {
     private final FakePlayer fakery;
 
     public TBMDrillEntity(World w) {
-        super(w, TBMKeys.GuiId.DRILL, new InventoryBasic("Drill", false, 1));
+        this(w, store.get(TBMKeys.Blocks.DRILL).get().getDefaultState());
+    }
+
+    public TBMDrillEntity(World w, IBlockState state) {
+        super(w, state, TBMKeys.GuiId.DRILL,
+                new InventoryBasic("Drill", false, 1));
         this.fakery = (w instanceof WorldServer)
                 ? FakePlayerFactory.getMinecraft((WorldServer) w) : null;
         if (this.fakery != null) {
@@ -37,11 +40,6 @@ public class TBMDrillEntity extends TBMFullGuiEntity<ContainerTBMDrill> {
             this.fakery.theItemInWorldManager.setGameType(GameType.SURVIVAL);
             this.fakery.setPosition(0, Double.POSITIVE_INFINITY, 0);
         }
-    }
-
-    @Override
-    public Block blockBase() {
-        return store.get(TBMKeys.Blocks.DRILL).get();
     }
 
     @Override
@@ -53,29 +51,38 @@ public class TBMDrillEntity extends TBMFullGuiEntity<ContainerTBMDrill> {
     @Override
     public void setInventorySlotContents(int index, ItemStack stack) {
         if (this.fakery != null) {
-            this.fakery.inventory.setInventorySlotContents(0,
-                    DynamicDrillheadInfo.lookupByMeta(stack.getItemDamage())
-                            .get().getPickaxe().convertToItemStack(3));
+            if (stack == null) {
+                this.fakery.inventory.setInventorySlotContents(0, null);
+            } else {
+                this.fakery.inventory.setInventorySlotContents(0,
+                        DynamicDrillheadInfo.lookupByMeta(stack.getItemDamage())
+                                .get().getPickaxe().convertToItemStack(3));
+            }
         }
         super.setInventorySlotContents(index, stack);
     }
-    
+
     @Override
     public void onEntityUpdate() {
         super.onEntityUpdate();
-        mod().log.trace("ALL YOUR ENTITY ARE HERE " + toString());
+        // mod().log.trace("ALL YOUR ENTITY ARE HERE " + toString());
     }
 
-    private void damageTools(int amt) {
+    private boolean damageTools(int amt) {
         if (this.fakery != null) {
             InventoryPlayer inventory = this.fakery.inventory;
             for (int i = 0; i < amt; i++) {
+                if (inventory.getCurrentItem() == null) {
+                    // nope
+                    return false;
+                }
                 if (inventory.getCurrentItem().attemptDamageItem(1,
                         this.rand)) {
                     inventory.decrStackSize(inventory.currentItem, 1);
                 }
             }
         }
+        return true;
     }
 
     @Override
@@ -91,13 +98,21 @@ public class TBMDrillEntity extends TBMFullGuiEntity<ContainerTBMDrill> {
     @Override
     public void onMoveToBlock(BlockPos pos) {
         if (doHarvestBlock(pos)) {
-            damageTools(1);
+            // don't need to dmg right now
+            // damageTools(1);
         }
     }
 
     // ItemInWorldManager.tryHarvestBlock except with no sounds/xp
     // (at least, no xp now *wink*)
+    /**
+     * @return true if full harvest completed
+     */
     private boolean doHarvestBlock(BlockPos pos) {
+        if (this.fakery.getCurrentEquippedItem() == null) {
+            // no tool. plz.
+            return false;
+        }
         int exp = net.minecraftforge.common.ForgeHooks.onBlockBreakEvent(
                 this.worldObj, GameType.SURVIVAL, this.fakery, pos);
         if (exp == -1) {

@@ -7,6 +7,7 @@ import com.techshroom.mods.tbm.gui.IGuiProvider;
 import com.techshroom.mods.tbm.gui.IPlayerContainerProvider;
 
 import codechicken.lib.math.MathHelper;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.world.World;
@@ -14,8 +15,8 @@ import net.minecraft.world.World;
 public abstract class TBMGuiEntity<C extends Container> extends TBMEntity
         implements IGuiProvider<C>, IPlayerContainerProvider {
 
-    protected TBMGuiEntity(World w) {
-        super(w);
+    protected TBMGuiEntity(World w, IBlockState state) {
+        super(w, state);
     }
 
     public abstract int getGuiId();

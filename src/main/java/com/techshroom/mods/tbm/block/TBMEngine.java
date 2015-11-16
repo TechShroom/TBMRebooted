@@ -15,7 +15,7 @@ public class TBMEngine extends TBMBlockBase {
 
     @Override
     public Entity spawnEntity(World world, BlockPos pos, IBlockState state) {
-        TBMEngineEntity entity = new TBMEngineEntity(world);
+        TBMEngineEntity entity = new TBMEngineEntity(world, state);
         world.spawnEntityInWorld(entity);
         entity.moveToBlockPosAndAngles(pos, 0, 0);
         return entity;

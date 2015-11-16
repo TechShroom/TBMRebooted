@@ -15,7 +15,7 @@ public class TBMCargo extends TBMBlockBase {
 
     @Override
     public Entity spawnEntity(World world, BlockPos pos, IBlockState state) {
-        TBMCargoEntity entity = new TBMCargoEntity(world);
+        TBMCargoEntity entity = new TBMCargoEntity(world, state);
         world.spawnEntityInWorld(entity);
         entity.moveToBlockPosAndAngles(pos, 0, 0);
         return entity;

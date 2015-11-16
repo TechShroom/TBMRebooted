@@ -34,11 +34,11 @@ public abstract class GenericRender<T extends Entity> extends Render {
      *            - z on screen
      * @param yaw
      *            - probably the yaw, not sure
-     * @param unknown
-     *            - no idea what this is, possibly partialTick?
+     * @param partialTicks
+     *            - partialTicks...? are something
      */
     public abstract void g_doRender(T entity, double xOnScreen,
-            double yOnScreen, double zOnScreen, float yaw, float unknown);
+            double yOnScreen, double zOnScreen, float yaw, float partialTicks);
 
     @Override
     protected final ResourceLocation getEntityTexture(Entity p_110775_1_) {

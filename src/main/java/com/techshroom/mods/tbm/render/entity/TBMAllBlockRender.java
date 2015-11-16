@@ -6,11 +6,9 @@ import com.techshroom.mods.tbm.block.TBMBlockBase;
 import com.techshroom.mods.tbm.entity.TBMEntity;
 
 import codechicken.lib.math.MathHelper;
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
-import net.minecraft.client.renderer.RegionRenderCacheBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -25,7 +23,6 @@ public class TBMAllBlockRender extends GenericRender<TBMEntity> {
         super(renderManager);
     }
 
-    private final RegionRenderCacheBuilder rrc = new RegionRenderCacheBuilder();
     private final BlockRendererDispatcher render =
             Minecraft.getMinecraft().getBlockRendererDispatcher();
 
@@ -33,8 +30,13 @@ public class TBMAllBlockRender extends GenericRender<TBMEntity> {
     public void g_doRender(TBMEntity entity, double renderOnScreenX,
             double renderOnScreenY, double renderOnScreenZ, float yaw,
             float unknown) {
-        if (entity.blockBase() == null) {
-            System.err.println("no block base for " + entity);
+        if (!entity.getMoving().hasMotion()) {
+            // if the entity is not moving, don't render it.
+            // the placed block will handle it
+            return;
+        }
+        if (entity.getState() == null) {
+            System.err.println("no block state for " + entity);
         } else {
             GL11.glPushMatrix();
             GL11.glTranslatef((float) renderOnScreenX, (float) renderOnScreenY,
@@ -45,8 +47,7 @@ public class TBMAllBlockRender extends GenericRender<TBMEntity> {
             int y = MathHelper.floor_double(entity.posY);
             int z = MathHelper.floor_double(entity.posZ);
 
-            // TODO meta might not be zero later
-            renderBlock(entity.blockBase(), entity.worldObj, x, y, z, 0,
+            renderBlock(entity.getState(), entity.worldObj, x, y, z,
                     entity.posX, entity.posY, entity.posZ);
 
             GL11.glEnable(GL11.GL_LIGHTING);
@@ -61,26 +62,25 @@ public class TBMAllBlockRender extends GenericRender<TBMEntity> {
         worldRendererIn.setTranslation(-x, -y, -z);
     }
 
-    private void postRenderBlocks(WorldRenderer worldRendererIn) {
-        worldRendererIn.finishDrawing();
+    private void postRenderBlocks(WorldRenderer worldRenderer) {
+        worldRenderer.setTranslation(0, 0, 0);
+        worldRenderer.reset();
     }
 
-    private void renderBlock(Block b, World w, int x, int y, int z, int meta,
+    private void renderBlock(IBlockState state, World w, int x, int y, int z,
             double dox, double doy, double doz) {
         BlockPos pos = new BlockPos(x, y, z);
-        if (!(b instanceof TBMBlockBase)) {
+        if (!(state.getBlock() instanceof TBMBlockBase)) {
             throw new IllegalStateException(
                     "Trying to render an entity with a non-tbm block! block="
-                            + b + ", location=" + pos);
+                            + state + ", location=" + pos);
         }
-        IBlockState state = b.getDefaultState();
         Tessellator t = Tessellator.getInstance();
         WorldRenderer worldRenderer = t.getWorldRenderer();
         preRenderBlocks(worldRenderer, dox, doy, doz);
         this.render.renderBlock(state, pos, w, worldRenderer);
-        t.draw();// postRenderBlocks(worldRenderer);
-        worldRenderer.setTranslation(0, 0, 0);
-        worldRenderer.reset();
+        t.draw();
+        postRenderBlocks(worldRenderer);
     }
 
     @Override

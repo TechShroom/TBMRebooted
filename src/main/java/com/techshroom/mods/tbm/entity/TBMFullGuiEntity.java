@@ -5,12 +5,15 @@ import static com.techshroom.mods.tbm.TBMMod.store;
 
 import java.util.function.Supplier;
 
+import com.techshroom.mods.tbm.inv.ExtendedInventoryUtils;
 import com.techshroom.mods.tbm.util.Storage.IntKey;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IChatComponent;
 import net.minecraft.world.World;
 
@@ -27,9 +30,9 @@ public abstract class TBMFullGuiEntity<C extends Container>
     private final transient Supplier<RuntimeException> noGuiIdException;
     protected final IInventory backingInv;
 
-    protected TBMFullGuiEntity(World w, IntKey guiIdKey,
+    protected TBMFullGuiEntity(World w, IBlockState state, IntKey guiIdKey,
             IInventory backingInv) {
-        super(w);
+        super(w, state);
         this.guiIdKey = checkNotNull(guiIdKey);
         this.backingInv = checkNotNull(backingInv);
         this.noGuiIdException = () -> new IllegalStateException("GUI ID key "
@@ -42,7 +45,23 @@ public abstract class TBMFullGuiEntity<C extends Container>
     }
 
     @Override
-    public String getCommandSenderName() {
+    protected void writeEntityToNBT(NBTTagCompound nbt) {
+        super.writeEntityToNBT(nbt);
+        nbt.setTag("inventory",
+                ExtendedInventoryUtils.writeInventory(this.backingInv));
+    }
+
+    @Override
+    protected void readEntityFromNBT(NBTTagCompound nbt) {
+        super.readEntityFromNBT(nbt);
+        ExtendedInventoryUtils.readInventory(
+                nbt.getTagList("inventory",
+                        ExtendedInventoryUtils.INVENTORY_TAG_TYPE),
+                this.backingInv);
+    }
+
+    @Override
+    public String getCustomNameTag() {
         return this.backingInv.getCommandSenderName();
     }
 

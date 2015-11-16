@@ -6,11 +6,14 @@ import codechicken.lib.inventory.InventoryUtils;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraftforge.common.util.Constants.NBT;
 
 public final class ExtendedInventoryUtils {
 
     private ExtendedInventoryUtils() {
     }
+    
+    public static final int INVENTORY_TAG_TYPE = NBT.TAG_COMPOUND;
 
     public static NBTTagList writeInventory(IInventory inv) {
         ItemStack[] stack = new ItemStack[inv.getSizeInventory()];

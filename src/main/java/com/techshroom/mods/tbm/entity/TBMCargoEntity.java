@@ -6,7 +6,7 @@ import com.techshroom.mods.tbm.TBMKeys;
 import com.techshroom.mods.tbm.gui.GuiTBMCargo;
 import com.techshroom.mods.tbm.gui.container.ContainerTBMCargo;
 
-import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -17,12 +17,12 @@ import net.minecraft.world.World;
 public class TBMCargoEntity extends TBMFullGuiEntity<ContainerTBMCargo> {
 
     public TBMCargoEntity(World w) {
-        super(w, TBMKeys.GuiId.CARGO, new InventoryBasic("Cargo", false, 27));
+        this(w, store.get(TBMKeys.Blocks.CARGO).get().getDefaultState());
     }
 
-    @Override
-    public Block blockBase() {
-        return store.get(TBMKeys.Blocks.CARGO).get();
+    public TBMCargoEntity(World w, IBlockState state) {
+        super(w, state, TBMKeys.GuiId.CARGO,
+                new InventoryBasic("Cargo", false, 27));
     }
 
     @Override
