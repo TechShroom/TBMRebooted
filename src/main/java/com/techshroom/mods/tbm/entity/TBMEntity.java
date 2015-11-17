@@ -27,7 +27,7 @@ public abstract class TBMEntity extends Entity {
     private static final float NO_BORDER = 0.0f;
     private static final float FULL_BOX_SIZE = 1F;
     private static final float BOX_SIZE = FULL_BOX_SIZE;
-    private static final float EMPTY_SIZE = 0.1F;
+    private static final float EMPTY_SIZE = 0.0001F;
 
     protected BlockPos lastBlockPos;
     private MovingState moving;
@@ -61,7 +61,7 @@ public abstract class TBMEntity extends Entity {
 
     public final void setMoving(MovingState moving) {
         if (isClient(this.worldObj)) {
-            // on client we never update the moving state with this
+            setCommonMovingLogic(moving);
             return;
         }
         if (this.firstUpdate) {
@@ -88,16 +88,23 @@ public abstract class TBMEntity extends Entity {
     protected void setMovingLogic(MovingState moving) {
         checkState(!isClient(this.worldObj),
                 "Must not update moving state with SML on client");
+        setCommonMovingLogic(moving);
+        if (moving.hasMotion()) {
+            this.worldObj.setBlockToAir(getPosition());
+        } else {
+            if (!this.firstUpdate) {
+                this.worldObj.setBlockState(getPosition(), getState());
+            }
+        }
+    }
+    
+    protected void setCommonMovingLogic(MovingState moving) {
         this.moving = moving;
         boolean isFirstUpdate = this.firstUpdate;
         this.firstUpdate = true; // disable move-on-setsize
         if (moving.hasMotion()) {
-            this.worldObj.setBlockToAir(getPosition());
             setSize(BOX_SIZE, BOX_SIZE);
         } else {
-            if (!isFirstUpdate) {
-                this.worldObj.setBlockState(getPosition(), getState());
-            }
             setSize(EMPTY_SIZE, EMPTY_SIZE);
         }
         this.firstUpdate = isFirstUpdate;

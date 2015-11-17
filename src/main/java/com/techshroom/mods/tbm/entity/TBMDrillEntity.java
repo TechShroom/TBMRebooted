@@ -68,6 +68,8 @@ public class TBMDrillEntity extends TBMFullGuiEntity<ContainerTBMDrill> {
         // mod().log.trace("ALL YOUR ENTITY ARE HERE " + toString());
     }
 
+    // might need it later
+    @SuppressWarnings("unused")
     private boolean damageTools(int amt) {
         if (this.fakery != null) {
             InventoryPlayer inventory = this.fakery.inventory;

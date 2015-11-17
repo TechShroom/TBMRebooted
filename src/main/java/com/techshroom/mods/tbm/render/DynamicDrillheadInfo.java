@@ -161,10 +161,7 @@ public abstract class DynamicDrillheadInfo {
                     "mismatched meta-pick-comp, we already have %s of [meta=%s,pick=%s,comp=%s]",
                     generateHaves(haveMetadata, havePick, haveComp), meta,
                     pickaxe, component);
-            if (haveMetadata && havePick && haveComp) {
-                return metadataToDrill.get(meta);
-            }
-
+            return metadataToDrill.get(meta);
         }
         checkState(!locked, "all info should have been created by now");
         metadataSet.set(meta);
