@@ -2,6 +2,8 @@ package com.techshroom.mods.tbm.item;
 
 import static com.techshroom.mods.tbm.Tutils.addressMod;
 
+import com.techshroom.mods.tbm.TBMMod;
+
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.item.Item;
@@ -14,8 +16,10 @@ public class ItemBase extends Item {
     public ItemBase(String name) {
         setUnlocalizedName(name);
         GameRegistry.registerItem(this, name);
-        ModelLoader.setCustomModelResourceLocation(this, 0,
-                new ModelResourceLocation(addressMod(name), "inventory"));
+        if (TBMMod.proxy().isClient()) {
+            ModelLoader.setCustomModelResourceLocation(this, 0,
+                    new ModelResourceLocation(addressMod(name), "inventory"));
+        }
         addSubtypesToVariants();
     }
 

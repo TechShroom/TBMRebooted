@@ -1,9 +1,11 @@
 package com.techshroom.mods.tbm;
 
 import java.nio.file.Path;
+import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 
+import com.google.common.collect.ImmutableList;
 import com.techshroom.mods.tbm.util.Storage.BooleanKey;
 import com.techshroom.mods.tbm.util.Storage.IntKey;
 import com.techshroom.mods.tbm.util.Storage.Key;
@@ -40,6 +42,9 @@ public final class TBMKeys {
         public static final IntKey ENGINE = IntKey.Named.create("engine_gui");
         public static final IntKey CPU = IntKey.Named.create("cpu_gui");
 
+        public static final List<IntKey> ALL =
+                ImmutableList.of(DRILL, CARGO, ENGINE, CPU);
+
         private GuiId() {
         }
 
@@ -48,6 +53,8 @@ public final class TBMKeys {
     public static final class Items {
 
         public static final Key<Item> DRILLHEAD = Key.Named.create("drillhead");
+
+        public static final List<Key<Item>> ALL = ImmutableList.of(DRILLHEAD);
 
         private Items() {
         }
@@ -61,6 +68,9 @@ public final class TBMKeys {
         public static final Key<Block> ENGINE = Key.Named.create("engine");
         public static final Key<Block> CPU = Key.Named.create("cpu");
         public static final Key<Block> EJECTOR = Key.Named.create("ejector");
+
+        public static final List<Key<Block>> ALL =
+                ImmutableList.of(DRILL, CARGO, ENGINE, CPU, EJECTOR);
 
         private Blocks() {
         }

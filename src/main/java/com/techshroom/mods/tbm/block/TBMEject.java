@@ -10,7 +10,7 @@ import net.minecraft.world.World;
 public class TBMEject extends TBMBlockBase {
 
     public TBMEject() {
-        super("ejecter", "eject-tex");
+        super("ejector", "eject-tex");
     }
 
     @Override
