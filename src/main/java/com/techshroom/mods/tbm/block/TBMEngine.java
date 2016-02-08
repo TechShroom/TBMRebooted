@@ -10,7 +10,7 @@ import net.minecraft.world.World;
 public class TBMEngine extends TBMBlockBase {
 
     public TBMEngine() {
-        super("engine", "engine-tex");
+        super("engine");
         setFacingStyle(FacingStyle.HORIZONTAL);
     }
 

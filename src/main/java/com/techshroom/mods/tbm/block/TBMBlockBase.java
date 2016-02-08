@@ -9,10 +9,12 @@ import static com.techshroom.mods.tbm.Tutils.getSideBlockState;
 import static com.techshroom.mods.tbm.Tutils.isClient;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.techshroom.mods.tbm.TBMKeys;
 import com.techshroom.mods.tbm.Tutils;
 import com.techshroom.mods.tbm.entity.TBMEntity;
+import com.techshroom.mods.tbm.entity.TBMGuiEntity;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -22,6 +24,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
@@ -35,8 +38,7 @@ public abstract class TBMBlockBase extends Block {
     private FacingStyle facingStyle = FacingStyle.NONE;
     private BlockState blockState = super.getBlockState();
 
-    protected TBMBlockBase(Material mat, String unlocalizedName,
-            String blockTexBase) {
+    protected TBMBlockBase(Material mat, String unlocalizedName) {
         super(mat);
         CreativeTabs blockTab = store.get(TBMKeys.BLOCK_TAB).get();
         setUnlocalizedName(unlocalizedName).setCreativeTab(blockTab);
@@ -44,12 +46,28 @@ public abstract class TBMBlockBase extends Block {
                 new BetterStateMapper(unlocalizedName));
     }
 
-    protected TBMBlockBase(String unlocalizedName, String blockTexBase) {
-        this(Material.iron, unlocalizedName, blockTexBase);
+    protected TBMBlockBase(String unlocalizedName) {
+        this(Material.iron, unlocalizedName);
     }
 
     protected static enum FacingStyle {
         NONE, ALL, HORIZONTAL;
+    }
+
+    @Override
+    public boolean onBlockActivated(World worldIn, BlockPos pos,
+            IBlockState state, EntityPlayer playerIn, EnumFacing side,
+            float hitX, float hitY, float hitZ) {
+        Optional<TBMGuiEntity<?>> guiEntity = worldIn
+                .getEntitiesWithinAABB(TBMGuiEntity.class,
+                        new AxisAlignedBB(pos, pos.add(1, 1, 1)))
+                .stream().findFirst().map(Tutils::cast);
+        if (guiEntity.isPresent()) {
+            guiEntity.get().openRelatedGui(playerIn, pos.getX(), pos.getY(),
+                    pos.getZ());
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -114,8 +132,9 @@ public abstract class TBMBlockBase extends Block {
     }
 
     @Override
-    public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state,
-            EntityLivingBase placer, ItemStack stack) {
+    public IBlockState onBlockPlaced(World worldIn, BlockPos pos,
+            EnumFacing side, float hitX, float hitY, float hitZ, int meta,
+            EntityLivingBase placer) {
         if (this.facingStyle != FacingStyle.NONE) {
             EnumFacing facing = null;
             IProperty<EnumFacing> prop = null;
@@ -129,14 +148,19 @@ public abstract class TBMBlockBase extends Block {
                 throw new UnsupportedOperationException(
                         String.valueOf(this.facingStyle));
             }
-            worldIn.setBlockState(pos, createBlockState().getBaseState()
-                    .withProperty(prop, facing), Tutils.SetBlockFlag.SEND);
+            return createBlockState().getBaseState().withProperty(prop, facing);
         }
+        return createBlockState().getBaseState();
+    }
+
+    @Override
+    public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state,
+            EntityLivingBase placer, ItemStack stack) {
         try {
-            Entity spawned =
-                    spawnEntity(worldIn, pos, worldIn.getBlockState(pos));
-            if (spawned == null && !isClient(worldIn)) {
-                throw new NullPointerException();
+            if (!isClient(worldIn)) {
+                Entity spawned =
+                        spawnEntity(worldIn, pos, worldIn.getBlockState(pos));
+                checkNotNull(spawned);
             }
         } catch (Exception e) {
             if (placer.sendCommandFeedback()) {

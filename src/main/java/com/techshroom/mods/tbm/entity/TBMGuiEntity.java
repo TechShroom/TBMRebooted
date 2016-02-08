@@ -26,9 +26,14 @@ public abstract class TBMGuiEntity<C extends Container> extends TBMEntity
             // special case
             return false;
         }
-        if (!isClient(this.worldObj))
-            player.openGui(mod(), getGuiId(), this.worldObj, fx, fy, fz);
+        if (!isClient(this.worldObj)) {
+            openRelatedGui(player, fx, fy, fz);
+        }
         return true;
+    }
+
+    public void openRelatedGui(EntityPlayer player, int fx, int fy, int fz) {
+        player.openGui(mod(), getGuiId(), this.worldObj, fx, fy, fz);
     }
 
     @Override

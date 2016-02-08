@@ -1,0 +1,11 @@
+{
+    "variants": {
+        "facing=down":  { "model": "tbmmod:ejector_vertical", "x": 180 },
+        "facing=up":    { "model": "tbmmod:ejector_vertical" },
+        "facing=north": { "model": "tbmmod:ejector" },
+        "facing=south": { "model": "tbmmod:ejector", "y": 180 },
+        "facing=west":  { "model": "tbmmod:ejector", "y": 270 },
+        "facing=east":  { "model": "tbmmod:ejector", "y": 90 },
+        "normal": { "model" : "tbmmod:ejector" }
+    }
+}

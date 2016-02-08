@@ -10,7 +10,7 @@ import net.minecraft.world.World;
 public class TBMEject extends TBMBlockBase {
 
     public TBMEject() {
-        super("ejector", "eject-tex");
+        super("ejector");
         setFacingStyle(FacingStyle.ALL);
     }
 

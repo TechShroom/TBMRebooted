@@ -1,7 +1,7 @@
 {
     "parent": "builtin/generated",
     "textures": {
-        "layer0": "tbmmod:blocks/drill-tex"
+        "layer0": "tbmmod:blocks/drill"
     },
     "display": {
         "thirdperson": {

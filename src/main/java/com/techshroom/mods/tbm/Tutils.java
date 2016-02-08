@@ -568,7 +568,7 @@ public final class Tutils {
     }
 
     public static EnumFacing getHorizontalFacing(EntityLivingBase entity) {
-        return entity.getHorizontalFacing();
+        return entity.getHorizontalFacing().getOpposite();
     }
 
     @SuppressWarnings("unused")

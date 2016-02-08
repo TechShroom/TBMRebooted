@@ -10,7 +10,7 @@ import net.minecraft.world.World;
 public class TBMCPU extends TBMBlockBase {
 
     public TBMCPU() {
-        super("cpu", "cpu-tex");
+        super("cpu");
     }
 
     @Override
