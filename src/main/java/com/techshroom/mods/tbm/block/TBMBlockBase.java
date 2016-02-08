@@ -118,7 +118,7 @@ public abstract class TBMBlockBase extends Block {
             EntityLivingBase placer, ItemStack stack) {
         if (this.facingStyle != FacingStyle.NONE) {
             EnumFacing facing = null;
-            IProperty prop = null;
+            IProperty<EnumFacing> prop = null;
             if (this.facingStyle == FacingStyle.ALL) {
                 facing = Tutils.getFacing(pos, placer);
                 prop = Tutils.PROP_FACING;

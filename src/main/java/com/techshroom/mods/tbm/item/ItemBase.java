@@ -8,6 +8,7 @@ import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
@@ -31,14 +32,15 @@ public class ItemBase extends Item {
             throw new IllegalStateException(
                     "there's no metadata in your item!");
         }
-        String[] var = new String[meta.length];
+        ResourceLocation[] var = new ResourceLocation[meta.length];
         for (int i = 0; i < meta.length; i++) {
             String name = getMetaUnlocalizedName(meta[i]).replace("item.", "");
-            var[i] = addressMod(name);
-            ModelLoader.setCustomModelResourceLocation(this, i,
-                    new ModelResourceLocation(addressMod(name), "inventory"));
+            ModelResourceLocation mrl =
+                    new ModelResourceLocation(addressMod(name), "inventory");
+            var[i] = mrl;
+            ModelLoader.setCustomModelResourceLocation(this, i, mrl);
         }
-        ModelBakery.addVariantName(this, var);
+        ModelBakery.registerItemVariants(this, var);
     }
 
     @Override

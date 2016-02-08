@@ -8,7 +8,6 @@ import com.techshroom.mods.tbm.render.entity.TBMAllBlockRender;
 import com.techshroom.mods.tbm.util.Storage.Key;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.model.ModelLoader;
@@ -27,13 +26,12 @@ public class TBMCProxy extends TBMProxy {
                             addressMod(block.getUnlocalizedName()),
                             "inventory"));
         }
+        RenderingRegistry.registerEntityRenderingHandler(TBMEntity.class,
+                TBMAllBlockRender::new);
     }
 
     @Override
     protected void subinit() {
-        RenderingRegistry.registerEntityRenderingHandler(TBMEntity.class,
-                new TBMAllBlockRender(
-                        Minecraft.getMinecraft().getRenderManager()));
     }
 
     @Override
