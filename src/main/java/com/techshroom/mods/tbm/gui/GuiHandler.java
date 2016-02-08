@@ -92,7 +92,7 @@ public class GuiHandler implements IGuiHandler {
              * + z + ")"));
              */
         }
-        System.err.println(isClient(player.worldObj) + "=>" + source);
+        // System.err.println(isClient(player.worldObj) + "=>" + source);
         if (source instanceof IPlayerContainerProvider) {
             return ((IPlayerContainerProvider) source).container(player);
         }

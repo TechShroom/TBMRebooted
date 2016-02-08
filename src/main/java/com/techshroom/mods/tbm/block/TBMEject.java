@@ -17,8 +17,8 @@ public class TBMEject extends TBMBlockBase {
     @Override
     public Entity spawnEntity(World world, BlockPos pos, IBlockState state) {
         TBMEjectEntity entity = new TBMEjectEntity(world);
-        world.spawnEntityInWorld(entity);
         entity.moveToBlockPosAndAngles(pos, 0, 0);
+        world.spawnEntityInWorld(entity);
         return entity;
     }
 

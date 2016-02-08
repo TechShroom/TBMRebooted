@@ -1,13 +1,9 @@
 package com.techshroom.mods.tbm.block;
 
-import com.techshroom.mods.tbm.Tutils;
-import com.techshroom.mods.tbm.Tutils.SetBlockFlag;
 import com.techshroom.mods.tbm.entity.TBMDrillEntity;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 
@@ -24,15 +20,6 @@ public class TBMDrill extends TBMBlockBase {
         entity.moveToBlockPosAndAngles(pos, 0, 0);
         world.spawnEntityInWorld(entity);
         return entity;
-    }
-
-    @Override
-    public void onBlockPlacedBy(World w, BlockPos pos, IBlockState state,
-            EntityLivingBase ent, ItemStack stack) {
-        w.setBlockState(pos,
-                Tutils.createStateForSideByEntityRotation(this, pos, ent),
-                SetBlockFlag.SEND);
-        super.onBlockPlacedBy(w, pos, w.getBlockState(pos), ent, stack);
     }
 
 }

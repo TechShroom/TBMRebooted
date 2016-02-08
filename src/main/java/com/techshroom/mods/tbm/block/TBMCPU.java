@@ -16,8 +16,8 @@ public class TBMCPU extends TBMBlockBase {
     @Override
     public Entity spawnEntity(World world, BlockPos pos, IBlockState state) {
         TBMCPUEntity entity = new TBMCPUEntity(world);
-        world.spawnEntityInWorld(entity);
         entity.moveToBlockPosAndAngles(pos, 0, 0);
+        world.spawnEntityInWorld(entity);
         return entity;
     }
 
