@@ -1,7 +1,7 @@
 {
     "parent": "tbmmod:block/orientable_vertical",
     "textures": {
-        "front": "tbmmod:blocks/drill-tex",
+        "front": "tbmmod:blocks/%1$s-tex",
         "side": "blocks/iron_block"
     }
 }

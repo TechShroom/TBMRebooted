@@ -62,7 +62,7 @@ public abstract class TBMFullGuiEntity<C extends Container>
 
     @Override
     public String getCustomNameTag() {
-        return this.backingInv.getCommandSenderName();
+        return this.backingInv.getName();
     }
 
     @Override
@@ -91,8 +91,8 @@ public abstract class TBMFullGuiEntity<C extends Container>
     }
 
     @Override
-    public ItemStack getStackInSlotOnClosing(int index) {
-        return this.backingInv.getStackInSlotOnClosing(index);
+    public ItemStack removeStackFromSlot(int index) {
+        return this.backingInv.removeStackFromSlot(index);
     }
 
     @Override

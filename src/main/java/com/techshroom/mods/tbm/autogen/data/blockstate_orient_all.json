@@ -1,0 +1,11 @@
+{
+    "variants": {
+        "facing=down":  { "model": "tbmmod:%1$s_vertical", "x": 180 },
+        "facing=up":    { "model": "tbmmod:%1$s_vertical" },
+        "facing=north": { "model": "tbmmod:%1$s" },
+        "facing=south": { "model": "tbmmod:%1$s", "y": 180 },
+        "facing=west":  { "model": "tbmmod:%1$s", "y": 270 },
+        "facing=east":  { "model": "tbmmod:%1$s", "y": 90 },
+        "normal": { "model" : "tbmmod:%1$s" }
+    }
+}

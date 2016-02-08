@@ -1,7 +1,7 @@
 {
     "parent": "tbmmod:block/orientable",
     "textures": {
-        "front": "tbmmod:blocks/eject-tex",
+        "front": "tbmmod:blocks/engine-tex",
         "side": "blocks/iron_block"
     }
 }

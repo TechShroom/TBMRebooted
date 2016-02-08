@@ -1,0 +1,9 @@
+{
+    "variants": {
+        "facing=north": { "model": "tbmmod:cargo" },
+        "facing=south": { "model": "tbmmod:cargo", "y": 180 },
+        "facing=west":  { "model": "tbmmod:cargo", "y": 270 },
+        "facing=east":  { "model": "tbmmod:cargo", "y": 90 },
+        "normal": { "model" : "tbmmod:cargo" }
+    }
+}

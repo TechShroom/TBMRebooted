@@ -11,6 +11,7 @@ public class TBMCargo extends TBMBlockBase {
 
     public TBMCargo() {
         super("cargo", "cargo_side-tex");
+        setFacingStyle(FacingStyle.HORIZONTAL);
     }
 
     @Override

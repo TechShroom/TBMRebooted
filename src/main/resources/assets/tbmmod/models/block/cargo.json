@@ -1,0 +1,7 @@
+{
+    "parent": "tbmmod:block/orientable",
+    "textures": {
+        "front": "tbmmod:blocks/cargo-tex",
+        "side": "blocks/iron_block"
+    }
+}

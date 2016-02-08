@@ -1,0 +1,6 @@
+{
+    "parent": "block/cube_all",
+    "textures": {
+        "all": "tbmmod:blocks/%1$s-tex"
+    }
+}

@@ -143,7 +143,7 @@ public abstract class TBMEntity extends Entity {
     // read client tag compound
     @SideOnly(Side.CLIENT)
     @Override
-    public void func_174834_g(NBTTagCompound compound) {
+    public void clientUpdateEntityNBT(NBTTagCompound compound) {
         if (compound != null) {
             readEntityFromNBT(compound);
         }
@@ -199,7 +199,7 @@ public abstract class TBMEntity extends Entity {
     }
 
     @Override
-    public AxisAlignedBB getBoundingBox() {
+    public AxisAlignedBB getCollisionBoundingBox() {
         return this.getEntityBoundingBox();
     }
 

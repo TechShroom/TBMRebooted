@@ -3,10 +3,10 @@ package com.techshroom.mods.tbm.entity;
 import static com.techshroom.mods.tbm.TBMMod.mod;
 import static com.techshroom.mods.tbm.Tutils.isClient;
 
+import com.flowpowered.math.GenericMath;
 import com.techshroom.mods.tbm.gui.IGuiProvider;
 import com.techshroom.mods.tbm.gui.IPlayerContainerProvider;
 
-import codechicken.lib.math.MathHelper;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -33,9 +33,8 @@ public abstract class TBMGuiEntity<C extends Container> extends TBMEntity
 
     @Override
     public boolean interactFirst(EntityPlayer p_130002_1_) {
-        return rightClick(p_130002_1_, MathHelper.floor_double(this.posX),
-                MathHelper.floor_double(this.posY),
-                MathHelper.floor_double(this.posZ));
+        return rightClick(p_130002_1_, GenericMath.floor(this.posX),
+                GenericMath.floor(this.posY), GenericMath.floor(this.posZ));
     }
 
 }

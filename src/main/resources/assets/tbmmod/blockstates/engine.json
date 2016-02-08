@@ -1,0 +1,9 @@
+{
+    "variants": {
+        "facing=north": { "model": "tbmmod:engine" },
+        "facing=south": { "model": "tbmmod:engine", "y": 180 },
+        "facing=west":  { "model": "tbmmod:engine", "y": 270 },
+        "facing=east":  { "model": "tbmmod:engine", "y": 90 },
+        "normal": { "model" : "tbmmod:engine" }
+    }
+}

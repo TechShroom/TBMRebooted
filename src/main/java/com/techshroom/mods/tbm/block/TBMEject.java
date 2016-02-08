@@ -11,6 +11,7 @@ public class TBMEject extends TBMBlockBase {
 
     public TBMEject() {
         super("ejector", "eject-tex");
+        setFacingStyle(FacingStyle.ALL);
     }
 
     @Override

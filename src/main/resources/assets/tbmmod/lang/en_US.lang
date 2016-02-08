@@ -8,7 +8,7 @@ item.drillhead[2].name=Diamond Drillhead
 itemGroup.tbmBlocks=TBM Blocks
 
 tile.drill.name=Drill
-tile.ejecter.name=Item Ejecter
+tile.ejector.name=Item Ejector
 tile.cargo.name=Cargo Storage
 tile.cpu.name=CPU
 tile.engine.name=Engine

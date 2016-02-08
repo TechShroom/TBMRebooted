@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import net.minecraft.command.CommandBase;
-import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -39,8 +38,8 @@ public class KillAllCommmand extends CommandBase {
             if (e instanceof EntityPlayer) {
                 continue;
             }
-            p_71515_1_.addChatMessage(new ChatComponentText(
-                    "Killed " + e.getCommandSenderName()));
+            p_71515_1_.addChatMessage(
+                    new ChatComponentText("Killed " + e.getName()));
             w.removeEntity(e);
         }
     }
@@ -51,7 +50,7 @@ public class KillAllCommmand extends CommandBase {
             List<Entity> temp = new ArrayList<Entity>(copyForMod.size() / 2);
             for (int i = 0; i < args.length; i++) {
                 for (Entity entity : copyForMod) {
-                    String simp = entity.getCommandSenderName();
+                    String simp = entity.getName();
                     if (simp.equals(args[i])) {
                         if (!temp.contains(entity)) {
                             temp.add(entity);
@@ -65,31 +64,20 @@ public class KillAllCommmand extends CommandBase {
     }
 
     @Override
-    public List<?> addTabCompletionOptions(ICommandSender sender, String[] args,
-            BlockPos pos) {
-        return g_addTabCompletionOptions(sender, args);
-    }
-
-    private List<String> g_addTabCompletionOptions(ICommandSender sender,
-            String[] args) {
+    public List<String> addTabCompletionOptions(ICommandSender sender,
+            String[] args, BlockPos pos) {
         String prefix = args[args.length - 1];
         List<String> entitynames = new ArrayList<String>();
         World w = sender.getEntityWorld();
         List<Entity> loaded = cast(w.loadedEntityList);
         for (Entity entity : loaded) {
-            if (!entitynames.contains(entity.getCommandSenderName())
-                    && entity.getCommandSenderName().startsWith(prefix)
+            if (!entitynames.contains(entity.getName())
+                    && entity.getName().startsWith(prefix)
                     && !(entity instanceof EntityPlayer)) {
-                entitynames.add(entity.getCommandSenderName());
+                entitynames.add(entity.getName());
             }
         }
         return entitynames;
-    }
-
-    @Override
-    public int compareTo(Object p_compareTo_1_) {
-        // why......because bad class mappings. I have no clue.
-        return this.compareTo((ICommand) p_compareTo_1_);
     }
 
 }

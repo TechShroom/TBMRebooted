@@ -194,8 +194,9 @@ public final class Tutils {
                 for (int i = 0; i < index.length; i++) {
                     PositionTextureVertex v = verts[index[i]];
                     Vec3 v3 = v.vector3D;
-                    tessellator.addVertexWithUV(v3.xCoord, v3.yCoord, v3.zCoord,
-                            texCoords[i].x, texCoords[i].y);
+                    tessellator.pos(v3.xCoord, v3.yCoord, v3.zCoord)
+                            .tex(texCoords[i].x, texCoords[i].y).endVertex();
+
                 }
             }
 
@@ -243,7 +244,7 @@ public final class Tutils {
                 return null;
             }
 
-            return ibs.getBlock();
+            return ibs.getWorld().getBlockState(ibs.getBlockPos()).getBlock();
         }
 
         public static String

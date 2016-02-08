@@ -1,10 +1,8 @@
 package com.techshroom.mods.tbm.inv;
 
-import static com.techshroom.mods.tbm.TBMMod.mod;
-
-import codechicken.lib.inventory.InventoryUtils;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.Constants.NBT;
 
@@ -12,29 +10,39 @@ public final class ExtendedInventoryUtils {
 
     private ExtendedInventoryUtils() {
     }
-    
+
     public static final int INVENTORY_TAG_TYPE = NBT.TAG_COMPOUND;
 
     public static NBTTagList writeInventory(IInventory inv) {
-        ItemStack[] stack = new ItemStack[inv.getSizeInventory()];
-        for (int i = 0; i < stack.length; i++) {
-            stack[i] = inv.getStackInSlot(i);
+        NBTTagList itemList = new NBTTagList();
+
+        for (int i = 0; i < inv.getSizeInventory(); ++i) {
+            ItemStack itemstack = inv.getStackInSlot(i);
+
+            if (itemstack != null) {
+                NBTTagCompound itemTag = new NBTTagCompound();
+                itemTag.setInteger("Slot", i);
+                itemstack.writeToNBT(itemTag);
+                itemList.appendTag(itemTag);
+            }
         }
-        NBTTagList list = InventoryUtils.writeItemStacksToTag(stack,
-                inv.getInventoryStackLimit());
-        return list;
+
+        return itemList;
     }
 
-    public static void readInventory(NBTTagList list, IInventory inv) {
-        ItemStack[] stack = new ItemStack[inv.getSizeInventory()];
-        InventoryUtils.readItemStacksFromTag(stack, list);
-        for (int i = 0; i < stack.length; i++) {
-            ItemStack is = stack[i];
-            if (is != null && !inv.isItemValidForSlot(i, is)) {
-                mod().log.warn("Item " + is + " is not valid for slot " + i
-                        + "; couldn't load it from NBT and store it");
-            } else if (is != null) {
-                inv.setInventorySlotContents(i, is);
+    public static void readInventory(NBTTagList itemList, IInventory inv) {
+        int sizeInventory = inv.getSizeInventory();
+        for (int i = 0; i < sizeInventory; ++i) {
+            inv.setInventorySlotContents(i, (ItemStack) null);
+        }
+
+        for (int k = 0; k < itemList.tagCount(); ++k) {
+            NBTTagCompound itemTag = itemList.getCompoundTagAt(k);
+            int slot = itemTag.getInteger("Slot");
+
+            if (slot >= 0 && slot < sizeInventory) {
+                inv.setInventorySlotContents(slot,
+                        ItemStack.loadItemStackFromNBT(itemTag));
             }
         }
     }

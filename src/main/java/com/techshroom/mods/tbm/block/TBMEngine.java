@@ -11,6 +11,7 @@ public class TBMEngine extends TBMBlockBase {
 
     public TBMEngine() {
         super("engine", "engine-tex");
+        setFacingStyle(FacingStyle.HORIZONTAL);
     }
 
     @Override
