@@ -9,11 +9,11 @@ import java.util.Optional;
  * Only allows modification once. After that, it is locked down. Does not allow
  * nulls.
  */
-public class OneTimeModReference<T> {
+public class ImmutableAfterSetReference<T> {
 
     private volatile Optional<T> ref = Optional.empty();
 
-    public OneTimeModReference() {
+    public ImmutableAfterSetReference() {
     }
 
     public boolean isLockedDown() {
