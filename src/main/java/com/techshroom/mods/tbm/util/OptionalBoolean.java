@@ -26,6 +26,9 @@ import java.util.function.Supplier;
  */
 public final class OptionalBoolean {
 
+    private static final int IS_PRESENT = 0b01;
+    private static final int VALUE = 0b10;
+
     /**
      * Common instance for {@code empty()}.
      */
@@ -35,8 +38,7 @@ public final class OptionalBoolean {
      * If true then the value is present, otherwise indicates no value is
      * present
      */
-    private final boolean isPresent;
-    private final boolean value;
+    private final byte data;
 
     /**
      * Construct an empty instance.
@@ -45,8 +47,7 @@ public final class OptionalBoolean {
      *           {@link OptionalBoolean#EMPTY}, should exist per VM.
      */
     private OptionalBoolean() {
-        this.isPresent = false;
-        this.value = false;
+        this.data = 0;
     }
 
     /**
@@ -71,8 +72,7 @@ public final class OptionalBoolean {
      *            the boolean value to be present.
      */
     private OptionalBoolean(boolean value) {
-        this.isPresent = true;
-        this.value = value;
+        this.data = (byte) (IS_PRESENT | (value ? VALUE : 0));
     }
 
     /**
@@ -97,10 +97,10 @@ public final class OptionalBoolean {
      * @see OptionalBoolean#isPresent()
      */
     public boolean getAsBoolean() {
-        if (!this.isPresent) {
+        if (!isPresent()) {
             throw new NoSuchElementException("No value present");
         }
-        return this.value;
+        return (this.data & VALUE) == VALUE;
     }
 
     /**
@@ -109,7 +109,7 @@ public final class OptionalBoolean {
      * @return {@code true} if there is a value present, otherwise {@code false}
      */
     public boolean isPresent() {
-        return this.isPresent;
+        return (this.data & IS_PRESENT) == IS_PRESENT;
     }
 
     /**
@@ -122,8 +122,8 @@ public final class OptionalBoolean {
      *             if value is present and {@code consumer} is null
      */
     public void ifPresent(BooleanConsumer consumer) {
-        if (this.isPresent)
-            consumer.accept(this.value);
+        if (this.isPresent())
+            consumer.accept(this.getAsBoolean());
     }
 
     /**
@@ -134,7 +134,7 @@ public final class OptionalBoolean {
      * @return the value, if present, otherwise {@code other}
      */
     public boolean orElse(boolean other) {
-        return this.isPresent ? this.value : other;
+        return this.isPresent() ? this.getAsBoolean() : other;
     }
 
     /**
@@ -150,7 +150,7 @@ public final class OptionalBoolean {
      *             if value is not present and {@code other} is null
      */
     public boolean orElseGet(BooleanSupplier other) {
-        return this.isPresent ? this.value : other.getAsBoolean();
+        return this.isPresent() ? this.getAsBoolean() : other.getAsBoolean();
     }
 
     /**
@@ -173,8 +173,8 @@ public final class OptionalBoolean {
      */
     public <X extends Throwable> boolean
             orElseThrow(Supplier<X> exceptionSupplier) throws X {
-        if (this.isPresent) {
-            return this.value;
+        if (this.isPresent()) {
+            return this.getAsBoolean();
         } else {
             throw exceptionSupplier.get();
         }
@@ -205,8 +205,7 @@ public final class OptionalBoolean {
         }
 
         OptionalBoolean other = (OptionalBoolean) obj;
-        return (this.isPresent && other.isPresent) ? this.value == other.value
-                : this.isPresent == other.isPresent;
+        return this.data == other.data;
     }
 
     /**
@@ -217,7 +216,7 @@ public final class OptionalBoolean {
      */
     @Override
     public int hashCode() {
-        return this.isPresent ? Boolean.hashCode(this.value) : 0;
+        return this.isPresent() ? Boolean.hashCode(this.getAsBoolean()) : 0;
     }
 
     /**
@@ -235,7 +234,8 @@ public final class OptionalBoolean {
      */
     @Override
     public String toString() {
-        return this.isPresent ? String.format("OptionalBoolean[%s]", this.value)
+        return this.isPresent()
+                ? String.format("OptionalBoolean[%s]", this.getAsBoolean())
                 : "OptionalBoolean.empty";
     }
 }
