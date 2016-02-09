@@ -17,7 +17,7 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 
 public class TBMEngineEntity extends TBMFullGuiEntity<ContainerTBMEngine> {
-    
+
     public TBMEngineEntity(World w) {
         this(w, store.get(TBMKeys.Blocks.ENGINE).get().getDefaultState());
     }
@@ -28,9 +28,9 @@ public class TBMEngineEntity extends TBMFullGuiEntity<ContainerTBMEngine> {
     }
 
     @Override
-    public boolean isItemValidForSlot(int p_94041_1_, ItemStack p_94041_2_) {
-        return super.isItemValidForSlot(p_94041_1_, p_94041_2_)
-                && p_94041_1_ == 0 && isFuel(p_94041_2_);
+    public boolean isItemValidForSlot(int slot, ItemStack stack) {
+        return super.isItemValidForSlot(slot, stack)
+                && slot < this.getSizeInventory() && isFuel(stack);
     }
 
     private boolean isFuel(ItemStack item) {

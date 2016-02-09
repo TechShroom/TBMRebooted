@@ -20,10 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.vector.Vector2f;
-
-import com.google.common.collect.Maps;
 import com.techshroom.mods.tbm.block.TBMBlockBase;
 
 import net.minecraft.block.Block;
@@ -32,17 +28,8 @@ import net.minecraft.block.BlockSourceImpl;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.model.PositionTextureVertex;
-import net.minecraft.client.renderer.BlockRendererDispatcher;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
-import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.dispenser.IBlockSource;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -50,8 +37,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
@@ -61,149 +46,6 @@ public final class Tutils {
 
     @SideOnly(Side.CLIENT)
     public static final class Client {
-
-        public static final class Draw {
-
-            private static void bindTexture(ResourceLocation res) {
-                TextureManager manager =
-                        TileEntityRendererDispatcher.instance.renderEngine;
-                if (manager != null) {
-                    manager.bindTexture(res);
-                }
-            }
-
-            /**
-             * @deprecated what's this for
-             */
-            @Deprecated
-            public static void drawBlockAsEntity(Block b, World w, double x,
-                    double y, double z) {
-                WorldRenderer wrender = new WorldRenderer(1024);
-                BlockPos floor = new BlockPos(x, y, z);
-                BlockRendererDispatcher render =
-                        Minecraft.getMinecraft().getBlockRendererDispatcher();
-                bindTexture(TextureMap.locationBlocksTexture);
-                RenderHelper.disableStandardItemLighting();
-                GL11.glBlendFunc(GL11.GL_SRC_ALPHA,
-                        GL11.GL_ONE_MINUS_SRC_ALPHA);
-                GL11.glEnable(GL11.GL_BLEND);
-                GL11.glDisable(GL11.GL_CULL_FACE);
-
-                if (Minecraft.isAmbientOcclusionEnabled()) {
-                    GL11.glShadeModel(GL11.GL_SMOOTH);
-                } else {
-                    GL11.glShadeModel(GL11.GL_FLAT);
-                }
-
-                render.renderBlock(w.getBlockState(floor), floor, w, wrender);
-                RenderHelper.enableStandardItemLighting();
-            }
-
-            public static double scalePixelToBlock(double pixel) {
-                return pixel / 16d;
-            }
-
-            public static float scalePixelToBlock(float pixel) {
-                return pixel / 16f;
-            }
-
-            public static PositionTextureVertex[]
-                    scaleToBlock(PositionTextureVertex[] verts) {
-                // copy it
-                verts = verts.clone();
-                for (int i = 0; i < verts.length; i++) {
-                    Vec3 v3 = verts[i].vector3D;
-                    verts[i].vector3D = new Vec3(scalePixelToBlock(v3.xCoord),
-                            scalePixelToBlock(v3.yCoord),
-                            scalePixelToBlock(v3.zCoord));
-                }
-                return verts;
-            }
-
-            /**
-             * Like {@link GL11#glDrawElements(int, java.nio.IntBuffer)}, but
-             * for {@link Tessellator}!
-             * 
-             * @param tessellator
-             *            - the tessellator (note: {@link Tessellator#instance}
-             *            is the only available instance, but that could
-             *            change!)
-             * @param verts
-             *            - the vertices
-             * @param index
-             *            - the index array for the vert array
-             */
-            public static void tesselateElements(WorldRenderer tessellator,
-                    PositionTextureVertex[] verts, int... index) {
-                tesselateElementsWIthTextureSpecs(tessellator, verts, null,
-                        index);
-            }
-
-            /**
-             * Like {@link GL11#glDrawElements(int, java.nio.IntBuffer)}, but
-             * for {@link Tessellator}! This version scales the given vertex
-             * coords via {@link #scalePixelToBlock(double)}.
-             * 
-             * @param tessellator
-             *            - the tessellator (note: {@link Tessellator#instance}
-             *            is the only available instance, but that could
-             *            change!)
-             * @param verts
-             *            - the vertices
-             * @param index
-             *            - the index array for the vert array
-             */
-            public static void tesselateElementsWithScale(
-                    WorldRenderer tessellator, PositionTextureVertex[] verts,
-                    int... index) {
-                tesselateElements(tessellator, scaleToBlock(verts), index);
-            }
-
-            public static void tesselateElementsWithScaleAndTextureSpecs(
-                    WorldRenderer tessellator, PositionTextureVertex[] verts,
-                    Vector2f[] texCoords, int... index) {
-                tesselateElementsWIthTextureSpecs(tessellator,
-                        scaleToBlock(verts), texCoords, index);
-            }
-
-            public static void tesselateElementsWIthTextureSpecs(
-                    WorldRenderer tessellator, PositionTextureVertex[] verts,
-                    Vector2f[] texCoords, int... index) {
-                if (index == null || index.length == 0) {
-                    index = Tutils.indexEqualsIndexArray(verts.length);
-                }
-                if (texCoords == null || texCoords.length == 0) {
-                    texCoords = new Vector2f[verts.length];
-                    for (int i = 0; i < verts.length; i++) {
-                        texCoords[i] = new Vector2f(verts[i].texturePositionX,
-                                verts[i].texturePositionY);
-                    }
-                }
-                if (texCoords.length < index.length
-                        && texCoords.length == verts.length) {
-                    Vector2f[] texNew = new Vector2f[index.length];
-                    for (int i = 0; i < index.length; i++) {
-                        texNew[i] = texCoords[index[i]];
-                    }
-                    texCoords = texNew;
-                }
-                if (texCoords.length != index.length) {
-                    throw new IllegalArgumentException(
-                            "texture array provided must match indexes length");
-                }
-                for (int i = 0; i < index.length; i++) {
-                    PositionTextureVertex v = verts[index[i]];
-                    Vec3 v3 = v.vector3D;
-                    tessellator.pos(v3.xCoord, v3.yCoord, v3.zCoord)
-                            .tex(texCoords[i].x, texCoords[i].y).endVertex();
-
-                }
-            }
-
-            private Draw() {
-                throw new AssertionError("Nope.");
-            }
-        }
 
         public static boolean buttonIsPressed(int id, GuiButton check) {
             return check.enabled && check.id == id;
@@ -510,28 +352,37 @@ public final class Tutils {
         return (T) o;
     }
 
+    private static final Map<TBMBlockBase, BlockState> NO_FACING_STATE =
+            new HashMap<>();
     private static final Map<TBMBlockBase, BlockState> SIDE_STATE =
-            Maps.newHashMap();
+            new HashMap<>();
     private static final Map<TBMBlockBase, BlockState> SIDE_STATE_NO_Y_AXIS =
-            Maps.newHashMap();
+            new HashMap<>();
     public static final PropertyDirection PROP_FACING =
             PropertyDirection.create("facing");
     public static final PropertyDirection PROP_FACING_HORIZ =
             PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
 
+    private static BlockState getOrCreateNoFacingState(TBMBlockBase block) {
+        return NO_FACING_STATE.computeIfAbsent(block, BlockState::new);
+    }
+
     private static BlockState getOrCreateSideState(TBMBlockBase block) {
-        if (!SIDE_STATE.containsKey(block)) {
-            SIDE_STATE.put(block, new BlockState(block, PROP_FACING));
-        }
-        return SIDE_STATE.get(block);
+        return SIDE_STATE.computeIfAbsent(block,
+                b -> new BlockState(b, PROP_FACING));
     }
 
     private static BlockState getOrCreateSideStateNoYAxis(TBMBlockBase block) {
-        if (!SIDE_STATE_NO_Y_AXIS.containsKey(block)) {
-            SIDE_STATE_NO_Y_AXIS.put(block,
-                    new BlockState(block, PROP_FACING_HORIZ));
-        }
-        return SIDE_STATE_NO_Y_AXIS.get(block);
+        return SIDE_STATE_NO_Y_AXIS.computeIfAbsent(block,
+                b -> new BlockState(b, PROP_FACING_HORIZ));
+    }
+
+    public static BlockState getNoFacingBlockState(TBMBlockBase block) {
+        return getOrCreateNoFacingState(block);
+    }
+
+    public static IBlockState getNoFacingBaseState(TBMBlockBase block) {
+        return getOrCreateNoFacingState(block).getBaseState();
     }
 
     public static BlockState getSideBlockState(TBMBlockBase block) {

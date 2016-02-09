@@ -1,46 +1,36 @@
 package com.techshroom.mods.tbm.machine;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 import com.google.common.collect.ImmutableSet;
 
-import gnu.trove.set.hash.TCustomHashSet;
-import gnu.trove.strategy.HashingStrategy;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 
 public abstract class TBMMachineBase implements TBMMachine {
 
-    protected final Set<Entity> entities =
-            new TCustomHashSet<>(new HashingStrategy<Entity>() {
-
-                private static final long serialVersionUID =
-                        -3688873446668328375L;
-
-                @Override
-                public int computeHashCode(Entity object) {
-                    return object.getUniqueID().hashCode();
-                }
-
-                @Override
-                public boolean equals(Entity o1, Entity o2) {
-                    return o1.getUniqueID().equals(o2.getUniqueID());
-                }
-
-            });
+    protected final Set<Entity> entities = new HashSet<>();
     private final Set<Block> allowedBlocks;
+    private final String id;
     private final String name;
 
-    protected TBMMachineBase(String name,
+    protected TBMMachineBase(String id, String name,
             Collection<? extends Block> allowedBlocks) {
+        this.id = id;
         this.name = name;
         this.allowedBlocks = ImmutableSet.copyOf(allowedBlocks);
     }
 
-    protected TBMMachineBase(String name, Block... allowedBlocks) {
-        this(name, ImmutableSet.copyOf(allowedBlocks));
+    protected TBMMachineBase(String id, String name, Block... allowedBlocks) {
+        this(id, name, ImmutableSet.copyOf(allowedBlocks));
+    }
+
+    @Override
+    public String getId() {
+        return this.id;
     }
 
     @Override

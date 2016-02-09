@@ -8,6 +8,8 @@ import net.minecraft.entity.Entity;
 
 public interface TBMMachine {
 
+    String getId();
+
     String getName();
 
     Set<Block> getBasicAllowedBlocks();

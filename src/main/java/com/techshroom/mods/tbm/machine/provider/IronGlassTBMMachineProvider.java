@@ -7,9 +7,11 @@ import com.techshroom.mods.tbm.machine.TBMMachine;
 @AutoService(TBMMachineProvider.class)
 public class IronGlassTBMMachineProvider implements TBMMachineProvider {
 
+    public static final String ID = "ironglass";
+
     @Override
     public String getId() {
-        return "ironglass";
+        return ID;
     }
 
     @Override
@@ -19,7 +21,7 @@ public class IronGlassTBMMachineProvider implements TBMMachineProvider {
 
     @Override
     public TBMMachine provideMachine() {
-        return new IronGlassTBMMachine(getProvidedMachineName());
+        return new IronGlassTBMMachine(getId(), getProvidedMachineName());
     }
 
 }

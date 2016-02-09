@@ -13,11 +13,11 @@ import net.minecraft.util.StatCollector;
 
 public class GuiTBMCPU extends GuiScreen {
 
-    private static final class BUTTONS {
+    private static final class Buttons {
 
         private static final int MOTION = 0;
 
-        private BUTTONS() {
+        private Buttons() {
         }
     }
 
@@ -35,16 +35,16 @@ public class GuiTBMCPU extends GuiScreen {
     public void initGui() {
         super.initGui();
         List<GuiButton> btns = buttons();
-        btns.add(new GuiButton(BUTTONS.MOTION, this.width / 2 - 100,
+        btns.add(new GuiButton(Buttons.MOTION, this.width / 2 - 100,
                 this.height / 2 - 10, getMotionMessage()));
     }
 
     private String getMotionMessage() {
-        String trans = isMovingTemp() ? "cpugui.start" : "cpugui.stop";
+        String trans = isAtAStandstill() ? "cpugui.start" : "cpugui.stop";
         return StatCollector.translateToLocal(trans);
     }
 
-    private boolean isMovingTemp() {
+    private boolean isAtAStandstill() {
         // TODO better definition of moving
         return this.entRef.motionX < 0.001 && this.entRef.motionZ < 0.001
                 && this.entRef.motionY < 0.001;
@@ -63,8 +63,8 @@ public class GuiTBMCPU extends GuiScreen {
 
     @Override
     protected void actionPerformed(GuiButton button) {
-        if (Client.buttonIsPressed(BUTTONS.MOTION, button)) {
-            if (isMovingTemp()) {
+        if (Client.buttonIsPressed(Buttons.MOTION, button)) {
+            if (isAtAStandstill()) {
                 this.entRef.guiStart();
             } else {
                 this.entRef.guiStop();

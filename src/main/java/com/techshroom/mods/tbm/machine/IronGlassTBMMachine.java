@@ -13,8 +13,8 @@ public class IronGlassTBMMachine extends TBMMachineBase {
     private static final Set<Material> VALID_MATERIALS =
             ImmutableSet.of(Material.glass, Material.iron);
 
-    public IronGlassTBMMachine(String name) {
-        super(name);
+    public IronGlassTBMMachine(String id, String name) {
+        super(id, name);
     }
 
     @Override

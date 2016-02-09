@@ -2,15 +2,10 @@ package com.techshroom.mods.tbm.gui;
 
 import net.minecraft.inventory.Container;
 
+@FunctionalInterface
 public interface IContainerProvider {
 
-    static final IContainerProvider NULL = new IContainerProvider() {
-
-        @Override
-        public Container container() {
-            return null;
-        }
-    };
+    static final IContainerProvider NULL = () -> null;
 
     Container container();
 }

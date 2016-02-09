@@ -2,6 +2,7 @@ package com.techshroom.mods.tbm.block;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.techshroom.mods.tbm.TBMMod.store;
+import static com.techshroom.mods.tbm.Tutils.getNoFacingBlockState;
 import static com.techshroom.mods.tbm.Tutils.getSideBaseNoYAxisState;
 import static com.techshroom.mods.tbm.Tutils.getSideBaseState;
 import static com.techshroom.mods.tbm.Tutils.getSideBlockNoYAxisState;
@@ -115,7 +116,7 @@ public abstract class TBMBlockBase extends Block {
     protected BlockState createBlockState() {
         // null -> early block constr. call
         if (this.facingStyle == null || this.facingStyle == FacingStyle.NONE) {
-            return super.createBlockState();
+            return getNoFacingBlockState(this);
         } else if (this.facingStyle == FacingStyle.ALL) {
             return getSideBlockState(this);
         } else if (this.facingStyle == FacingStyle.HORIZONTAL) {
