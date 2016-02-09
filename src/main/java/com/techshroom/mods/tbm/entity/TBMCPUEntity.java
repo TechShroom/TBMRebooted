@@ -11,13 +11,13 @@ import com.techshroom.mods.tbm.gui.GuiTBMCPU;
 import com.techshroom.mods.tbm.gui.container.ContainerTBMCPU;
 import com.techshroom.mods.tbm.machine.TBMMachine;
 import com.techshroom.mods.tbm.machine.provider.TBMMachineProviders;
+import com.techshroom.mods.tbm.util.NbtUtil;
 
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagLong;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants.NBT;
@@ -87,12 +87,7 @@ public class TBMCPUEntity extends TBMGuiEntity<ContainerTBMCPU> {
         NBTTagCompound compound = new NBTTagCompound();
         NBTTagList entities = new NBTTagList();
         this.machine.getTrackedEntities().forEach(e -> {
-            NBTTagList uuid = new NBTTagList();
-            uuid.appendTag(
-                    new NBTTagLong(e.getUniqueID().getMostSignificantBits()));
-            uuid.appendTag(
-                    new NBTTagLong(e.getUniqueID().getLeastSignificantBits()));
-            entities.appendTag(uuid);
+            entities.appendTag(NbtUtil.uuidToTagCompound(e.getUniqueID()));
         });
         compound.setString(MACHINE_ID_KEY, this.machine.getId());
         compound.setTag(MACHINE_ENTITIES_KEY, entities);
@@ -111,13 +106,11 @@ public class TBMCPUEntity extends TBMGuiEntity<ContainerTBMCPU> {
                 .getProviderOrFail(compound.getString(MACHINE_ID_KEY))
                 .provideMachine();
         NBTTagList entities =
-                compound.getTagList(MACHINE_ENTITIES_KEY, NBT.TAG_LIST);
+                compound.getTagList(MACHINE_ENTITIES_KEY, NBT.TAG_COMPOUND);
         this.trackOnUpdate = new HashSet<>(entities.tagCount());
         for (int i = 0; i < entities.tagCount(); i++) {
-            NBTTagList uuid = (NBTTagList) entities.get(i);
-            this.trackOnUpdate
-                    .add(new UUID(((NBTTagLong) uuid.get(0)).getLong(),
-                            ((NBTTagLong) uuid.get(1)).getLong()));
+            NBTTagCompound uuid = (NBTTagCompound) entities.get(i);
+            this.trackOnUpdate.add(NbtUtil.tagCompoundToUuid(uuid));
         }
         return machine;
     }
