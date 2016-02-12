@@ -2,10 +2,6 @@ package com.techshroom.mods.tbm.entity;
 
 import static com.techshroom.mods.tbm.TBMMod.store;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
-
 import com.techshroom.mods.tbm.TBMKeys;
 import com.techshroom.mods.tbm.gui.GuiTBMCPU;
 import com.techshroom.mods.tbm.gui.container.ContainerTBMCPU;
@@ -28,7 +24,6 @@ public class TBMCPUEntity extends TBMGuiEntity<ContainerTBMCPU> {
     private static final String MACHINE_ID_KEY = "id";
     private static final String MACHINE_ENTITIES_KEY = "machine-entities";
     private TBMMachine machine;
-    private transient Set<UUID> trackOnUpdate;
 
     public TBMCPUEntity(World w) {
         super(w, store.get(TBMKeys.Blocks.CPU).get().getDefaultState());
@@ -37,19 +32,6 @@ public class TBMCPUEntity extends TBMGuiEntity<ContainerTBMCPU> {
     public TBMCPUEntity(World w, TBMMachine machine) {
         this(w);
         this.machine = machine;
-    }
-
-    @Override
-    public void onUpdate() {
-        super.onUpdate();
-        if (this.trackOnUpdate != null) {
-            this.trackOnUpdate.forEach(e -> {
-                this.worldObj.getLoadedEntityList().stream()
-                        .filter(x -> x.getUniqueID().equals(e)).findFirst()
-                        .ifPresent(this.machine::trackEntity);
-            });
-            this.trackOnUpdate = null;
-        }
     }
 
     @Override
@@ -87,7 +69,7 @@ public class TBMCPUEntity extends TBMGuiEntity<ContainerTBMCPU> {
         NBTTagCompound compound = new NBTTagCompound();
         NBTTagList entities = new NBTTagList();
         this.machine.getTrackedEntities().forEach(e -> {
-            entities.appendTag(NbtUtil.uuidToTagCompound(e.getUniqueID()));
+            entities.appendTag(NbtUtil.uuidToTagCompound(e));
         });
         compound.setString(MACHINE_ID_KEY, this.machine.getId());
         compound.setTag(MACHINE_ENTITIES_KEY, entities);
@@ -107,10 +89,9 @@ public class TBMCPUEntity extends TBMGuiEntity<ContainerTBMCPU> {
                 .provideMachine();
         NBTTagList entities =
                 compound.getTagList(MACHINE_ENTITIES_KEY, NBT.TAG_COMPOUND);
-        this.trackOnUpdate = new HashSet<>(entities.tagCount());
         for (int i = 0; i < entities.tagCount(); i++) {
             NBTTagCompound uuid = (NBTTagCompound) entities.get(i);
-            this.trackOnUpdate.add(NbtUtil.tagCompoundToUuid(uuid));
+            machine.trackEntity(NbtUtil.tagCompoundToUuid(uuid));
         }
         return machine;
     }

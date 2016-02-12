@@ -9,13 +9,13 @@ import static com.techshroom.mods.tbm.Tutils.getSideBlockNoYAxisState;
 import static com.techshroom.mods.tbm.Tutils.getSideBlockState;
 import static com.techshroom.mods.tbm.Tutils.isClient;
 
-import java.util.List;
 import java.util.Optional;
 
 import com.techshroom.mods.tbm.TBMKeys;
 import com.techshroom.mods.tbm.Tutils;
 import com.techshroom.mods.tbm.entity.TBMEntity;
 import com.techshroom.mods.tbm.entity.TBMGuiEntity;
+import com.techshroom.mods.tbm.util.BlockToEntityMap;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -27,7 +27,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumFacing;
@@ -59,10 +58,10 @@ public abstract class TBMBlockBase extends Block {
     public boolean onBlockActivated(World worldIn, BlockPos pos,
             IBlockState state, EntityPlayer playerIn, EnumFacing side,
             float hitX, float hitY, float hitZ) {
-        Optional<TBMGuiEntity<?>> guiEntity = worldIn
-                .getEntitiesWithinAABB(TBMGuiEntity.class,
-                        new AxisAlignedBB(pos, pos.add(1, 1, 1)))
-                .stream().findFirst().map(Tutils::cast);
+        Optional<TBMGuiEntity<?>> guiEntity = Optional.of(worldIn)
+                .filter(w -> !isClient(w)).map(BlockToEntityMap::getForWorld)
+                .map(map -> map.get(pos)).filter(TBMGuiEntity.class::isInstance)
+                .map(Tutils::cast);
         if (guiEntity.isPresent()) {
             guiEntity.get().openRelatedGui(playerIn, pos.getX(), pos.getY(),
                     pos.getZ());
@@ -162,6 +161,7 @@ public abstract class TBMBlockBase extends Block {
                 Entity spawned =
                         spawnEntity(worldIn, pos, worldIn.getBlockState(pos));
                 checkNotNull(spawned);
+                BlockToEntityMap.getForWorld(worldIn).put(pos, spawned);
             }
         } catch (Exception e) {
             if (placer.sendCommandFeedback()) {
@@ -178,18 +178,13 @@ public abstract class TBMBlockBase extends Block {
     @Override
     public void onBlockDestroyedByPlayer(World world, BlockPos pos,
             IBlockState state) {
-        List<?> entitiesWithinAABB =
-                world.getEntitiesWithinAABB(TBMEntity.class, aabbFromPos(pos));
-        if (entitiesWithinAABB.isEmpty()) {
-            return;
+        if (!isClient(world)) {
+            BlockToEntityMap map = BlockToEntityMap.getForWorld(world);
+            TBMEntity linked = (TBMEntity) map.remove(pos);
+            if (linked != null) {
+                linked.setDead();
+            }
         }
-        TBMEntity linked = (TBMEntity) entitiesWithinAABB.get(0);
-        linked.setDead();
-    }
-
-    private AxisAlignedBB aabbFromPos(BlockPos pos) {
-        return new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(),
-                pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D);
     }
 
     public abstract Entity spawnEntity(World world, BlockPos pos,
