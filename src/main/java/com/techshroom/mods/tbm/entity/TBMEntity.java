@@ -2,9 +2,11 @@ package com.techshroom.mods.tbm.entity;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
+import static com.techshroom.mods.tbm.TBMMod.mod;
 import static com.techshroom.mods.tbm.Tutils.isClient;
 
 import com.techshroom.mods.tbm.machine.TBMMachine;
+import com.techshroom.mods.tbm.util.BlockToEntityMap;
 import com.techshroom.mods.tbm.util.CalledOnServerOnly;
 
 import net.minecraft.block.state.IBlockState;
@@ -15,6 +17,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Vec3i;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -97,7 +100,7 @@ public abstract class TBMEntity extends Entity {
             }
         }
     }
-    
+
     protected void setCommonMovingLogic(MovingState moving) {
         this.moving = moving;
         boolean isFirstUpdate = this.firstUpdate;
@@ -116,6 +119,17 @@ public abstract class TBMEntity extends Entity {
     @Override
     public void onUpdate() {
         super.onUpdate();
+        if (!getMoving().hasMotion()) {
+            Vec3i pos = BlockToEntityMap.getForWorld(this.worldObj)
+                    .getReverse(this);
+            if (!this.state
+                    .equals(this.worldObj.getBlockState(new BlockPos(pos)))) {
+                // Extra entity.
+                mod().log.warn("Removing extra entity at " + pos);
+                setDead();
+                return;
+            }
+        }
         if (!getPosition().equals(this.lastBlockPos)) {
             // change probably
             if (!isClient(this.worldObj)) {

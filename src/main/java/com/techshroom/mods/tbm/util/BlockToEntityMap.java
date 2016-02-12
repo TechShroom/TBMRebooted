@@ -6,11 +6,11 @@ import static com.techshroom.mods.tbm.TBMMod.mod;
 import static com.techshroom.mods.tbm.Tutils.isClient;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import com.google.common.base.Predicates;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.techshroom.mods.tbm.net.messageForClients.BlockToEntityMapTranferForClient;
 
 import gnu.trove.map.TObjectIntMap;
@@ -62,13 +62,18 @@ public class BlockToEntityMap extends WorldSavedData {
         }
     }
 
-    private final Map<Vec3i, Entity> map = new HashMap<>();
+    private final BiMap<Vec3i, Entity> map = HashBiMap.create();
     private final TObjectIntMap<Vec3i> tryAgain = new TObjectIntHashMap<>();
     private final World relatedWorld = currentLoadingWorld.get();
 
     public BlockToEntityMap(String id) {
         super(id);
         checkNotNull(this.relatedWorld, "no loaded world, what!");
+    }
+    
+    public Vec3i getReverse(Entity ent) {
+        tryAgain();
+        return this.map.inverse().get(ent);
     }
 
     public Entity get(Vec3i pos) {
