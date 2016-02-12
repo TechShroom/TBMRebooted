@@ -4,7 +4,6 @@ import java.util.Set;
 
 import com.google.common.collect.ImmutableSet;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 
@@ -18,9 +17,9 @@ public class IronGlassTBMMachine extends TBMMachineBase {
     }
 
     @Override
-    public boolean isBlockAllowed(Block block, IBlockState state) {
-        return super.isBlockAllowed(block, state)
-                || VALID_MATERIALS.contains(block.getMaterial());
+    public boolean isBlockAllowed(IBlockState state) {
+        return super.isBlockAllowed(state)
+                || VALID_MATERIALS.contains(state.getBlock().getMaterial());
     }
 
 }

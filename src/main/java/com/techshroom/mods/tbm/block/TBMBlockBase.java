@@ -59,12 +59,13 @@ public abstract class TBMBlockBase extends Block {
             IBlockState state, EntityPlayer playerIn, EnumFacing side,
             float hitX, float hitY, float hitZ) {
         Optional<TBMGuiEntity<?>> guiEntity = Optional.of(worldIn)
-                .filter(w -> !isClient(w)).map(BlockToEntityMap::getForWorld)
-                .map(map -> map.get(pos)).filter(TBMGuiEntity.class::isInstance)
-                .map(Tutils::cast);
+                .map(BlockToEntityMap::getForWorld).map(map -> map.get(pos))
+                .filter(TBMGuiEntity.class::isInstance).map(Tutils::cast);
         if (guiEntity.isPresent()) {
-            guiEntity.get().openRelatedGui(playerIn, pos.getX(), pos.getY(),
-                    pos.getZ());
+            if (!isClient(worldIn)) {
+                guiEntity.get().openRelatedGui(playerIn, pos.getX(), pos.getY(),
+                        pos.getZ());
+            }
             return true;
         }
         return false;

@@ -27,7 +27,8 @@ public class TBMCProxy extends TBMProxy {
                             "inventory"));
         }
         RenderingRegistry.registerEntityRenderingHandler(TBMEntity.class,
-                TBMAllBlockRender::new);
+                rm -> store.put(TBMKeys.ALL_BLOCK_ENTITY_RENDERER,
+                        new TBMAllBlockRender(rm)));
     }
 
     @Override

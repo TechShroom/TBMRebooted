@@ -21,9 +21,11 @@ public interface TBMMachine {
     /**
      * N.B.: This must allow all blocks in {@link #getBasicAllowedBlocks()}.
      */
-    boolean isBlockAllowed(Block block, IBlockState state);
+    boolean isBlockAllowed(IBlockState state);
 
     void trackEntity(UUID e);
+
+    void untrackEntity(UUID e);
 
     Set<UUID> getTrackedEntities();
 

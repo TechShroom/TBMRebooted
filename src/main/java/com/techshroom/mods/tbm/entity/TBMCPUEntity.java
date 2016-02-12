@@ -6,10 +6,13 @@ import com.techshroom.mods.tbm.TBMKeys;
 import com.techshroom.mods.tbm.gui.GuiTBMCPU;
 import com.techshroom.mods.tbm.gui.container.ContainerTBMCPU;
 import com.techshroom.mods.tbm.machine.TBMMachine;
+import com.techshroom.mods.tbm.machine.constructing.MachineDiscoverer;
 import com.techshroom.mods.tbm.machine.provider.TBMMachineProviders;
+import com.techshroom.mods.tbm.util.BlockToEntityMap;
 import com.techshroom.mods.tbm.util.NbtUtil;
 
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.nbt.NBTTagCompound;
@@ -23,6 +26,7 @@ public class TBMCPUEntity extends TBMGuiEntity<ContainerTBMCPU> {
     private static final String MACHINE_KEY = "machine";
     private static final String MACHINE_ID_KEY = "id";
     private static final String MACHINE_ENTITIES_KEY = "machine-entities";
+
     private TBMMachine machine;
 
     public TBMCPUEntity(World w) {
@@ -50,9 +54,30 @@ public class TBMCPUEntity extends TBMGuiEntity<ContainerTBMCPU> {
     }
 
     public void guiStop() {
+        // Halt all entities.
+        this.machine.resolveEntities(this.worldObj).stream()
+                .filter(TBMEntity.class::isInstance).map(TBMEntity.class::cast)
+                .forEach(tbm -> {
+                    tbm.setMoving(MovingState.HALTED);
+                });
+        // Drop all entities.
+        this.machine.getTrackedEntities().forEach(this.machine::untrackEntity);
     }
 
     public void guiStart() {
+        // Flush state.
+        guiStop();
+        // Discover and collect entities to track.
+        BlockToEntityMap map = BlockToEntityMap.getForWorld(this.worldObj);
+        new MachineDiscoverer(this.worldObj, this.machine,
+                getActualBlockPosition()).discover().map(map::get)
+                        .map(Entity::getUniqueID)
+                        .forEach(this.machine::trackEntity);
+        this.machine.resolveEntities(this.worldObj).stream()
+                .filter(TBMEntity.class::isInstance).map(TBMEntity.class::cast)
+                .forEach(tbm -> {
+                    tbm.setMoving(MovingState.UP);
+                });
     }
 
     @Override

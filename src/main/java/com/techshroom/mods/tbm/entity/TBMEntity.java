@@ -119,11 +119,9 @@ public abstract class TBMEntity extends Entity {
     @Override
     public void onUpdate() {
         super.onUpdate();
-        if (!getMoving().hasMotion()) {
-            Vec3i pos = BlockToEntityMap.getForWorld(this.worldObj)
-                    .getReverse(this);
-            if (!this.state
-                    .equals(this.worldObj.getBlockState(new BlockPos(pos)))) {
+        if (!getMoving().hasMotion() && !isClient(this.worldObj)) {
+            BlockPos pos = getActualBlockPosition();
+            if (!this.state.equals(this.worldObj.getBlockState(pos))) {
                 // Extra entity.
                 mod().log.warn("Removing extra entity at " + pos);
                 setDead();
@@ -141,6 +139,15 @@ public abstract class TBMEntity extends Entity {
                 this.waitingForGridAlignedPosition = false;
             }
         }
+    }
+
+    public BlockPos getActualBlockPosition() {
+        Vec3i tmp =
+                BlockToEntityMap.getForWorld(this.worldObj).getReverse(this);
+        if (tmp instanceof BlockPos) {
+            return (BlockPos) tmp;
+        }
+        return new BlockPos(tmp);
     }
 
     @Override

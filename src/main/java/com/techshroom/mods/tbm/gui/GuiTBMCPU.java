@@ -1,11 +1,10 @@
 package com.techshroom.mods.tbm.gui;
 
-import static com.techshroom.mods.tbm.Tutils.cast;
-
-import java.util.List;
+import static com.techshroom.mods.tbm.TBMMod.mod;
 
 import com.techshroom.mods.tbm.Tutils.Client;
 import com.techshroom.mods.tbm.entity.TBMCPUEntity;
+import com.techshroom.mods.tbm.net.messageForServer.CPUStartOrStopForServer;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -27,15 +26,10 @@ public class GuiTBMCPU extends GuiScreen {
         this.entRef = entity;
     }
 
-    private List<GuiButton> buttons() {
-        return cast(this.buttonList);
-    }
-
     @Override
     public void initGui() {
         super.initGui();
-        List<GuiButton> btns = buttons();
-        btns.add(new GuiButton(Buttons.MOTION, this.width / 2 - 100,
+        this.buttonList.add(new GuiButton(Buttons.MOTION, this.width / 2 - 100,
                 this.height / 2 - 10, getMotionMessage()));
     }
 
@@ -45,9 +39,7 @@ public class GuiTBMCPU extends GuiScreen {
     }
 
     private boolean isAtAStandstill() {
-        // TODO better definition of moving
-        return this.entRef.motionX < 0.001 && this.entRef.motionZ < 0.001
-                && this.entRef.motionY < 0.001;
+        return !this.entRef.getMoving().hasMotion();
     }
 
     @Override
@@ -64,11 +56,10 @@ public class GuiTBMCPU extends GuiScreen {
     @Override
     protected void actionPerformed(GuiButton button) {
         if (Client.buttonIsPressed(Buttons.MOTION, button)) {
-            if (isAtAStandstill()) {
-                this.entRef.guiStart();
-            } else {
-                this.entRef.guiStop();
-            }
+            mod().netmanager().netWrapper()
+                    .sendToServer(new CPUStartOrStopForServer(
+                            this.entRef.getActualBlockPosition()));
+            this.buttonList.get(0).displayString = getMotionMessage();
         }
     }
 }

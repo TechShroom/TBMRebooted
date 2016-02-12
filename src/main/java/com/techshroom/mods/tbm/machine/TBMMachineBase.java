@@ -44,13 +44,18 @@ public abstract class TBMMachineBase implements TBMMachine {
     }
 
     @Override
-    public boolean isBlockAllowed(Block block, IBlockState state) {
-        return this.allowedBlocks.contains(block);
+    public boolean isBlockAllowed(IBlockState state) {
+        return this.allowedBlocks.contains(state.getBlock());
     }
 
     @Override
     public void trackEntity(UUID e) {
         this.entities.add(e);
+    }
+
+    @Override
+    public void untrackEntity(UUID e) {
+        this.entities.remove(e);
     }
 
     @Override

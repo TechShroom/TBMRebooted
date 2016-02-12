@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.logging.log4j.Logger;
 
 import com.google.common.collect.ImmutableList;
+import com.techshroom.mods.tbm.render.entity.TBMAllBlockRender;
 import com.techshroom.mods.tbm.util.Storage.BooleanKey;
 import com.techshroom.mods.tbm.util.Storage.IntKey;
 import com.techshroom.mods.tbm.util.Storage.Key;
@@ -34,6 +35,8 @@ public final class TBMKeys {
             Key.Named.create("netchannel");
     public static final BooleanKey USE_CHEST_MODEL =
             BooleanKey.Named.create("chestmodel");
+    public static final Key<TBMAllBlockRender> ALL_BLOCK_ENTITY_RENDERER =
+            Key.Named.create("allblockrender");
 
     public static final class GuiId {
 
