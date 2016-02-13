@@ -5,6 +5,8 @@ import static com.google.common.base.Preconditions.checkState;
 import static com.techshroom.mods.tbm.TBMMod.mod;
 import static com.techshroom.mods.tbm.Tutils.isClient;
 
+import java.util.Set;
+
 import com.techshroom.mods.tbm.machine.TBMMachine;
 import com.techshroom.mods.tbm.util.BlockToEntityMap;
 import com.techshroom.mods.tbm.util.CalledOnServerOnly;
@@ -12,13 +14,17 @@ import com.techshroom.mods.tbm.util.CalledOnServerOnly;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.play.server.S49PacketUpdateEntityNBT;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3i;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -111,6 +117,17 @@ public abstract class TBMEntity extends Entity {
             setSize(EMPTY_SIZE, EMPTY_SIZE);
         }
         this.firstUpdate = isFirstUpdate;
+        if (!isClient(this.worldObj)) {
+            WorldServer wS = (WorldServer) this.worldObj;
+            Set<? extends EntityPlayer> watchers =
+                    wS.getEntityTracker().getTrackingPlayers(this);
+            watchers.stream().filter(EntityPlayerMP.class::isInstance)
+                    .map(EntityPlayerMP.class::cast).forEach(emp -> {
+                        emp.playerNetServerHandler.sendPacket(
+                                new S49PacketUpdateEntityNBT(this.getEntityId(),
+                                        this.getNBTTagCompound()));
+                    });
+        }
     }
 
     @CalledOnServerOnly
@@ -119,6 +136,7 @@ public abstract class TBMEntity extends Entity {
     @Override
     public void onUpdate() {
         super.onUpdate();
+        // System.err.println("update " + this + " @ " + this.worldObj);
         if (!getMoving().hasMotion() && !isClient(this.worldObj)) {
             BlockPos pos = getActualBlockPosition();
             if (!this.state.equals(this.worldObj.getBlockState(pos))) {
@@ -158,6 +176,9 @@ public abstract class TBMEntity extends Entity {
     public NBTTagCompound getNBTTagCompound() {
         NBTTagCompound tag = new NBTTagCompound();
         writeEntityToNBT(tag);
+        // Add extra BB data.
+        tag.setDouble("width", this.width);
+        tag.setDouble("height", this.height);
         return tag;
     }
 
@@ -167,6 +188,12 @@ public abstract class TBMEntity extends Entity {
     public void clientUpdateEntityNBT(NBTTagCompound compound) {
         if (compound != null) {
             readEntityFromNBT(compound);
+            // Update moving state.
+            setMoving(this.moving);
+            // Additionally, we expect the size data
+            setSize((float) compound.getDouble("width"),
+                    (float) compound.getDouble("height"));
+            System.err.println("size " + this.width + ":" + this.height);
         }
     }
 

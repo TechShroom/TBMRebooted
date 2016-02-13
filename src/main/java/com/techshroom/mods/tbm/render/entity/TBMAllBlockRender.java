@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.model.IBakedModel;
 import net.minecraft.util.BlockPos;
@@ -38,13 +39,13 @@ public class TBMAllBlockRender extends Render<TBMEntity> {
         if (entity.getState() == null) {
             System.err.println("no block state for " + entity);
         } else {
-            this.bindEntityTexture(entity);
+            this.bindTexture(TextureMap.locationBlocksTexture);
             int x = GenericMath.floor(entity.posX);
             int y = GenericMath.floor(entity.posY);
             int z = GenericMath.floor(entity.posZ);
 
             renderBlock(entity.getState(), entity.worldObj, x, y, z,
-                    entity.posX, entity.posY, entity.posZ);
+                    renderOnScreenX, renderOnScreenY, renderOnScreenZ);
 
         }
     }
@@ -60,7 +61,7 @@ public class TBMAllBlockRender extends Render<TBMEntity> {
         if (state.getBlock().getRenderType() != -1) {
             if (state.getBlock().getRenderType() == 3) {
                 GlStateManager.pushMatrix();
-                GlStateManager.translate(x, y, z);
+                GlStateManager.translate(dox, doy, doz);
                 GlStateManager.disableLighting();
                 Tessellator tessellator = Tessellator.getInstance();
                 WorldRenderer worldRender = tessellator.getWorldRenderer();
