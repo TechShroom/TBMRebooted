@@ -70,7 +70,7 @@ public class BlockToEntityMap extends WorldSavedData {
         super(id);
         checkNotNull(this.relatedWorld, "no loaded world, what!");
     }
-    
+
     public Vec3i getReverse(Entity ent) {
         tryAgain();
         return this.map.inverse().get(ent);
@@ -123,10 +123,9 @@ public class BlockToEntityMap extends WorldSavedData {
             int[] vec = entry.getIntArray("key");
             UUID uuid =
                     NbtUtil.tagCompoundToUuid(entry.getCompoundTag("value"));
-            Entity ref =
-                    new ArrayList<>(this.relatedWorld.getLoadedEntityList())
-                            .stream().filter(e -> e.getUniqueID().equals(uuid))
-                            .findFirst().orElse(null);
+            Entity ref = new ArrayList<>(this.relatedWorld.loadedEntityList)
+                    .stream().filter(e -> e.getUniqueID().equals(uuid))
+                    .findFirst().orElse(null);
             if (ref != null) {
                 put(vec[0], vec[1], vec[2], ref);
             }

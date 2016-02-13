@@ -5,6 +5,7 @@ import static org.lwjgl.opengl.GL11.GL_QUADS;
 import com.flowpowered.math.GenericMath;
 import com.techshroom.mods.tbm.block.TBMBlockBase;
 import com.techshroom.mods.tbm.entity.TBMEntity;
+import com.techshroom.mods.tbm.machine.TBMMachine;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -19,6 +20,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.model.IBakedModel;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public class TBMAllBlockRender extends Render<TBMEntity> {
@@ -44,20 +46,22 @@ public class TBMAllBlockRender extends Render<TBMEntity> {
             int y = GenericMath.floor(entity.posY);
             int z = GenericMath.floor(entity.posZ);
 
-            renderBlock(entity.getState(), entity.worldObj, x, y, z,
-                    renderOnScreenX, renderOnScreenY, renderOnScreenZ);
+            renderBlock(entity.getMachine(), entity.getState(), entity.worldObj,
+                    x, y, z, renderOnScreenX, renderOnScreenY, renderOnScreenZ);
 
         }
     }
 
-    private void renderBlock(IBlockState state, World w, int x, int y, int z,
-            double dox, double doy, double doz) {
+    private void renderBlock(TBMMachine machine, IBlockState state, World w,
+            int x, int y, int z, double dox, double doy, double doz) {
         BlockPos pos = new BlockPos(x, y, z);
         if (!(state.getBlock() instanceof TBMBlockBase)) {
             throw new IllegalStateException(
                     "Trying to render an entity with a non-tbm block! block="
                             + state + ", location=" + pos);
         }
+        IBlockAccess customFilter = w;// new FilterByEntitiesOnMachine(w,
+                                      // machine);
         if (state.getBlock().getRenderType() != -1) {
             if (state.getBlock().getRenderType() == 3) {
                 GlStateManager.pushMatrix();
@@ -70,9 +74,9 @@ public class TBMAllBlockRender extends Render<TBMEntity> {
                 BlockRendererDispatcher bird =
                         Minecraft.getMinecraft().getBlockRendererDispatcher();
                 IBakedModel model =
-                        bird.getModelFromBlockState(state, w, (BlockPos) null);
-                bird.getBlockModelRenderer().renderModel(w, model, state, pos,
-                        worldRender, false);
+                        bird.getModelFromBlockState(state, customFilter, pos);
+                bird.getBlockModelRenderer().renderModel(customFilter, model,
+                        state, pos, worldRender, false);
                 worldRender.setTranslation(0.0D, 0.0D, 0.0D);
                 tessellator.draw();
                 GlStateManager.enableLighting();

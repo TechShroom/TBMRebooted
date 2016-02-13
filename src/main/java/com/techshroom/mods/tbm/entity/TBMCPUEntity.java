@@ -7,27 +7,15 @@ import com.techshroom.mods.tbm.gui.GuiTBMCPU;
 import com.techshroom.mods.tbm.gui.container.ContainerTBMCPU;
 import com.techshroom.mods.tbm.machine.TBMMachine;
 import com.techshroom.mods.tbm.machine.constructing.MachineDiscoverer;
-import com.techshroom.mods.tbm.machine.provider.TBMMachineProviders;
 import com.techshroom.mods.tbm.util.BlockToEntityMap;
-import com.techshroom.mods.tbm.util.NbtUtil;
 
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants.NBT;
 
 public class TBMCPUEntity extends TBMGuiEntity<ContainerTBMCPU> {
-
-    private static final String MACHINE_KEY = "machine";
-    private static final String MACHINE_ID_KEY = "id";
-    private static final String MACHINE_ENTITIES_KEY = "machine-entities";
-
-    private TBMMachine machine;
 
     public TBMCPUEntity(World w) {
         super(w, store.get(TBMKeys.Blocks.CPU).get().getDefaultState());
@@ -54,14 +42,13 @@ public class TBMCPUEntity extends TBMGuiEntity<ContainerTBMCPU> {
     }
 
     public void guiStop() {
-        // Halt all entities.
-        this.machine.resolveEntities(this.worldObj).stream()
+        // Halt and drop all entities.
+        this.machine.getTrackedEntities().stream()
                 .filter(TBMEntity.class::isInstance).map(TBMEntity.class::cast)
                 .forEach(tbm -> {
                     tbm.setMoving(MovingState.HALTED);
+                    this.machine.untrackEntity(tbm);
                 });
-        // Drop all entities.
-        this.machine.getTrackedEntities().forEach(this.machine::untrackEntity);
     }
 
     public void guiStart() {
@@ -71,54 +58,18 @@ public class TBMCPUEntity extends TBMGuiEntity<ContainerTBMCPU> {
         BlockToEntityMap map = BlockToEntityMap.getForWorld(this.worldObj);
         new MachineDiscoverer(this.worldObj, this.machine,
                 getActualBlockPosition()).discover().map(map::get)
-                        .map(Entity::getUniqueID)
                         .forEach(this.machine::trackEntity);
-        this.machine.resolveEntities(this.worldObj).stream()
+        this.machine.getTrackedEntities().stream()
                 .filter(TBMEntity.class::isInstance).map(TBMEntity.class::cast)
                 .forEach(tbm -> {
+                    // Update machine in all TBMs
+                    tbm.machine = this.machine;
                     tbm.setMoving(MovingState.UP);
                 });
     }
 
     @Override
     public void onMoveToBlock(BlockPos pos) {
-    }
-
-    @Override
-    protected void writeEntityToNBT(NBTTagCompound nbt) {
-        nbt.setTag(MACHINE_KEY, createMachineTagCompound());
-        super.writeEntityToNBT(nbt);
-    }
-
-    private NBTTagCompound createMachineTagCompound() {
-        NBTTagCompound compound = new NBTTagCompound();
-        NBTTagList entities = new NBTTagList();
-        this.machine.getTrackedEntities().forEach(e -> {
-            entities.appendTag(NbtUtil.uuidToTagCompound(e));
-        });
-        compound.setString(MACHINE_ID_KEY, this.machine.getId());
-        compound.setTag(MACHINE_ENTITIES_KEY, entities);
-        return compound;
-    }
-
-    @Override
-    protected void readEntityFromNBT(NBTTagCompound nbt) {
-        super.readEntityFromNBT(nbt);
-        this.machine =
-                createMachineFromTagCompound(nbt.getCompoundTag(MACHINE_KEY));
-    }
-
-    private TBMMachine createMachineFromTagCompound(NBTTagCompound compound) {
-        TBMMachine machine = TBMMachineProviders
-                .getProviderOrFail(compound.getString(MACHINE_ID_KEY))
-                .provideMachine();
-        NBTTagList entities =
-                compound.getTagList(MACHINE_ENTITIES_KEY, NBT.TAG_COMPOUND);
-        for (int i = 0; i < entities.tagCount(); i++) {
-            NBTTagCompound uuid = (NBTTagCompound) entities.get(i);
-            machine.trackEntity(NbtUtil.tagCompoundToUuid(uuid));
-        }
-        return machine;
     }
 
 }

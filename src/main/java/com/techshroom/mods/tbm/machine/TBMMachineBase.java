@@ -3,16 +3,16 @@ package com.techshroom.mods.tbm.machine;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 import com.google.common.collect.ImmutableSet;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 
 public abstract class TBMMachineBase implements TBMMachine {
 
-    protected final Set<UUID> entities = new HashSet<>();
+    protected final Set<Entity> entities = new HashSet<>();
     private final Set<Block> allowedBlocks;
     private final String id;
     private final String name;
@@ -49,17 +49,17 @@ public abstract class TBMMachineBase implements TBMMachine {
     }
 
     @Override
-    public void trackEntity(UUID e) {
+    public void trackEntity(Entity e) {
         this.entities.add(e);
     }
 
     @Override
-    public void untrackEntity(UUID e) {
+    public void untrackEntity(Entity e) {
         this.entities.remove(e);
     }
 
     @Override
-    public Set<UUID> getTrackedEntities() {
+    public Set<Entity> getTrackedEntities() {
         return ImmutableSet.copyOf(this.entities);
     }
 

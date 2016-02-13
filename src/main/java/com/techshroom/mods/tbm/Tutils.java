@@ -245,7 +245,7 @@ public final class Tutils {
 
     public static final class SetBlockFlag {
 
-        public static final int UPDATE = 1, SEND = 2, DONT_RE_RENDER = 2;
+        public static final int UPDATE = 1, SEND = 2, DONT_RE_RENDER = 4;
         public static final int UPDATE_AND_SEND = UPDATE | SEND;
         public static final int SEND_AND_DONT_RE_RENDER = SEND | DONT_RE_RENDER;
         public static final int UPDATE_AND_DONT_RE_RENDER =

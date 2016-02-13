@@ -8,6 +8,7 @@ import static com.techshroom.mods.tbm.Tutils.isClient;
 import java.util.Set;
 
 import com.techshroom.mods.tbm.machine.TBMMachine;
+import com.techshroom.mods.tbm.machine.provider.TBMMachineProviders;
 import com.techshroom.mods.tbm.util.BlockToEntityMap;
 import com.techshroom.mods.tbm.util.CalledOnServerOnly;
 
@@ -17,6 +18,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagInt;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.play.server.S49PacketUpdateEntityNBT;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
@@ -25,6 +28,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3i;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.util.Constants.NBT;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -37,6 +41,10 @@ public abstract class TBMEntity extends Entity {
     private static final float FULL_BOX_SIZE = 1F;
     private static final float BOX_SIZE = FULL_BOX_SIZE;
     private static final float EMPTY_SIZE = 0.0001F;
+
+    private static final String MACHINE_KEY = "machine";
+    private static final String MACHINE_ID_KEY = "id";
+    private static final String MACHINE_ENTITIES_KEY = "machine-entities";
 
     protected BlockPos lastBlockPos;
     private MovingState moving;
@@ -66,6 +74,10 @@ public abstract class TBMEntity extends Entity {
 
     public MovingState getMoving() {
         return this.moving;
+    }
+
+    public TBMMachine getMachine() {
+        return this.machine;
     }
 
     public final void setMoving(MovingState moving) {
@@ -113,6 +125,8 @@ public abstract class TBMEntity extends Entity {
         this.firstUpdate = true; // disable move-on-setsize
         if (moving.hasMotion()) {
             setSize(BOX_SIZE, BOX_SIZE);
+            // Has to be moved manually
+            moveEntity(-0.5, 0, -0.5);
         } else {
             setSize(EMPTY_SIZE, EMPTY_SIZE);
         }
@@ -175,6 +189,7 @@ public abstract class TBMEntity extends Entity {
     @Override
     public NBTTagCompound getNBTTagCompound() {
         NBTTagCompound tag = new NBTTagCompound();
+        tag.setTag(MACHINE_KEY, createMachineTagCompound());
         writeEntityToNBT(tag);
         // Add extra BB data.
         tag.setDouble("width", this.width);
@@ -187,6 +202,8 @@ public abstract class TBMEntity extends Entity {
     @Override
     public void clientUpdateEntityNBT(NBTTagCompound compound) {
         if (compound != null) {
+            this.machine = createMachineFromTagCompound(
+                    compound.getCompoundTag(MACHINE_KEY));
             readEntityFromNBT(compound);
             // Update moving state.
             setMoving(this.moving);
@@ -205,11 +222,42 @@ public abstract class TBMEntity extends Entity {
         this.moving = MovingState.valueOf(nbt.getString("moving"));
     }
 
+    private TBMMachine createMachineFromTagCompound(NBTTagCompound compound) {
+        if (compound.hasNoTags()) {
+            return null;
+        }
+        TBMMachine machine = TBMMachineProviders
+                .getProviderOrFail(compound.getString(MACHINE_ID_KEY))
+                .provideMachine();
+        NBTTagList entities =
+                compound.getTagList(MACHINE_ENTITIES_KEY, NBT.TAG_INT);
+        for (int i = 0; i < entities.tagCount(); i++) {
+            Entity ent = this.worldObj
+                    .getEntityByID(((NBTTagInt) entities.get(i)).getInt());
+            machine.trackEntity(ent);
+        }
+        return machine;
+    }
+
     @Override
     protected void writeEntityToNBT(NBTTagCompound nbt) {
         nbt.setInteger("state",
                 this.state.getBlock().getMetaFromState(this.state));
         nbt.setString("moving", this.moving.name());
+    }
+
+    private NBTTagCompound createMachineTagCompound() {
+        NBTTagCompound compound = new NBTTagCompound();
+        if (this.machine == null) {
+            return compound;
+        }
+        NBTTagList entities = new NBTTagList();
+        this.machine.getTrackedEntities().forEach(e -> {
+            entities.appendTag(new NBTTagInt(e.getEntityId()));
+        });
+        compound.setString(MACHINE_ID_KEY, this.machine.getId());
+        compound.setTag(MACHINE_ENTITIES_KEY, entities);
+        return compound;
     }
 
     public ResourceLocation getEntityTexture() {
