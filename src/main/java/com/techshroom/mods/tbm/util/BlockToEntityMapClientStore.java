@@ -17,7 +17,6 @@ public final class BlockToEntityMapClientStore {
                         .withCurrentWorld(Minecraft.getMinecraft().theWorld)) {
             current = new BlockToEntityMap(BlockToEntityMap.DATA_ID);
         }
-        System.err.println(packetData);
         current.readFromNBTPacket(packetData);
     }
 

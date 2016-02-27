@@ -1,6 +1,9 @@
 package com.techshroom.mods.tbm.net.messageForServer;
 
+import static com.techshroom.mods.tbm.TBMMod.mod;
+
 import com.techshroom.mods.tbm.entity.TBMCPUEntity;
+import com.techshroom.mods.tbm.net.SimpleMessageHandler;
 import com.techshroom.mods.tbm.util.BlockToEntityMap;
 
 import io.netty.buffer.ByteBuf;
@@ -8,23 +11,23 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public final class CPUStartOrStopForServer implements IMessage {
 
     public static class Handler
-            implements IMessageHandler<CPUStartOrStopForServer, IMessage> {
+            implements SimpleMessageHandler.Client<CPUStartOrStopForServer> {
 
         @Override
-        public IMessage onMessage(CPUStartOrStopForServer message,
+        public void processOnMCThread(CPUStartOrStopForServer message,
                 MessageContext ctx) {
             World contextWorld = ctx.getServerHandler().playerEntity.worldObj;
             Entity atPos =
                     BlockToEntityMap.getForWorld(contextWorld).get(message.pos);
             if (!(atPos instanceof TBMCPUEntity)) {
                 // Cop out on bad packets.
-                return null;
+                mod().log.warn("bad packet, claiming CPU at " + atPos);
+                return;
             }
             TBMCPUEntity cpu = (TBMCPUEntity) atPos;
             if (cpu.getMoving().hasMotion()) {
@@ -32,7 +35,6 @@ public final class CPUStartOrStopForServer implements IMessage {
             } else {
                 cpu.guiStart();
             }
-            return null;
         }
 
     }

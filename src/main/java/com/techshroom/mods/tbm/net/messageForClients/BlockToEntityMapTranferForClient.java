@@ -5,25 +5,24 @@ import java.io.IOException;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
 
+import com.techshroom.mods.tbm.net.SimpleMessageHandler;
 import com.techshroom.mods.tbm.util.BlockToEntityMapClientStore;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public final class BlockToEntityMapTranferForClient implements IMessage {
 
     public static class Handler implements
-            IMessageHandler<BlockToEntityMapTranferForClient, IMessage> {
+            SimpleMessageHandler.Client<BlockToEntityMapTranferForClient> {
 
         @Override
-        public IMessage onMessage(BlockToEntityMapTranferForClient message,
+        public void processOnMCThread(BlockToEntityMapTranferForClient message,
                 MessageContext ctx) {
             BlockToEntityMapClientStore.onPacketUpdate(message.data);
-            return null;
         }
 
     }

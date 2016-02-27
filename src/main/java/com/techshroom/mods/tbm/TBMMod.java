@@ -29,8 +29,8 @@ public final class TBMMod {
     private static TBMMod INST;
     @SidedProxy(clientSide = "com.techshroom.mods.tbm.TBMCProxy",
             serverSide = "com.techshroom.mods.tbm.TBMProxy")
-    private static TBMProxy PROX;
-    @SidedProxy(clientSide = "com.techshroom.mods.tbm.WorldFetchProxy_client",
+    private static TBMProxy PROXY;
+    @SidedProxy(clientSide = "com.techshroom.mods.tbm.WorldFetchProxyClient",
             serverSide = "com.techshroom.mods.tbm.WorldFetchProxy")
     private static WorldFetchProxy WORLD_FETCHER;
     private static final CreativeTabs tabBlock = new CreativeTabs("tbmBlocks") {
@@ -54,7 +54,7 @@ public final class TBMMod {
     }
 
     public static TBMProxy proxy() {
-        return PROX;
+        return PROXY;
     }
 
     public static WorldFetchProxy worldFetcher() {
@@ -81,7 +81,7 @@ public final class TBMMod {
         this.log = e.getModLog();
         this.log.entry(e);
         store.put(TBMKeys.LOGGER, this.log);
-        if (PROX.isClient()) {
+        if (PROXY.isClient()) {
             netmanager = new Client();
         } else {
             netmanager = new Server();

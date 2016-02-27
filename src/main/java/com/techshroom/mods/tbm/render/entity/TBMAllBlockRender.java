@@ -70,7 +70,7 @@ public class TBMAllBlockRender extends Render<TBMEntity> {
                 Tessellator tessellator = Tessellator.getInstance();
                 WorldRenderer worldRender = tessellator.getWorldRenderer();
                 worldRender.begin(GL_QUADS, DefaultVertexFormats.BLOCK);
-                worldRender.setTranslation(-x - 0.5d, -y, -z - 0.5d);
+                worldRender.setTranslation(-x - 0.5, -y, -z - 0.5);
                 BlockRendererDispatcher bird =
                         Minecraft.getMinecraft().getBlockRendererDispatcher();
                 IBakedModel model =

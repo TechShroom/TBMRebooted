@@ -55,7 +55,11 @@ public abstract class TBMEntity extends Entity {
 
     public TBMEntity(World w, IBlockState state) {
         super(w);
-        setMoving(MovingState.HALTED);
+        if (isClient(w)) {
+            setMovingClient(MovingState.HALTED);
+        } else {
+            setMoving(MovingState.HALTED);
+        }
         checkNotNull(state);
         this.state = state;
         this.isImmuneToFire = true;
@@ -81,18 +85,10 @@ public abstract class TBMEntity extends Entity {
     }
 
     public final void setMoving(MovingState moving) {
-        if (isClient(this.worldObj)) {
-            setCommonMovingLogic(moving);
-            return;
-        }
+        checkState(!isClient(this.worldObj), "server only");
         if (this.firstUpdate) {
             // if it is our first update, always SML
             setMovingLogic(moving);
-            return;
-        }
-        boolean change = moving != this.moving;
-        if (!change) {
-            // nothing to do
             return;
         }
         if (!moving.hasMotion()) {
@@ -100,6 +96,11 @@ public abstract class TBMEntity extends Entity {
             this.waitingForGridAlignedPosition = true;
             this.delayedSetMoving = moving;
             System.err.println("must wait");
+            return;
+        }
+        boolean change = moving != this.moving;
+        if (!change) {
+            // nothing to do
             return;
         }
         // otherwise feel free to start!
@@ -117,30 +118,36 @@ public abstract class TBMEntity extends Entity {
                 this.worldObj.setBlockState(getPosition(), getState());
             }
         }
+        WorldServer wS = (WorldServer) this.worldObj;
+        Set<? extends EntityPlayer> watchers =
+                wS.getEntityTracker().getTrackingPlayers(this);
+        watchers.stream().filter(EntityPlayerMP.class::isInstance)
+                .map(EntityPlayerMP.class::cast).forEach(emp -> {
+                    emp.playerNetServerHandler.sendPacket(
+                            new S49PacketUpdateEntityNBT(this.getEntityId(),
+                                    this.getNBTTagCompound()));
+                });
+    }
+
+    public void setMovingClient(MovingState moving) {
+        checkState(isClient(this.worldObj), "client only");
+        setCommonMovingLogic(moving);
     }
 
     protected void setCommonMovingLogic(MovingState moving) {
+        boolean change = this.moving != moving;
         this.moving = moving;
-        boolean isFirstUpdate = this.firstUpdate;
-        this.firstUpdate = true; // disable move-on-setsize
-        if (moving.hasMotion()) {
-            setSize(BOX_SIZE, BOX_SIZE);
-            // Has to be moved manually
-            moveEntity(-0.5, 0, -0.5);
-        } else {
-            setSize(EMPTY_SIZE, EMPTY_SIZE);
-        }
-        this.firstUpdate = isFirstUpdate;
-        if (!isClient(this.worldObj)) {
-            WorldServer wS = (WorldServer) this.worldObj;
-            Set<? extends EntityPlayer> watchers =
-                    wS.getEntityTracker().getTrackingPlayers(this);
-            watchers.stream().filter(EntityPlayerMP.class::isInstance)
-                    .map(EntityPlayerMP.class::cast).forEach(emp -> {
-                        emp.playerNetServerHandler.sendPacket(
-                                new S49PacketUpdateEntityNBT(this.getEntityId(),
-                                        this.getNBTTagCompound()));
-                    });
+        if (change) {
+            boolean isFirstUpdate = this.firstUpdate;
+            this.firstUpdate = true; // disable move-on-setsize
+            if (moving.hasMotion()) {
+                setSize(BOX_SIZE, BOX_SIZE);
+                // Has to be moved manually, but only on server.
+                moveEntity(-0.5, 0, -0.5);
+            } else {
+                setSize(EMPTY_SIZE, EMPTY_SIZE);
+            }
+            this.firstUpdate = isFirstUpdate;
         }
     }
 
@@ -160,17 +167,27 @@ public abstract class TBMEntity extends Entity {
                 return;
             }
         }
-        if (!getPosition().equals(this.lastBlockPos)) {
+        BlockPos pos = getPosition();
+        if (!pos.equals(this.lastBlockPos)) {
             // change probably
             if (!isClient(this.worldObj)) {
                 onMoveToBlock(getPosition());
             }
             this.lastBlockPos = getPosition();
+        }
+        if (nearlyExactlyHere(pos) && !isClient(this.worldObj)) {
             if (this.waitingForGridAlignedPosition) {
                 setMovingLogic(this.delayedSetMoving);
                 this.waitingForGridAlignedPosition = false;
             }
         }
+    }
+
+    private boolean nearlyExactlyHere(BlockPos pos) {
+        double error = 0.001;
+        return Math.abs(pos.getX() - this.posX) < error
+                && Math.abs(pos.getY() - this.posY) < error
+                && Math.abs(pos.getZ() - this.posZ) < error;
     }
 
     public BlockPos getActualBlockPosition() {
@@ -206,7 +223,7 @@ public abstract class TBMEntity extends Entity {
                     compound.getCompoundTag(MACHINE_KEY));
             readEntityFromNBT(compound);
             // Update moving state.
-            setMoving(this.moving);
+            setMovingClient(this.moving);
             // Additionally, we expect the size data
             setSize((float) compound.getDouble("width"),
                     (float) compound.getDouble("height"));
@@ -218,8 +235,12 @@ public abstract class TBMEntity extends Entity {
     protected void readEntityFromNBT(NBTTagCompound nbt) {
         this.state =
                 this.state.getBlock().getStateFromMeta(nbt.getInteger("state"));
-        // not setMoving, we expect all state to be good
-        this.moving = MovingState.valueOf(nbt.getString("moving"));
+        MovingState moving = MovingState.valueOf(nbt.getString("moving"));
+        if (!isClient(this.worldObj)) {
+            setMoving(moving);
+        } else {
+            setMovingClient(moving);
+        }
     }
 
     private TBMMachine createMachineFromTagCompound(NBTTagCompound compound) {
